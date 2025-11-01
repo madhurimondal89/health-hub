@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+<!-- Homepage -->
+<url>
+  <loc>https://health-hub.calculatorfree.in/</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+
+<!-- Calculator Pages -->
+<url>
+  <loc>https://health-hub.calculatorfree.in/bmi-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/bmr-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/tdee-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/calorie-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/macro-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/calorie-burn-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/body-fat-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/lean-body-mass-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/waist-to-hip-ratio-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/waist-to-height-ratio-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/ideal-weight-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/running-pace-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/sleep-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/food-calorie-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://https://health-hub.calculatorfree.in/heart-rate-zones-calculator</loc>
+  <lastmod>2024-05-22T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+
+</urlset>

@@ -1,0 +1,127 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="bmiForm">
+                    <!-- Metric Units -->
+                    <div id="metricInputs">
+                        <div class="form-group">
+                            <label for="weightKg">Weight (kg)</label>
+                            <div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="heightCm">Height (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div>
+                        </div>
+                    </div>
+                    <!-- Imperial Units -->
+                    <div id="imperialInputs" style="display: none;">
+                         <div class="form-group">
+                            <label for="weightLbs">Weight (lbs)</label>
+                            <div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Height (ft, in)</label>
+                            <div class="height-imperial-inputs">
+                                <div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div>
+                                <div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Select your preferred units and enter your details.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>How to Use This Calculator</span><span class="icon">+</span></button><div class="accordion-content"><p>Select your preferred units (Metric or Imperial). Enter your weight and height. The calculator will automatically show your BMI result and category on the right.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Understanding BMI</span><span class="icon">+</span></button><div class="accordion-content"><p>Body Mass Index (BMI) is a measure that uses your height and weight to work out if your weight is healthy.</p><ul><li><strong>Below 18.5:</strong> Underweight</li><li><strong>18.5 – 24.9:</strong> Healthy Weight</li><li><strong>25.0 – 29.9:</strong> Overweight</li><li><strong>30.0 and Above:</strong> Obesity</li></ul></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This BMI calculator is an informational tool only and should not be a substitute for professional medical advice. For a comprehensive assessment of your health, please consult a qualified healthcare provider.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric';
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        allInputs.forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate.</div>`;
+    }
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    
+    allInputs.forEach(input => input.addEventListener('input', calculateBMI));
+
+    function calculateBMI() {
+        let weightInKg, heightInCm;
+        if (currentUnit === 'metric') {
+            weightInKg = parseFloat(document.getElementById('weightKg').value);
+            heightInCm = parseFloat(document.getElementById('heightCm').value);
+        } else {
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            const ft = parseFloat(document.getElementById('heightFt').value);
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
+            if (!isNaN(ft)) heightInCm = (ft * 12 + inches) * 2.54;
+        }
+        
+        if (isNaN(weightInKg) || isNaN(heightInCm) || weightInKg <= 0 || heightInCm <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter valid weight and height.</div>`;
+            return;
+        }
+
+        const heightInMeters = heightInCm / 100;
+        const bmi = weightInKg / (heightInMeters * heightInMeters);
+        const bmiResult = bmi.toFixed(2); // BMI is often shown with 2 decimal places
+
+        let category = '';
+        if (bmi < 18.5) { category = 'Underweight'; } 
+        else if (bmi >= 18.5 && bmi < 25) { category = 'Healthy Weight'; } 
+        else if (bmi >= 25 && bmi < 30) { category = 'Overweight'; } 
+        else { category = 'Obesity'; }
+
+        // --- NEW RESULT HTML STRUCTURE ---
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Your BMI: <strong>${bmiResult}</strong></p>
+                <hr class="result-divider" />
+                <p class="result-sub-text">You are in the <strong>${category}</strong> category.</p>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

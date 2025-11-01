@@ -1,0 +1,145 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (kg)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (lbs)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="calorieBurnForm">
+                    <div id="metricInputs">
+                        <div class="form-group"><label for="weightKg">Your Weight (kg)</label><div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div></div>
+                    </div>
+                    <div id="imperialInputs" style="display: none;">
+                        <div class="form-group"><label for="weightLbs">Your Weight (lbs)</label><div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="activity">Select an Activity</label>
+                        <div class="input-wrapper">
+                            <select id="activity">
+                                <optgroup label="Walking & Running">
+                                    <option value="2.0">Walking, slow pace (2.0 mph)</option>
+                                    <option value="3.5" selected>Walking, moderate pace (3.0 mph)</option>
+                                    <option value="5.0">Walking, brisk pace (4.0 mph)</option>
+                                    <option value="8.0">Running (6.0 mph, 10 min/mile)</option>
+                                    <option value="11.0">Running (7.5 mph, 8 min/mile)</option>
+                                    <option value="8.0">Hiking, cross-country</option>
+                                </optgroup>
+                                <optgroup label="Gym & Fitness">
+                                    <option value="6.0">Aerobics, general</option>
+                                    <option value="8.0">Elliptical Trainer, general</option>
+                                    <option value="10.0">Jumping Rope</option>
+                                    <option value="7.0">Rowing Machine, moderate</option>
+                                    <option value="5.5">Weight Lifting, vigorous</option>
+                                    <option value="3.0">Stretching / Yoga (Hatha)</option>
+                                </optgroup>
+                                <optgroup label="Sports & Outdoors">
+                                    <option value="8.0">Basketball, game</option>
+                                    <option value="7.0">Cycling, moderate (12-14 mph)</option>
+                                    <option value="12.0">Cycling, vigorous (>16 mph)</option>
+                                    <option value="7.0">Soccer, casual</option>
+                                    <option value="6.0">Swimming, freestyle moderate</option>
+                                    <option value="10.0">Swimming, freestyle vigorous</option>
+                                    <option value="7.0">Tennis, singles</option>
+                                </optgroup>
+                                 <optgroup label="Home & Daily Life">
+                                    <option value="2.5">Cooking or food prep</option>
+                                    <option value="3.5">Cleaning, moderate (vacuuming)</option>
+                                    <option value="4.5">Gardening, general</option>
+                                    <option value="2.3">Shopping, in store</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="duration">Duration of Activity (minutes)</label>
+                        <div class="input-wrapper"><input type="number" id="duration" min="1" placeholder="e.g., 30"></div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your details to estimate calories burned.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>How is this calculated?</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculation is based on the Metabolic Equivalent of Task (MET) formula. A MET value is assigned to each activity, representing the energy cost. The formula is: <strong>Calories Burned = MET Value × Body Weight (kg) × Duration (hours)</strong>.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>What is a MET Value?</span><span class="icon">+</span></button><div class="accordion-content"><p>A MET (Metabolic Equivalent of Task) is a unit that estimates the amount of energy used by the body during physical activity, as compared to resting metabolism. One MET is the energy you expend sitting at rest.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator provides an estimation and is for informational purposes only. Actual calories burned can vary based on individual factors like age, gender, body composition, and intensity. Always consult a healthcare professional for personalized advice.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric';
+    const allInputs = document.querySelectorAll('input, select');
+    const resultDiv = document.getElementById('result-section');
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        document.querySelectorAll('input').forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate.</div>`;
+    }
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    
+    allInputs.forEach(input => input.addEventListener('input', calculateBurn));
+
+    function calculateBurn() {
+        let weightInKg;
+        const metValue = parseFloat(document.getElementById('activity').value);
+        const durationMinutes = parseFloat(document.getElementById('duration').value);
+
+        if (currentUnit === 'metric') {
+            weightInKg = parseFloat(document.getElementById('weightKg').value);
+        } else {
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
+        }
+
+        if (isNaN(weightInKg) || isNaN(metValue) || isNaN(durationMinutes) || weightInKg <= 0 || durationMinutes <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter valid weight and duration.</div>`;
+            return;
+        }
+
+        const durationHours = durationMinutes / 60;
+        const caloriesBurned = Math.round(metValue * weightInKg * durationHours);
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Calories Burned:</p>
+                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${caloriesBurned.toLocaleString()}</strong></p>
+                <p class="result-main-unit">kcal</p>
+                <hr class="result-divider" />
+                <p class="result-sub-text">Estimated calories burned during ${durationMinutes} minutes of your selected activity.</p>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

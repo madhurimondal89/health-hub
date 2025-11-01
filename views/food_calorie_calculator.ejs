@@ -1,0 +1,86 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="foodCalorieForm">
+                    <div class="form-group">
+                        <label for="protein">Protein (grams)</label>
+                        <div class="input-wrapper"><input type="number" id="protein" min="0" placeholder="e.g., 20"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="carbs">Carbohydrates (grams)</label>
+                        <div class="input-wrapper"><input type="number" id="carbs" min="0" placeholder="e.g., 35"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="fat">Fat (grams)</label>
+                        <div class="input-wrapper"><input type="number" id="fat" min="0" placeholder="e.g., 15"></div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter macronutrient values from a food label to calculate total calories.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>How are food calories calculated?</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator uses the Atwater system, which is the standard method for calculating calories from macronutrients:</p><ul><li><strong>Protein:</strong> 4 calories per gram</li><li><strong>Carbohydrates:</strong> 4 calories per gram</li><li><strong>Fat:</strong> 9 calories per gram</li></ul><p>The total is the sum of calories from each macronutrient.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Where to find this information?</span><span class="icon">+</span></button><div class="accordion-content"><p>You can find the grams of protein, carbohydrates, and fat on the "Nutrition Facts" label of most packaged foods. This calculator is perfect for understanding how those numbers translate to total calories.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This tool provides a calculation based on standard values. The actual caloric content on a food label may vary slightly due to factors like fiber content. Always refer to the label for the most accurate information.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    
+    allInputs.forEach(input => input.addEventListener('input', calculateFoodCalories));
+
+    function calculateFoodCalories() {
+        const proteinGrams = parseFloat(document.getElementById('protein').value) || 0;
+        const carbsGrams = parseFloat(document.getElementById('carbs').value) || 0;
+        const fatGrams = parseFloat(document.getElementById('fat').value) || 0;
+
+        if (proteinGrams === 0 && carbsGrams === 0 && fatGrams === 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Enter macronutrient values to see the result.</div>`;
+            return;
+        }
+
+        const proteinCalories = proteinGrams * 4;
+        const carbsCalories = carbsGrams * 4;
+        const fatCalories = fatGrams * 9;
+        const totalCalories = Math.round(proteinCalories + carbsCalories + fatCalories);
+
+        const proteinPercent = totalCalories > 0 ? (proteinCalories / totalCalories * 100) : 0;
+        const carbsPercent = totalCalories > 0 ? (carbsCalories / totalCalories * 100) : 0;
+        const fatPercent = totalCalories > 0 ? (fatCalories / totalCalories * 100) : 0;
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Total Calories: <strong>${totalCalories.toLocaleString()} kcal</strong></p>
+            </div>
+            <div class="calorie-breakdown-container">
+                <h4>Calorie Breakdown:</h4>
+                <div class="breakdown-item"><div class="breakdown-label"><div>Protein</div><div>${proteinCalories.toFixed(0)} kcal</div></div><div class="breakdown-bar"><div class="breakdown-bar-fill protein" style="width: ${proteinPercent.toFixed(2)}%;"></div></div><div class="breakdown-percent">${proteinPercent.toFixed(1)}%</div></div>
+                <div class="breakdown-item"><div class="breakdown-label"><div>Carbohydrates</div><div>${carbsCalories.toFixed(0)} kcal</div></div><div class="breakdown-bar"><div class="breakdown-bar-fill carbs" style="width: ${carbsPercent.toFixed(2)}%;"></div></div><div class="breakdown-percent">${carbsPercent.toFixed(1)}%</div></div>
+                <div class="breakdown-item"><div class="breakdown-label"><div>Fat</div><div>${fatCalories.toFixed(0)} kcal</div></div><div class="breakdown-bar"><div class="breakdown-bar-fill fat" style="width: ${fatPercent.toFixed(2)}%;"></div></div><div class="breakdown-percent">${fatPercent.toFixed(1)}%</div></div>
+            </div>
+        `;
+    }
+    
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

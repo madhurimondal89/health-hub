@@ -1,0 +1,181 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (in)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="bodyFatForm">
+                    <div class="form-group"><label>Gender</label><div class="gender-switcher"><button type="button" id="genderMale" class="gender-btn active">Male</button><button type="button" id="genderFemale" class="gender-btn">Female</button></div></div>
+                    
+                    <div id="metricInputs">
+                        <div class="form-group"><label for="heightCm">Height (cm)</label><div class="input-wrapper"><input type="number" id="heightCm" placeholder="e.g., 175"></div></div>
+                        <div class="form-group"><label for="weightKg">Weight (kg)</label><div class="input-wrapper"><input type="number" id="weightKg" placeholder="e.g., 70"></div></div>
+                        <div class="form-group"><label for="neckCm">Neck (cm)</label><div class="input-wrapper"><input type="number" id="neckCm" placeholder="e.g., 38"></div></div>
+                        <div class="form-group"><label for="waistCm">Waist (cm)</label><div class="input-wrapper"><input type="number" id="waistCm" placeholder="e.g., 85"></div></div>
+                        <div class="form-group" id="hipFormGroupMetric" style="display: none;"><label for="hipCm">Hip (cm)</label><div class="input-wrapper"><input type="number" id="hipCm" placeholder="e.g., 95"></div></div>
+                    </div>
+
+                    <div id="imperialInputs" style="display: none;">
+                        <div class="form-group"><label>Height (ft, in)</label><div class="height-imperial-inputs"><div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div><div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div></div></div>
+                        <div class="form-group"><label for="weightLbs">Weight (lbs)</label><div class="input-wrapper"><input type="number" id="weightLbs" placeholder="e.g., 154"></div></div>
+                        <div class="form-group"><label for="neckIn">Neck (in)</label><div class="input-wrapper"><input type="number" id="neckIn" placeholder="e.g., 15"></div></div>
+                        <div class="form-group"><label for="waistIn">Waist (in)</label><div class="input-wrapper"><input type="number" id="waistIn" placeholder="e.g., 33"></div></div>
+                        <div class="form-group" id="hipFormGroupImperial" style="display: none;"><label for="hipIn">Hip (in)</label><div class="input-wrapper"><input type="number" id="hipIn" placeholder="e.g., 37"></div></div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your body measurements to estimate your body fat.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>How is Body Fat Calculated?</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator uses the U.S. Navy Method, which requires height, neck, and waist circumference measurements. For women, it also requires hip circumference. It's a widely used and reliable method for estimating body fat without specialized equipment.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>How Accurate is This Method?</span><span class="icon">+</span></button><div class="accordion-content"><p>While this method is generally accurate for most people, it is still an estimation. Body fat percentage can be influenced by many factors. For the most accurate measurement, consult with a fitness or healthcare professional who can use methods like skinfold calipers or DEXA scans.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator provides an estimate for informational purposes only. The results are not a substitute for professional medical advice. Consult a healthcare provider for any health-related concerns.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric', currentGender = 'male';
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const genderMaleBtn = document.getElementById('genderMale');
+    const genderFemaleBtn = document.getElementById('genderFemale');
+    
+    // Form groups for unit switching
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+    const hipFormGroupMetric = document.getElementById('hipFormGroupMetric');
+    const hipFormGroupImperial = document.getElementById('hipFormGroupImperial');
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        allInputs.forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your body measurements.</div>`;
+    }
+
+    function switchGender(gender) {
+        currentGender = gender;
+        genderMaleBtn.classList.toggle('active', gender === 'male');
+        genderFemaleBtn.classList.toggle('active', gender === 'female');
+        // Show/hide hip input based on gender
+        const showHip = gender === 'female';
+        hipFormGroupMetric.style.display = showHip ? 'block' : 'none';
+        hipFormGroupImperial.style.display = showHip ? 'block' : 'none';
+        calculateBodyFat();
+    }
+    
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    genderMaleBtn.addEventListener('click', () => switchGender('male'));
+    genderFemaleBtn.addEventListener('click', () => switchGender('female'));
+    allInputs.forEach(input => input.addEventListener('input', calculateBodyFat));
+
+    function getCategory(bfp, gender) {
+        if (gender === 'male') {
+            if (bfp < 6) return 'Essential Fat';
+            if (bfp < 14) return 'Athletes';
+            if (bfp < 18) return 'Fitness';
+            if (bfp < 25) return 'Acceptable';
+            return 'Obese';
+        } else { // female
+            if (bfp < 14) return 'Essential Fat';
+            if (bfp < 21) return 'Athletes';
+            if (bfp < 25) return 'Fitness';
+            if (bfp < 32) return 'Acceptable';
+            return 'Obese';
+        }
+    }
+
+    function calculateBodyFat() {
+        let heightCm, weightKg, neckCm, waistCm, hipCm;
+
+        if (currentUnit === 'metric') {
+            heightCm = parseFloat(document.getElementById('heightCm').value);
+            weightKg = parseFloat(document.getElementById('weightKg').value);
+            neckCm = parseFloat(document.getElementById('neckCm').value);
+            waistCm = parseFloat(document.getElementById('waistCm').value);
+            if (currentGender === 'female') hipCm = parseFloat(document.getElementById('hipCm').value);
+        } else {
+            const ft = parseFloat(document.getElementById('heightFt').value);
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            if (!isNaN(ft)) heightCm = (ft * 12 + inches) * 2.54;
+            if (!isNaN(lbs)) weightKg = lbs * 0.453592;
+            
+            neckCm = parseFloat(document.getElementById('neckIn').value) * 2.54;
+            waistCm = parseFloat(document.getElementById('waistIn').value) * 2.54;
+            if (currentGender === 'female') hipCm = parseFloat(document.getElementById('hipIn').value) * 2.54;
+        }
+
+        if (isNaN(heightCm) || isNaN(neckCm) || isNaN(waistCm) || (currentGender === 'female' && isNaN(hipCm))) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter all required measurements.</div>`;
+            return;
+        }
+
+        let bodyFatPercentage;
+        if (currentGender === 'male') {
+            bodyFatPercentage = 86.010 * Math.log10(waistCm - neckCm) - 70.041 * Math.log10(heightCm) + 36.76;
+        } else {
+            bodyFatPercentage = 163.205 * Math.log10(waistCm + hipCm - neckCm) - 97.684 * Math.log10(heightCm) - 78.387;
+        }
+        
+        if (bodyFatPercentage <= 0 || !isFinite(bodyFatPercentage)) {
+            resultDiv.innerHTML = `<div class="placeholder">Invalid measurements. Please check your inputs.</div>`;
+            return;
+        }
+
+        const bfpResult = bodyFatPercentage.toFixed(1);
+        const category = getCategory(bfpResult, currentGender);
+        let fatMassText = '', leanMassText = '';
+        
+        if (!isNaN(weightKg)) {
+            const fatMass = weightKg * (bfpResult / 100);
+            const leanMass = weightKg - fatMass;
+            const massUnit = currentUnit === 'metric' ? 'kg' : 'lbs';
+            const displayWeight = currentUnit === 'metric' ? weightKg : weightKg / 0.453592;
+            
+            fatMassText = `<div class="bf-details-item"><div>Body Fat Mass</div><div><strong>${(displayWeight * (bfpResult/100)).toFixed(1)} ${massUnit}</strong></div></div>`;
+            leanMassText = `<div class="bf-details-item"><div>Lean Body Mass</div><div><strong>${(displayWeight * (1 - bfpResult/100)).toFixed(1)} ${massUnit}</strong></div></div>`;
+        }
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Body Fat Percentage:</p>
+                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${bfpResult}%</strong></p>
+                <p class="result-main-unit">${category}</p>
+            </div>
+            <div class="bf-details-container">
+                ${fatMassText}
+                ${leanMassText}
+            </div>
+        `;
+    }
+    
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

@@ -1,0 +1,205 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="calc-mode-switcher">
+            <button id="wakeUpBtn" class="unit-btn active">Wake Up Time</button>
+            <button id="bedtimeBtn" class="unit-btn">Bedtime</button>
+            <button id="lengthBtn" class="unit-btn">Sleep Length</button>
+        </div>
+
+        <!-- Mode 1: Wake Up Time -->
+        <div id="wakeUpMode">
+            <p class="mode-description">Calculate when to wake up based on your bedtime.</p>
+            <button id="calculateNowBtn" class="main-action-btn">Calculate from Now</button>
+            <p class="mode-description-alt">Or, if you plan to sleep at a specific time:</p>
+            <div class="form-group"><div class="input-wrapper"><input type="time" id="bedtimeInput"></div></div>
+        </div>
+
+        <!-- Mode 2: Bedtime -->
+        <div id="bedtimeMode" style="display: none;">
+            <p class="mode-description">Calculate when to go to bed to wake up at a specific time.</p>
+            <div class="form-group">
+                <label for="wakeUpTimeInput">I want to wake up at:</label>
+                <div class="input-wrapper"><input type="time" id="wakeUpTimeInput"></div>
+            </div>
+        </div>
+
+        <!-- Mode 3: Sleep Length -->
+        <div id="sleepLengthMode" style="display: none;">
+            <p class="mode-description">Calculate the duration and sleep cycles between your bedtime and wake-up time.</p>
+            <div class="form-group"><label for="sleepStart">I plan to sleep at:</label><div class="input-wrapper"><input type="time" id="sleepStart"></div></div>
+            <div class="form-group"><label for="sleepEnd">And wake up at:</label><div class="input-wrapper"><input type="time" id="sleepEnd"></div></div>
+        </div>
+
+        <div class="result-section" id="result-section" style="margin-top: 2rem;">
+             <div class="placeholder">Select a mode and provide a time to get started.</div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>How Does This Calculator Work?</span><span class="icon">+</span></button><div class="accordion-content"><p>The average human sleep cycle is 90 minutes. Waking up at the end of a cycle, rather than in the middle of it, helps you feel refreshed and alert. This calculator works with 90-minute increments and also considers an average of 15 minutes to fall asleep.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Why 90-Minute Cycles?</span><span class="icon">+</span></button><div class="accordion-content"><p>During sleep, your brain cycles through different stages (light, deep, REM). A full cycle takes about 90 minutes. Completing 5-6 full cycles (7.5 to 9 hours) is recommended for most adults.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This is a tool based on averages. Individual sleep cycles can vary. Use these results as a guideline to find what works best for you.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentMode = 'wakeUp';
+    const resultDiv = document.getElementById('result-section');
+
+    const wakeUpBtn = document.getElementById('wakeUpBtn');
+    const bedtimeBtn = document.getElementById('bedtimeBtn');
+    const lengthBtn = document.getElementById('lengthBtn');
+
+    const wakeUpModeDiv = document.getElementById('wakeUpMode');
+    const bedtimeModeDiv = document.getElementById('bedtimeMode');
+    const sleepLengthModeDiv = document.getElementById('sleepLengthMode');
+
+    const calculateNowBtn = document.getElementById('calculateNowBtn');
+    const bedtimeInput = document.getElementById('bedtimeInput');
+    const wakeUpTimeInput = document.getElementById('wakeUpTimeInput');
+    const sleepStartInput = document.getElementById('sleepStart');
+    const sleepEndInput = document.getElementById('sleepEnd');
+
+    function formatTime(date) {
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        return `${hours}:${minutes} ${ampm}`;
+    }
+
+    function switchMode(mode) {
+        currentMode = mode;
+        wakeUpBtn.classList.toggle('active', mode === 'wakeUp');
+        bedtimeBtn.classList.toggle('active', mode === 'bedtime');
+        lengthBtn.classList.toggle('active', mode === 'length');
+        
+        wakeUpModeDiv.style.display = mode === 'wakeUp' ? 'block' : 'none';
+        bedtimeModeDiv.style.display = mode === 'bedtime' ? 'block' : 'none';
+        sleepLengthModeDiv.style.display = mode === 'length' ? 'block' : 'none';
+        
+        resultDiv.innerHTML = `<div class="placeholder">Select a mode and provide a time to get started.</div>`;
+    }
+
+    function generateWakeUpResults(startTime, introText) {
+        const fallAsleepTime = new Date(startTime.getTime() + 15 * 60000); // Add 15 mins to fall asleep
+        
+        let resultsHTML = `<h4>${introText}</h4><div class="time-options-list">`;
+        for (let i = 1; i <= 6; i++) {
+            const wakeUpTime = new Date(fallAsleepTime.getTime() + i * 90 * 60000);
+            const isRecommended = (i === 5 || i === 6);
+            resultsHTML += `<div class="time-option ${isRecommended ? 'recommended' : ''}">${formatTime(wakeUpTime)} <span>(${i} cycle${i > 1 ? 's' : ''})</span></div>`;
+        }
+        resultsHTML += '</div><p class="result-sub-text">Getting 7.5 to 9 hours of sleep is recommended for adults.</p>';
+        resultDiv.innerHTML = resultsHTML;
+    }
+
+    function calculateBedtimes() {
+        const wakeUpValue = wakeUpTimeInput.value;
+        if (!wakeUpValue) {
+            resultDiv.innerHTML = `<div class="placeholder">Please select a wake up time.</div>`;
+            return;
+        }
+
+        const [hours, minutes] = wakeUpValue.split(':');
+        const wakeUpTime = new Date();
+        wakeUpTime.setHours(hours);
+        wakeUpTime.setMinutes(minutes);
+
+        let resultsHTML = `<h4>To wake up at ${formatTime(wakeUpTime)}, you should go to bed at one of the following times:</h4><div class="time-options-list">`;
+        for (let i = 1; i <= 6; i++) {
+            const bedtime = new Date(wakeUpTime.getTime() - (i * 90 * 60000) - (15 * 60000));
+            const isRecommended = (i === 5 || i === 6);
+            resultsHTML += `<div class="time-option ${isRecommended ? 'recommended' : ''}">${formatTime(bedtime)} <span>(${i} cycle${i > 1 ? 's' : ''})</span></div>`;
+        }
+        resultsHTML += '</div><p class="result-sub-text">This includes 15 minutes to fall asleep.</p>';
+        resultDiv.innerHTML = resultsHTML;
+    }
+
+    function calculateSleepLength() {
+        const startTimeValue = sleepStartInput.value;
+        const endTimeValue = sleepEndInput.value;
+        if (!startTimeValue || !endTimeValue) {
+            resultDiv.innerHTML = `<div class="placeholder">Please select both a start and end time.</div>`;
+            return;
+        }
+
+        const [startH, startM] = startTimeValue.split(':');
+        const [endH, endM] = endTimeValue.split(':');
+        
+        let startDate = new Date();
+        startDate.setHours(startH, startM, 0, 0);
+        let endDate = new Date();
+        endDate.setHours(endH, endM, 0, 0);
+
+        if (endDate < startDate) { // Handle overnight sleep
+            endDate.setDate(endDate.getDate() + 1);
+        }
+
+        const diffMs = endDate - startDate;
+        const totalMinutes = Math.floor(diffMs / 60000);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        
+        const sleepCycles = Math.floor(totalMinutes / 90);
+        const remainingMinutes = totalMinutes % 90;
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Total Sleep Duration:</p>
+                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${hours}h ${minutes}m</strong></p>
+            </div>
+            <div class="bf-details-container">
+                <div class="bf-details-item">
+                    <div>Completed Sleep Cycles</div>
+                    <div><strong>${sleepCycles}</strong></div>
+                </div>
+                <div class="bf-details-item">
+                    <div>Remaining Time</div>
+                    <div><strong>${remainingMinutes} minutes</strong></div>
+                </div>
+            </div>
+        `;
+    }
+
+    // --- ATTACH EVENT LISTENERS ---
+    wakeUpBtn.addEventListener('click', () => switchMode('wakeUp'));
+    bedtimeBtn.addEventListener('click', () => switchMode('bedtime'));
+    lengthBtn.addEventListener('click', () => switchMode('length'));
+    
+    calculateNowBtn.addEventListener('click', () => {
+        generateWakeUpResults(new Date(), 'If you go to bed now, you should wake up at:');
+    });
+
+    bedtimeInput.addEventListener('input', () => {
+        const bedTimeValue = bedtimeInput.value;
+        if (!bedTimeValue) return;
+        const [hours, minutes] = bedTimeValue.split(':');
+        const startTime = new Date();
+        startTime.setHours(hours);
+        startTime.setMinutes(minutes);
+        generateWakeUpResults(startTime, `If you go to bed at ${formatTime(startTime)}, you should wake up at:`);
+    });
+
+    wakeUpTimeInput.addEventListener('input', calculateBedtimes);
+    sleepStartInput.addEventListener('input', calculateSleepLength);
+    sleepEndInput.addEventListener('input', calculateSleepLength);
+
+    // --- ACCORDION LOGIC (THIS WAS MISSING) ---
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

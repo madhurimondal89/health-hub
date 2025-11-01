@@ -1,0 +1,98 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="hrForm">
+                    <div class="form-group">
+                        <label for="age">Your Age (years)</label>
+                        <div class="input-wrapper"><input type="number" id="age" min="15" max="100" placeholder="e.g., 25"></div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your age to see your target heart rate zones for exercise.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What are Heart Rate Zones?</span><span class="icon">+</span></button><div class="accordion-content"><p>Heart rate zones are ranges based on a percentage of your maximum heart rate (MHR). Training in different zones helps you achieve specific fitness goals, such as improving endurance, burning fat, or increasing speed.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>How is Maximum Heart Rate (MHR) Calculated?</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator uses the most common formula: <strong>MHR = 220 - Your Age</strong>. While this is a reliable estimate for most people, individual MHR can vary. For a precise measurement, a clinical stress test is recommended.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This information is for educational purposes only. Consult a healthcare professional before starting any new exercise program, especially if you have pre-existing health conditions.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ageInput = document.getElementById('age');
+    const resultDiv = document.getElementById('result-section');
+    
+    ageInput.addEventListener('input', calculateHeartRateZones);
+
+    function calculateHeartRateZones() {
+        const age = parseFloat(ageInput.value);
+
+        if (isNaN(age) || age < 15 || age > 100) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter a valid age between 15 and 100.</div>`;
+            return;
+        }
+
+        const maxHeartRate = 220 - age;
+
+        const zones = [
+            { name: 'Zone 1: Very Light', percentage: '50-60%', colorClass: 'zone-1' },
+            { name: 'Zone 2: Light (Fat Burning)', percentage: '60-70%', colorClass: 'zone-2' },
+            { name: 'Zone 3: Moderate (Cardio)', percentage: '70-80%', colorClass: 'zone-3' },
+            { name: 'Zone 4: Hard (Anaerobic)', percentage: '80-90%', colorClass: 'zone-4' },
+            { name: 'Zone 5: Maximum Effort', percentage: '90-100%', colorClass: 'zone-5' }
+        ];
+
+        const tableRows = zones.map(zone => {
+            const [minPercent, maxPercent] = zone.percentage.split('-').map(p => parseInt(p) / 100);
+            const minBPM = Math.round(maxHeartRate * minPercent);
+            const maxBPM = Math.round(maxHeartRate * maxPercent);
+            return `<tr>
+                        <td><span class="zone-color-dot ${zone.colorClass}"></span>${zone.name}</td>
+                        <td>${zone.percentage}</td>
+                        <td><strong>${minBPM} - ${maxBPM} BPM</strong></td>
+                    </tr>`;
+        }).join('');
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Your Estimated Max Heart Rate:</p>
+                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${maxHeartRate}</strong> BPM</p>
+            </div>
+            <div class="activity-table-container">
+                <h4>Target Heart Rate Zones:</h4>
+                <table class="activity-table">
+                    <thead>
+                        <tr>
+                            <th>Zone</th>
+                            <th>Intensity</th>
+                            <th>BPM Range</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+    
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

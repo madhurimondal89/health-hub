@@ -1,0 +1,166 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (ft, in)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="idealWeightForm">
+                    <div class="form-group"><label>Gender</label><div class="gender-switcher"><button type="button" id="genderMale" class="gender-btn active">Male</button><button type="button" id="genderFemale" class="gender-btn">Female</button></div></div>
+                    
+                    <div id="metricInputs">
+                        <div class="form-group"><label for="heightCm">Height (cm)</label><div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div></div>
+                    </div>
+
+                    <div id="imperialInputs" style="display: none;">
+                        <div class="form-group"><label>Height (ft, in)</label><div class="height-imperial-inputs"><div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div><div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div></div></div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your height to find your ideal weight range.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What is Ideal Weight?</span><span class="icon">+</span></button><div class="accordion-content"><p>"Ideal Weight" is not a single number but a healthy weight range. This range varies among individuals and is influenced by factors like height, gender, and body composition. This calculator provides estimates based on popular formulas.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Understanding the Formulas</span><span class="icon">+</span></button><div class="accordion-content"><p>This tool uses several formulas to provide a comprehensive view:</p><ul><li><strong>G.J. Hamwi Formula (1964)</strong></li><li><strong>B.J. Devine Formula (1974)</strong></li><li><strong>J.D. Robinson Formula (1983)</strong></li><li><strong>D.R. Miller Formula (1983)</strong></li></ul><p>The "Healthy BMI Range" is also provided, which is considered a good indicator of healthy weight for a given height.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>These results are estimations for informational purposes. They do not account for individual factors like muscle mass or body frame. For personalized health advice, please consult a qualified healthcare professional.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric', currentGender = 'male';
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const genderMaleBtn = document.getElementById('genderMale');
+    const genderFemaleBtn = document.getElementById('genderFemale');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    // --- UNIT SWITCHER LOGIC ---
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        allInputs.forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your height to find your ideal weight range.</div>`;
+    }
+
+    // --- GENDER SWITCHER LOGIC ---
+    function switchGender(gender) {
+        currentGender = gender;
+        genderMaleBtn.classList.toggle('active', gender === 'male');
+        genderFemaleBtn.classList.toggle('active', gender === 'female');
+        calculateIdealWeight();
+    }
+    
+    // --- ATTACH EVENT LISTENERS ---
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    genderMaleBtn.addEventListener('click', () => switchGender('male'));
+    genderFemaleBtn.addEventListener('click', () => switchGender('female'));
+    allInputs.forEach(input => input.addEventListener('input', calculateIdealWeight));
+
+    // --- MAIN CALCULATION FUNCTION ---
+    function calculateIdealWeight() {
+        let heightInInches;
+        if (currentUnit === 'metric') {
+            const heightCm = parseFloat(document.getElementById('heightCm').value);
+            if (!isNaN(heightCm)) heightInInches = heightCm / 2.54;
+        } else {
+            const ft = parseFloat(document.getElementById('heightFt').value);
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            if (!isNaN(ft)) heightInInches = ft * 12 + inches;
+        }
+
+        if (isNaN(heightInInches) || heightInInches <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter a valid height.</div>`;
+            return;
+        }
+        
+        if (heightInInches < 60) { // Height less than 5ft
+            resultDiv.innerHTML = `<div class="placeholder">Formulas are most accurate for heights above 5ft (152.4cm).</div>`;
+            return;
+        }
+
+        const baseHeight = 60; // 5 ft in inches
+        const inchesOverBase = heightInInches - baseHeight;
+        let hamwi, devine, robinson, miller;
+
+        if (currentGender === 'male') {
+            hamwi = 48 + (2.7 * inchesOverBase);
+            devine = 50 + (2.3 * inchesOverBase);
+            robinson = 52 + (1.9 * inchesOverBase);
+            miller = 56.2 + (1.41 * inchesOverBase);
+        } else { // female
+            hamwi = 45.5 + (2.2 * inchesOverBase);
+            devine = 45.5 + (2.3 * inchesOverBase);
+            robinson = 49 + (1.7 * inchesOverBase);
+            miller = 53.1 + (1.36 * inchesOverBase);
+        }
+        
+        const heightInMeters = heightInInches * 0.0254;
+        const healthyBmiLower = 18.5 * (heightInMeters ** 2);
+        const healthyBmiUpper = 25 * (heightInMeters ** 2);
+        
+        const averageIdeal = (hamwi + devine + robinson + miller) / 4;
+        const massUnit = currentUnit === 'metric' ? 'kg' : 'lbs';
+        const displayWeight = (kg) => (currentUnit === 'metric') ? kg.toFixed(1) : (kg * 2.20462).toFixed(1);
+
+        const results = [
+            { formula: 'G.J. Hamwi', weight: hamwi },
+            { formula: 'B.J. Devine', weight: devine },
+            { formula: 'J.D. Robinson', weight: robinson },
+            { formula: 'D.R. Miller', weight: miller }
+        ];
+
+        const tableRows = results.map(res => {
+            return `<tr><td>${res.formula}</td><td><strong>${displayWeight(res.weight)} ${massUnit}</strong></td></tr>`;
+        }).join('');
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Your Ideal Weight (Average):</p>
+                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${displayWeight(averageIdeal)} ${massUnit}</strong></p>
+            </div>
+            <div class="bf-details-container">
+                <div class="bf-details-item">
+                    <div>Healthy BMI Range</div>
+                    <div><strong>${displayWeight(healthyBmiLower)} - ${displayWeight(healthyBmiUpper)} ${massUnit}</strong></div>
+                </div>
+            </div>
+            <div class="activity-table-container">
+                <h4>Ideal Weight by different formulas:</h4>
+                <table class="activity-table">
+                    <thead><tr><th>Formula</th><th>Ideal Weight</th></tr></thead>
+                    <tbody>${tableRows}</tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    // --- ACCORDION LOGIC ---
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

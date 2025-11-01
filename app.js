@@ -1,0 +1,59 @@
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+app.use(express.static('public'));
+
+// Centralized Calculator Data
+const calculatorData = {
+    'bmi-calculator': { title: 'BMI Calculator', description: 'Calculate your Body Mass Index (BMI) instantly. Check if you are in a healthy weight range with our accurate BMI calculator for adults.' },
+    'bmr-calculator': { title: 'BMR Calculator', description: 'Estimate your Basal Metabolic Rate (BMR) - the number of calories your body burns at rest. Understand your daily calorie needs.' },
+    'tdee-calculator': { title: 'TDEE Calculator', description: 'Calculate your Total Daily Energy Expenditure (TDEE). Find out how many calories you burn per day based on your activity level.' },
+    'calorie-calculator': { title: 'Calorie Calculator', description: 'Determine your daily calorie needs for weight loss, maintenance, or gain. Get a personalized calorie plan based on your goals.' },
+    'macro-calculator': { title: 'Macro Calculator', description: 'Calculate your daily macronutrient needs (protein, carbs, and fat) based on your calorie goals and diet plan (balanced, low-carb, high-protein).' },
+    'calorie-burn-calculator': { title: 'Calorie Burn Calculator', description: 'Estimate the number of calories burned during various activities and exercises. Find out how many calories you burn while walking, running, and more.' },
+    'body-fat-calculator': { title: 'Body Fat Calculator', description: 'Estimate your body fat percentage using the U.S. Navy method. A simple way to measure your body composition without special equipment.' },
+    'lean-body-mass-calculator': { title: 'Lean Body Mass Calculator', description: 'Calculate your Lean Body Mass (LBM) using popular formulas. Understand your body composition beyond just weight.' },
+    'waist-to-hip-ratio-calculator': { title: 'Waist-to-Hip Ratio Calculator', description: 'Assess your health risk by calculating your Waist-to-Hip Ratio (WHR). A key indicator of abdominal fat and related health risks.' },
+    'waist-to-height-ratio-calculator': { title: 'Waist-to-Height Ratio Calculator', description: 'Use the Waist-to-Height Ratio (WHtR) to assess your health risk. A simple and effective indicator of central obesity.' },
+    'running-pace-calculator': { title: 'Running Pace Calculator', description: 'Calculate your running pace, time, or distance. An essential tool for runners to track performance and plan their training.' },
+    'sleep-calculator': { title: 'Sleep Calculator', description: 'Find the best time to wake up or go to sleep based on natural 90-minute sleep cycles. Wake up feeling refreshed and energized.' },
+    'food-calorie-calculator': { title: 'Food Calorie Calculator', description: 'Calculate the total calories in your food based on its protein, carbohydrate, and fat content. Understand nutrition labels better.' },
+    'heart-rate-zones-calculator': { title: 'Heart Rate Zones Calculator', description: 'Determine your target heart rate zones for exercise (fat burning, cardio, etc.). Optimize your workouts for better results.' },
+    'ideal-weight-calculator': { title: 'Ideal Weight Calculator', description: 'Find your ideal body weight range using multiple popular formulas. Get a healthy weight estimate based on your height and gender.' }
+};
+
+app.get('/', (req, res) => {
+    const calculators = Object.keys(calculatorData).map(key => ({
+        name: calculatorData[key].title,
+        url: `/${key}`,
+        description: calculatorData[key].description.split('.')[0] + '.' // Use first sentence for card description
+    }));
+    res.render('index', { 
+        title: 'Health Hub - All-in-One Health Calculators',
+        description: 'A free collection of online health and fitness calculators to help you achieve your goals. From BMI to TDEE, we have all the tools you need.',
+        calculators: calculators 
+    });
+});
+
+app.get('/:calculator', (req, res) => {
+    const calculatorName = req.params.calculator;
+    const data = calculatorData[calculatorName];
+
+    if (data) {
+        const viewName = calculatorName.replace(/-/g, '_');
+        res.render(viewName, { 
+            title: data.title,
+            description: data.description 
+        });
+    } else {
+        // Handle 404 - Not Found
+        res.status(404).send('Calculator not found');
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Health-Hub server is running at http://localhost:${port}`);
+});

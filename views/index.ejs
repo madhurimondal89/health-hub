@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <meta name="description" content="<%= description %>">
+    
+    <!-- Google Fonts (Poppins) for a modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon Links with your new PNG -->
+    <link rel="icon" type="image/png" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
+    <link rel="apple-touch-icon" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container">
+            <a href="/" class="logo">HealthHub</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-card">
+                    <h1>Welcome to Health Hub</h1>
+                    <p>Your one-stop destination for all health-related calculations.</p>
+                </div>
+            </section>
+
+            <!-- Calculator Grid Section -->
+            <section class="calculator-section">
+                <div class="calculator-grid-home">
+                    <% calculators.forEach(calc => { %>
+                        <a href="<%= calc.url %>" class="calc-card">
+                            <div class="card-content">
+                                <h3><%= calc.name %></h3>
+                                <p><%= calc.description %></p>
+                            </div>
+                            <div class="card-button">
+                                Go to Calculator
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-links">
+            <a href="https://www.calculatorfree.in/about-us/" target="_blank" rel="noopener noreferrer">About Us</a>
+            <a href="https://www.calculatorfree.in/contact-us/" target="_blank" rel="noopener noreferrer">Contact Us</a>
+            <a href="https://www.calculatorfree.in/disclaimer/" target="_blank" rel="noopener noreferrer">Disclaimer</a>
+            <a href="https://www.calculatorfree.in/dmca-policy/" target="_blank" rel="noopener noreferrer">DMCA Policy</a>
+            <a href="https://www.calculatorfree.in/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+            <a href="https://www.calculatorfree.in/terms-conditions/" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
+        </div>
+        <p>&copy; <%= new Date().getFullYear() %> calculatorfree.in All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>

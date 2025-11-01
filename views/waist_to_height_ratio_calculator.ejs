@@ -1,0 +1,109 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (in)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="whtrForm">
+                    <div id="metricInputs">
+                        <div class="form-group"><label for="heightCm">Height (cm)</label><div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div></div>
+                        <div class="form-group"><label for="waistCm">Waist Circumference (cm)</label><div class="input-wrapper"><input type="number" id="waistCm" placeholder="e.g., 85"></div></div>
+                    </div>
+
+                    <div id="imperialInputs" style="display: none;">
+                        <div class="form-group"><label>Height (ft, in)</label><div class="height-imperial-inputs"><div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div><div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div></div></div>
+                        <div class="form-group"><label for="waistIn">Waist Circumference (in)</label><div class="input-wrapper"><input type="number" id="waistIn" placeholder="e.g., 33"></div></div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your measurements to assess your health risk.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What is Waist-to-Height Ratio?</span><span class="icon">+</span></button><div class="accordion-content"><p>The Waist-to-Height Ratio (WHtR) is a measure of body fat distribution. A simple rule of thumb is to keep your waist circumference less than half your height. This ratio is often considered a better predictor of cardiovascular risk than BMI.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Health Risk Categories</span><span class="icon">+</span></button><div class="accordion-content"><ul><li><strong>Below 0.4:</strong> Underweight</li><li><strong>0.4 to 0.5:</strong> Healthy Weight</li><li><strong>0.5 to 0.6:</strong> Overweight</li><li><strong>Above 0.6:</strong> Obese</li></ul><p>These categories are generally applicable to both men and women.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator is for informational purposes only and is not a substitute for professional medical advice. Consult a healthcare provider for any health-related concerns.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric';
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        allInputs.forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your measurements.</div>`;
+    }
+    
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    allInputs.forEach(input => input.addEventListener('input', calculateWHtR));
+
+    function calculateWHtR() {
+        let height, waist;
+        if (currentUnit === 'metric') {
+            height = parseFloat(document.getElementById('heightCm').value);
+            waist = parseFloat(document.getElementById('waistCm').value);
+        } else {
+            const ft = parseFloat(document.getElementById('heightFt').value);
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            const waistIn = parseFloat(document.getElementById('waistIn').value);
+            if (!isNaN(ft)) height = ft * 12 + inches; // Height in inches
+            waist = waistIn;
+        }
+
+        if (isNaN(height) || isNaN(waist) || height <= 0 || waist <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter valid height and waist measurements.</div>`;
+            return;
+        }
+
+        const ratio = waist / height;
+        let risk = '', riskClass = '';
+
+        if (ratio < 0.4) { risk = 'Underweight'; riskClass = 'risk-low'; }
+        else if (ratio <= 0.5) { risk = 'Healthy Weight'; riskClass = 'risk-healthy'; }
+        else if (ratio <= 0.6) { risk = 'Overweight'; riskClass = 'risk-moderate'; }
+        else { risk = 'Obese'; riskClass = 'risk-high'; }
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Your Waist-to-Height Ratio:</p>
+                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${ratio.toFixed(2)}</strong></p>
+                <hr class="result-divider" />
+                <p class="result-sub-text">Category: <span class="risk-indicator ${riskClass}">${risk}</span></p>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

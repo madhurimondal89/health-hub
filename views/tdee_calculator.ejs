@@ -1,0 +1,115 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="tdeeForm">
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <div class="gender-switcher">
+                            <button type="button" id="genderMale" class="gender-btn active">Male</button>
+                            <button type="button" id="genderFemale" class="gender-btn">Female</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age (years)</label>
+                        <div class="input-wrapper"><input type="number" id="age" min="15" max="100" placeholder="e.g., 25"></div>
+                    </div>
+                    
+                    <!-- Weight & Height Inputs (same as BMR) -->
+                    <div id="metricInputs">
+                        <div class="form-group"><label for="weightKg">Weight (kg)</label><div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div></div>
+                        <div class="form-group"><label for="heightCm">Height (cm)</label><div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div></div>
+                    </div>
+                    <div id="imperialInputs" style="display: none;">
+                        <div class="form-group"><label for="weightLbs">Weight (lbs)</label><div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div></div>
+                        <div class="form-group"><label>Height (ft, in)</label><div class="height-imperial-inputs"><div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div><div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div></div></div>
+                    </div>
+
+                    <!-- --- NEW ACTIVITY LEVEL DROPDOWN --- -->
+                    <div class="form-group">
+                        <label for="activityLevel">Activity Level</label>
+                        <div class="input-wrapper">
+                            <select id="activityLevel">
+                                <option value="1.2">Sedentary (little or no exercise)</option>
+                                <option value="1.375">Lightly active (exercise 1-3 days/week)</option>
+                                <option value="1.55">Moderately active (exercise 3-5 days/week)</option>
+                                <option value="1.725">Very active (hard exercise 6-7 days/week)</option>
+                                <option value="1.9">Extra active (very hard exercise & physical job)</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your details to estimate your daily calorie needs.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What is TDEE?</span><span class="icon">+</span></button><div class="accordion-content"><p>Total Daily Energy Expenditure (TDEE) is an estimation of how many calories you burn per day when exercise is taken into account. It is calculated by first figuring out your Basal Metabolic Rate (BMR), then multiplying that value by an activity multiplier.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>How to Use TDEE for Weight Goals</span><span class="icon">+</span></button><div class="accordion-content"><p>Your TDEE is the number of calories your body needs to maintain its current weight. This is your "maintenance calories."</p><ul><li><strong>To lose weight:</strong> Consume slightly fewer calories than your TDEE (a deficit of 300-500 kcal is common).</li><li><strong>To gain weight:</strong> Consume slightly more calories than your TDEE (a surplus of 300-500 kcal is common).</li></ul></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This TDEE calculator provides an estimate and should not be a substitute for professional medical advice. For personalized nutrition and health guidance, please consult a qualified healthcare provider or a registered dietitian.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric', currentGender = 'male';
+    const allInputs = document.querySelectorAll('input, select');
+    const resultDiv = document.getElementById('result-section');
+    // ... all other element selections are the same as BMR ...
+
+    // --- All event listeners and switch functions are the same ---
+    
+    allInputs.forEach(input => input.addEventListener('input', calculateTDEE));
+
+    function calculateTDEE() {
+        let weightInKg, heightInCm;
+        const age = parseFloat(document.getElementById('age').value);
+        const activityMultiplier = parseFloat(document.getElementById('activityLevel').value);
+
+        if (currentUnit === 'metric') {
+            weightInKg = parseFloat(document.getElementById('weightKg').value);
+            heightInCm = parseFloat(document.getElementById('heightCm').value);
+        } else {
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            const ft = parseFloat(document.getElementById('heightFt').value);
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
+            if (!isNaN(ft)) heightInCm = (ft * 12 + inches) * 2.54;
+        }
+
+        if (isNaN(weightInKg) || isNaN(heightInCm) || isNaN(age) || age < 15) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter valid age, weight, and height.</div>`;
+            return;
+        }
+
+        let bmr;
+        if (currentGender === 'male') { bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) + 5; } 
+        else { bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) - 161; }
+        
+        const tdee = Math.round(bmr * activityMultiplier);
+        
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Your TDEE: <strong>${tdee.toLocaleString()} kcal/day</strong></p>
+                <hr class="result-divider" />
+                <p class="result-sub-text">This is your estimated daily calorie need to maintain your current weight.</p>
+            </div>
+        `;
+    }
+
+    // Attach listeners and other functions from BMR calculator
+</script>
+
+<%- include('partials/inner_footer') %>

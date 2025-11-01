@@ -1,0 +1,124 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (in)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="whrForm">
+                    <div class="form-group"><label>Gender</label><div class="gender-switcher"><button type="button" id="genderMale" class="gender-btn active">Male</button><button type="button" id="genderFemale" class="gender-btn">Female</button></div></div>
+                    
+                    <div id="metricInputs">
+                        <div class="form-group"><label for="waistCm">Waist Circumference (cm)</label><div class="input-wrapper"><input type="number" id="waistCm" placeholder="e.g., 85"></div></div>
+                        <div class="form-group"><label for="hipCm">Hip Circumference (cm)</label><div class="input-wrapper"><input type="number" id="hipCm" placeholder="e.g., 95"></div></div>
+                    </div>
+
+                    <div id="imperialInputs" style="display: none;">
+                        <div class="form-group"><label for="waistIn">Waist Circumference (in)</label><div class="input-wrapper"><input type="number" id="waistIn" placeholder="e.g., 33"></div></div>
+                        <div class="form-group"><label for="hipIn">Hip Circumference (in)</label><div class="input-wrapper"><input type="number" id="hipIn" placeholder="e.g., 37"></div></div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your measurements to assess your health risk.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What is Waist-to-Hip Ratio?</span><span class="icon">+</span></button><div class="accordion-content"><p>Waist-to-Hip Ratio (WHR) is the ratio of the circumference of your waist to that of your hips. It is a simple and useful measure of fat distribution, which can indicate potential health risks.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>How to Measure Correctly</span><span class="icon">+</span></button><div class="accordion-content"><p>For accurate results, use a measuring tape:</p><ul><li><strong>Waist:</strong> Measure at the narrowest point, usually just above the belly button.</li><li><strong>Hips:</strong> Measure at the widest part of your buttocks.</li></ul><p>Ensure the tape is snug but not compressing the skin.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator is an informational tool and not a substitute for professional medical advice. Consult a healthcare provider to understand your results and for any health-related concerns.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric', currentGender = 'male';
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const genderMaleBtn = document.getElementById('genderMale');
+    const genderFemaleBtn = document.getElementById('genderFemale');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        allInputs.forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your measurements.</div>`;
+    }
+    
+    function switchGender(gender) {
+        currentGender = gender;
+        genderMaleBtn.classList.toggle('active', gender === 'male');
+        genderFemaleBtn.classList.toggle('active', gender === 'female');
+        calculateWHR();
+    }
+    
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    genderMaleBtn.addEventListener('click', () => switchGender('male'));
+    genderFemaleBtn.addEventListener('click', () => switchGender('female'));
+    allInputs.forEach(input => input.addEventListener('input', calculateWHR));
+
+    function calculateWHR() {
+        let waist, hip;
+        if (currentUnit === 'metric') {
+            waist = parseFloat(document.getElementById('waistCm').value);
+            hip = parseFloat(document.getElementById('hipCm').value);
+        } else {
+            waist = parseFloat(document.getElementById('waistIn').value);
+            hip = parseFloat(document.getElementById('hipIn').value);
+        }
+
+        if (isNaN(waist) || isNaN(hip) || waist <= 0 || hip <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter valid waist and hip measurements.</div>`;
+            return;
+        }
+
+        const ratio = waist / hip;
+        let risk = '', riskClass = '';
+
+        if (currentGender === 'male') {
+            if (ratio <= 0.95) { risk = 'Low Risk'; riskClass = 'risk-low'; }
+            else if (ratio <= 1.0) { risk = 'Moderate Risk'; riskClass = 'risk-moderate'; }
+            else { risk = 'High Risk'; riskClass = 'risk-high'; }
+        } else { // female
+            if (ratio <= 0.80) { risk = 'Low Risk'; riskClass = 'risk-low'; }
+            else if (ratio <= 0.85) { risk = 'Moderate Risk'; riskClass = 'risk-moderate'; }
+            else { risk = 'High Risk'; riskClass = 'risk-high'; }
+        }
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Your Waist-to-Hip Ratio:</p>
+                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${ratio.toFixed(2)}</strong></p>
+                <hr class="result-divider" />
+                <p class="result-sub-text">Health Risk: <span class="risk-indicator ${riskClass}">${risk}</span></p>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

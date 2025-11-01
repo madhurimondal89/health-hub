@@ -1,0 +1,154 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="calc-mode-switcher">
+            <button id="calcPaceBtn" class="unit-btn active">Calculate Pace</button>
+            <button id="calcTimeBtn" class="unit-btn">Calculate Time</button>
+            <button id="calcDistBtn" class="unit-btn">Calculate Distance</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="paceForm">
+                    <!-- Distance Inputs -->
+                    <div id="distanceInputs" class="form-group">
+                        <label>Distance</label>
+                        <div class="multi-input-group">
+                            <div class="input-wrapper"><input type="number" id="distanceValue" placeholder="e.g., 5"></div>
+                            <div class="input-wrapper">
+                                <select id="distanceUnit">
+                                    <option value="km">Kilometers</option>
+                                    <option value="mi">Miles</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Inputs -->
+                    <div id="timeInputs" class="form-group">
+                        <label>Time (hh:mm:ss)</label>
+                        <div class="multi-input-group">
+                            <div class="input-wrapper"><input type="number" id="timeHours" placeholder="hh"></div>
+                            <div class="input-wrapper"><input type="number" id="timeMinutes" placeholder="mm"></div>
+                            <div class="input-wrapper"><input type="number" id="timeSeconds" placeholder="ss"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pace Inputs -->
+                    <div id="paceInputs" class="form-group" style="display: none;">
+                        <label>Pace (mm:ss per unit)</label>
+                        <div class="multi-input-group">
+                            <div class="input-wrapper"><input type="number" id="paceMinutes" placeholder="mm"></div>
+                            <div class="input-wrapper"><input type="number" id="paceSeconds" placeholder="ss"></div>
+                            <div class="input-wrapper">
+                                <select id="paceUnit">
+                                    <option value="km">per km</option>
+                                    <option value="mi">per mile</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your details to calculate your result.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>How to Use the Calculator</span><span class="icon">+</span></button><div class="accordion-content"><p>Select what you want to calculate (Pace, Time, or Distance) using the buttons at the top. The required input fields will appear. Fill in the known values, and the calculator will instantly show you the result.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>What is Running Pace?</span><span class="icon">+</span></button><div class="accordion-content"><p>Running pace is the time it takes to cover a specific distance, typically measured in minutes per mile or minutes per kilometer. It's a key metric for runners to track their speed and endurance.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator provides a mathematical conversion and does not account for real-world factors like terrain, elevation, or weather. Use it as a training guide and reference.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentMode = 'pace';
+    const allInputs = document.querySelectorAll('input, select');
+    const resultDiv = document.getElementById('result-section');
+    
+    const calcPaceBtn = document.getElementById('calcPaceBtn');
+    const calcTimeBtn = document.getElementById('calcTimeBtn');
+    const calcDistBtn = document.getElementById('calcDistBtn');
+    const distanceInputs = document.getElementById('distanceInputs');
+    const timeInputs = document.getElementById('timeInputs');
+    const paceInputs = document.getElementById('paceInputs');
+
+    function switchMode(mode) {
+        currentMode = mode;
+        calcPaceBtn.classList.toggle('active', mode === 'pace');
+        calcTimeBtn.classList.toggle('active', mode === 'time');
+        calcDistBtn.classList.toggle('active', mode === 'distance');
+        
+        distanceInputs.style.display = (mode === 'pace' || mode === 'time') ? 'block' : 'none';
+        timeInputs.style.display = (mode === 'pace' || mode === 'distance') ? 'block' : 'none';
+        paceInputs.style.display = (mode === 'time' || mode === 'distance') ? 'block' : 'none';
+
+        allInputs.forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate.</div>`;
+    }
+
+    calcPaceBtn.addEventListener('click', () => switchMode('pace'));
+    calcTimeBtn.addEventListener('click', () => switchMode('time'));
+    calcDistBtn.addEventListener('click', () => switchMode('distance'));
+    allInputs.forEach(input => input.addEventListener('input', calculate));
+
+    function calculate() {
+        const distVal = parseFloat(document.getElementById('distanceValue').value);
+        const distUnit = document.getElementById('distanceUnit').value;
+        
+        const timeH = parseFloat(document.getElementById('timeHours').value) || 0;
+        const timeM = parseFloat(document.getElementById('timeMinutes').value) || 0;
+        const timeS = parseFloat(document.getElementById('timeSeconds').value) || 0;
+        const totalTimeInSeconds = (timeH * 3600) + (timeM * 60) + timeS;
+
+        const paceM = parseFloat(document.getElementById('paceMinutes').value) || 0;
+        const paceS = parseFloat(document.getElementById('paceSeconds').value) || 0;
+        const paceUnit = document.getElementById('paceUnit').value;
+        const totalPaceInSeconds = (paceM * 60) + paceS;
+
+        if (currentMode === 'pace') {
+            if (isNaN(distVal) || totalTimeInSeconds <= 0 || distVal <= 0) {
+                resultDiv.innerHTML = `<div class="placeholder">Enter valid distance and time.</div>`; return;
+            }
+            const secondsPerUnit = totalTimeInSeconds / distVal;
+            const paceMinutes = Math.floor(secondsPerUnit / 60);
+            const paceSeconds = Math.round(secondsPerUnit % 60);
+            resultDiv.innerHTML = `<div class="result-display-new"><p class="result-main-text">Required Pace:</p><p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${paceMinutes}:${paceSeconds.toString().padStart(2, '0')}</strong></p><p class="result-main-unit">min/${distUnit}</p></div>`;
+        } 
+        else if (currentMode === 'time') {
+            if (isNaN(distVal) || totalPaceInSeconds <= 0 || distVal <= 0) {
+                resultDiv.innerHTML = `<div class="placeholder">Enter valid distance and pace.</div>`; return;
+            }
+            const distInPaceUnit = (distUnit === paceUnit) ? distVal : (distUnit === 'km' ? distVal / 1.60934 : distVal * 1.60934);
+            const totalSeconds = distInPaceInUnit * totalPaceInSeconds;
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = Math.round(totalSeconds % 60);
+            resultDiv.innerHTML = `<div class="result-display-new"><p class="result-main-text">Estimated Time:</p><p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</strong></p><p class="result-main-unit">hh:mm:ss</p></div>`;
+        } 
+        else if (currentMode === 'distance') {
+            if (totalTimeInSeconds <= 0 || totalPaceInSeconds <= 0) {
+                resultDiv.innerHTML = `<div class="placeholder">Enter valid time and pace.</div>`; return;
+            }
+            const distance = totalTimeInSeconds / totalPaceInSeconds;
+            resultDiv.innerHTML = `<div class="result-display-new"><p class="result-main-text">Calculated Distance:</p><p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${distance.toFixed(2)}</strong></p><p class="result-main-unit">${paceUnit === 'km' ? 'Kilometers' : 'Miles'}</p></div>`;
+        }
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

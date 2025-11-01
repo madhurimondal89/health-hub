@@ -1,0 +1,157 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="lbmForm">
+                    <div class="form-group"><label>Gender</label><div class="gender-switcher"><button type="button" id="genderMale" class="gender-btn active">Male</button><button type="button" id="genderFemale" class="gender-btn">Female</button></div></div>
+                    <div id="metricInputs">
+                        <div class="form-group"><label for="weightKg">Weight (kg)</label><div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div></div>
+                        <div class="form-group"><label for="heightCm">Height (cm)</label><div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div></div>
+                    </div>
+                    <div id="imperialInputs" style="display: none;">
+                        <div class="form-group"><label for="weightLbs">Weight (lbs)</label><div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div></div>
+                        <div class="form-group"><label>Height (ft, in)</label><div class="height-imperial-inputs"><div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div><div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div></div></div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your details to estimate your Lean Body Mass.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What is Lean Body Mass?</span><span class="icon">+</span></button><div class="accordion-content"><p>Lean Body Mass (LBM) is the total weight of your body minus all the weight due to your fat mass. LBM includes the weight of your organs, skin, bones, body water, and muscles. It's a key indicator of your metabolic rate.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Understanding the Formulas</span><span class="icon">+</span></button><div class="accordion-content"><p>Different formulas were developed based on studies of different population groups. This calculator uses three popular formulas:</p><ul><li><strong>Boer Formula:</strong> A widely used and generally accurate formula.</li><li><strong>James Formula:</strong> Developed in 1976, it's another well-regarded method.</li><li><strong>Hume Formula:</strong> Developed in 1966, this is one of the older but still relevant formulas.</li></ul><p>The variation in results highlights that these are estimations. The average of these formulas can provide a balanced view.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator provides estimations and is for informational purposes only. For a precise measurement and health assessment, consult a qualified healthcare provider.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric', currentGender = 'male';
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const genderMaleBtn = document.getElementById('genderMale');
+    const genderFemaleBtn = document.getElementById('genderFemale');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        allInputs.forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your details.</div>`;
+    }
+    
+    function switchGender(gender) {
+        currentGender = gender;
+        genderMaleBtn.classList.toggle('active', gender === 'male');
+        genderFemaleBtn.classList.toggle('active', gender === 'female');
+        calculateLBM();
+    }
+    
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    genderMaleBtn.addEventListener('click', () => switchGender('male'));
+    genderFemaleBtn.addEventListener('click', () => switchGender('female'));
+    allInputs.forEach(input => input.addEventListener('input', calculateLBM));
+
+    function calculateLBM() {
+        let weightKg, heightCm;
+
+        if (currentUnit === 'metric') {
+            weightKg = parseFloat(document.getElementById('weightKg').value);
+            heightCm = parseFloat(document.getElementById('heightCm').value);
+        } else {
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            const ft = parseFloat(document.getElementById('heightFt').value);
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            if (!isNaN(lbs)) weightKg = lbs * 0.453592;
+            if (!isNaN(ft)) heightCm = (ft * 12 + inches) * 2.54;
+        }
+
+        if (isNaN(weightKg) || isNaN(heightCm) || weightKg <= 0 || heightCm <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter valid weight and height.</div>`;
+            return;
+        }
+
+        let lbmBoer, lbmJames, lbmHume;
+        if (currentGender === 'male') {
+            lbmBoer = (0.407 * weightKg) + (0.267 * heightCm) - 19.2;
+            lbmJames = (1.1 * weightKg) - (128 * ((weightKg / heightCm) ** 2));
+            lbmHume = (0.32810 * weightKg) + (0.33929 * heightCm) - 29.5336;
+        } else { // female
+            lbmBoer = (0.252 * weightKg) + (0.473 * heightCm) - 48.3;
+            lbmJames = (1.07 * weightKg) - (148 * ((weightKg / heightCm) ** 2));
+            lbmHume = (0.29569 * weightKg) + (0.41813 * heightCm) - 43.2933;
+        }
+        
+        const massUnit = (currentUnit === 'metric') ? 'kg' : 'lbs';
+        const displayLBM = (lbm) => (currentUnit === 'metric') ? lbm.toFixed(1) : (lbm / 0.453592).toFixed(1);
+
+        const results = [
+            { formula: 'Boer', lbm: lbmBoer },
+            { formula: 'James', lbm: lbmJames },
+            { formula: 'Hume', lbm: lbmHume }
+        ];
+
+        const averageLBM = (lbmBoer + lbmJames + lbmHume) / 3;
+
+        const tableRows = results.map(res => {
+            const bodyFatPercent = ((weightKg - res.lbm) / weightKg * 100).toFixed(1);
+            return `<tr>
+                        <td>${res.formula}</td>
+                        <td><strong>${displayLBM(res.lbm)} ${massUnit}</strong> (${((res.lbm / weightKg) * 100).toFixed(0)}%)</td>
+                        <td>${bodyFatPercent}%</td>
+                    </tr>`;
+        }).join('');
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Average Lean Body Mass:</p>
+                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${displayLBM(averageLBM)} ${massUnit}</strong></p>
+            </div>
+            <div class="activity-table-container">
+                <h4>LBM based on different formulas:</h4>
+                <table class="activity-table">
+                    <thead>
+                        <tr>
+                            <th>Formula</th>
+                            <th>Lean Body Mass</th>
+                            <th>Body Fat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>
