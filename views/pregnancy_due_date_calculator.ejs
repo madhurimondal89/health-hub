@@ -1,0 +1,161 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="dueDateForm">
+                    <div class="form-group">
+                        <label for="lmpDate">First Day of Last Menstrual Period (LMP)</label>
+                        <div class="input-wrapper">
+                            <input type="date" id="lmpDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cycleLength">Average Cycle Length (days)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="cycleLength" value="28" placeholder="e.g., 28">
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">The average cycle is 28 days. Adjust if yours is different.</p>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your LMP date to estimate your due date and track your pregnancy timeline.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item">
+                <button class="accordion-header"><span>How is the due date calculated?</span><span class="icon">+</span></button>
+                <div class="accordion-content">
+                    <p>This calculator uses Naegele's rule, a standard method for estimating a due date. It works by:</p>
+                    <ol>
+                        <li>Taking the first day of your last menstrual period (LMP).</li>
+                        <li>Adding 280 days (40 weeks) to that date.</li>
+                        <li>Adjusting for your cycle length. The standard 280 days assumes a 28-day cycle. If your cycle is longer or shorter, the calculator adjusts the due date accordingly.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header"><span>Is this due date 100% accurate?</span><span class="icon">+</span></button>
+                <div class="accordion-content">
+                    <p>No, this is an <strong>estimated due date (EDD)</strong>. Only about 5% of babies are born on their exact due date. It provides a valuable guideline, but your actual delivery date can vary. An ultrasound performed by a healthcare professional will give a more accurate date.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button>
+                <div class="accordion-content">
+                    <p>This tool is for informational purposes only and should not replace professional medical advice. Always consult with a doctor or other qualified healthcare provider for any questions you may have regarding your pregnancy.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const lmpDateInput = document.getElementById('lmpDate');
+    const cycleLengthInput = document.getElementById('cycleLength');
+    const resultDiv = document.getElementById('result-section');
+    
+    // Add today's date as max for LMP date input
+    lmpDateInput.max = new Date().toISOString().split("T")[0];
+
+    lmpDateInput.addEventListener('input', calculateDueDate);
+    cycleLengthInput.addEventListener('input', calculateDueDate);
+
+    function formatDate(date) {
+        return date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    function calculateDueDate() {
+        const lmpString = lmpDateInput.value;
+        const cycleLength = parseInt(cycleLengthInput.value) || 28;
+
+        if (!lmpString) {
+            resultDiv.innerHTML = `<div class="placeholder">Enter your LMP date to estimate your due date.</div>`;
+            return;
+        }
+
+        const lmpDate = new Date(lmpString + 'T00:00:00'); // To avoid timezone issues
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        if (lmpDate > today) {
+            resultDiv.innerHTML = `<div class="placeholder">LMP date cannot be in the future.</div>`;
+            return;
+        }
+
+        // Calculate Due Date
+        const dueDate = new Date(lmpDate);
+        const daysToAdd = 280 + (cycleLength - 28);
+        dueDate.setDate(dueDate.getDate() + daysToAdd);
+
+        // Calculate Gestational Age
+        const diffTime = Math.abs(today - lmpDate);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const gestationalWeeks = Math.floor(diffDays / 7);
+        const gestationalDays = diffDays % 7;
+
+        // Other key dates
+        const conceptionDate = new Date(lmpDate);
+        conceptionDate.setDate(conceptionDate.getDate() + 14); // Approximate
+
+        const endOfFirstTrimester = new Date(lmpDate);
+        endOfFirstTrimester.setDate(endOfFirstTrimester.getDate() + (13 * 7) + 6);
+
+        const endOfSecondTrimester = new Date(lmpDate);
+        endOfSecondTrimester.setDate(endOfSecondTrimester.getDate() + (27 * 7) + 6);
+        
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text-large">Estimated Due Date</p>
+                <p class="result-main-text"><strong>${formatDate(dueDate)}</strong></p>
+            </div>
+
+            <div class="bf-details-container">
+                <h4>Your Pregnancy Timeline</h4>
+                <div class="bf-details-item">
+                    <span>Current Gestational Age</span>
+                    <strong>${gestationalWeeks} weeks, ${gestationalDays} days</strong>
+                </div>
+                 <div class="bf-details-item">
+                    <span>Estimated Conception Date</span>
+                    <strong>${formatDate(conceptionDate)}</strong>
+                </div>
+                <div class="bf-details-item">
+                    <span>End of 1st Trimester</span>
+                    <strong>${formatDate(endOfFirstTrimester)}</strong>
+                </div>
+                <div class="bf-details-item">
+                    <span>End of 2nd Trimester</span>
+                    <strong>${formatDate(endOfSecondTrimester)}</strong>
+                </div>
+            </div>
+        `;
+    }
+
+    // Accordion script from your previous file
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            if (accordionItem.classList.contains('active')) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            } else {
+                content.style.maxHeight = '0px';
+            }
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

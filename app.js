@@ -22,7 +22,12 @@ const calculatorData = {
     'sleep-calculator': { title: 'Sleep Calculator', description: 'Find the best time to wake up or go to sleep based on natural 90-minute sleep cycles. Wake up feeling refreshed and energized.' },
     'food-calorie-calculator': { title: 'Food Calorie Calculator', description: 'Calculate the total calories in your food based on its protein, carbohydrate, and fat content. Understand nutrition labels better.' },
     'heart-rate-zones-calculator': { title: 'Heart Rate Zones Calculator', description: 'Determine your target heart rate zones for exercise (fat burning, cardio, etc.). Optimize your workouts for better results.' },
-    'ideal-weight-calculator': { title: 'Ideal Weight Calculator', description: 'Find your ideal body weight range using multiple popular formulas. Get a healthy weight estimate based on your height and gender.' }
+    'ideal-weight-calculator': { title: 'Ideal Weight Calculator', description: 'Find your ideal body weight range using multiple popular formulas. Get a healthy weight estimate based on your height and gender.' },
+    'pregnancy-due-date-calculator': { title: 'Pregnancy Due Date Calculator', description: 'Estimate your baby\'s due date based on your last menstrual period (LMP) and cycle length. Track your pregnancy timeline and key milestones.' },
+    'ovulation-calculator': { title: 'Ovulation Calculator', description: 'Predict your most fertile days and ovulation period. Our calculator helps you identify the best time to conceive based on your menstrual cycle.' },
+    'fertility-window-calculator': { title: 'Fertility Window Calculator', description: 'Pinpoint your most fertile days to increase your chances of conception. This calculator identifies your key fertility window based on your cycle.' },
+    'menstrual-cycle-and-next-period-calculator': { title: 'Menstrual Cycle & Next Period Calculator', description: 'Track your menstrual cycle and predict your next period date. Get insights into your cycle phases and plan ahead with our easy-to-use calculator.' },
+    'pregnancy-weight-gain-calculator': { title: 'Pregnancy Weight Gain Calculator', description: 'Track your pregnancy weight gain with our calculator. Get personalized recommendations based on your pre-pregnancy BMI for a healthy pregnancy.' },
 };
 
 app.get('/', (req, res) => {

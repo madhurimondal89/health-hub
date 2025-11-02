@@ -39,7 +39,24 @@ body {
     margin: 0 auto;
     padding: 0 20px;
 }
+/* Ei notun code-ta add koro */
+.main-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.main-header nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: opacity 0.2s ease;
+}
+
+.main-header nav a:hover {
+    opacity: 0.85;
+}
 /* --- 2. Homepage Styles --- */
 .main-header {
     background: linear-gradient(90deg, #00A353 0%, #00B85C 100%);

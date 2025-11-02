@@ -1,0 +1,150 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="ovulationForm">
+                    <div class="form-group">
+                        <label for="lmpDate">First Day of Last Menstrual Period (LMP)</label>
+                        <div class="input-wrapper">
+                            <input type="date" id="lmpDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cycleLength">Average Cycle Length (days)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="cycleLength" value="28" placeholder="e.g., 28">
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">The average cycle is 28 days. Adjust if yours is different.</p>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your LMP date and cycle length to find your fertile window.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item">
+                <button class="accordion-header"><span>How is the fertile window calculated?</span><span class="icon">+</span></button>
+                <div class="accordion-content">
+                    <p>The calculator estimates your next period based on your LMP and cycle length. It then counts back 14 days from the next period to determine your approximate ovulation date. The "fertile window" is the 6-day period that includes the 5 days before ovulation plus the day of ovulation itself. Sperm can survive in the female reproductive tract for up to 5 days, so intercourse during this window gives the highest chance of conception.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header"><span>How accurate is this calculator?</span><span class="icon">+</span></button>
+                <div class="accordion-content">
+                    <p>This calculator provides an <strong>estimate</strong> and works best for women with regular menstrual cycles. Cycle length and ovulation timing can be affected by factors like stress, diet, and health conditions. For greater accuracy, consider tracking your cycle with other methods, such as using ovulation predictor kits (OPKs) or monitoring your basal body temperature (BBT).</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button>
+                <div class="accordion-content">
+                    <p>This tool is for informational purposes only and should not be considered a substitute for professional medical advice. For family planning and health concerns, always consult with a qualified healthcare provider.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const lmpDateInput = document.getElementById('lmpDate');
+    const cycleLengthInput = document.getElementById('cycleLength');
+    const resultDiv = document.getElementById('result-section');
+    
+    lmpDateInput.max = new Date().toISOString().split("T")[0];
+
+    lmpDateInput.addEventListener('input', calculateOvulation);
+    cycleLengthInput.addEventListener('input', calculateOvulation);
+
+    function formatDate(date) {
+        return date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    function formatDateRange(startDate, endDate) {
+        const startMonth = startDate.toLocaleString('en-US', { month: 'long' });
+        const endMonth = endDate.toLocaleString('en-US', { month: 'long' });
+        if (startMonth === endMonth) {
+            return `${startMonth} ${startDate.getDate()} - ${endDate.getDate()}, ${endDate.getFullYear()}`;
+        } else {
+            return `${startMonth} ${startDate.getDate()} - ${endMonth} ${endDate.getDate()}, ${endDate.getFullYear()}`;
+        }
+    }
+
+    function calculateOvulation() {
+        const lmpString = lmpDateInput.value;
+        const cycleLength = parseInt(cycleLengthInput.value) || 28;
+
+        if (!lmpString) {
+            resultDiv.innerHTML = `<div class="placeholder">Enter your LMP date and cycle length.</div>`;
+            return;
+        }
+
+        const lmpDate = new Date(lmpString + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (lmpDate > today) {
+            resultDiv.innerHTML = `<div class="placeholder">LMP date cannot be in the future.</div>`;
+            return;
+        }
+        
+        // Calculations
+        const nextPeriodDate = new Date(lmpDate);
+        nextPeriodDate.setDate(lmpDate.getDate() + cycleLength);
+
+        const ovulationDate = new Date(nextPeriodDate);
+        ovulationDate.setDate(nextPeriodDate.getDate() - 14); // Luteal phase is approx 14 days
+
+        const fertileWindowStart = new Date(ovulationDate);
+        fertileWindowStart.setDate(ovulationDate.getDate() - 5);
+
+        const fertileWindowEnd = ovulationDate;
+
+        const estimatedDueDate = new Date(ovulationDate);
+        estimatedDueDate.setDate(ovulationDate.getDate() + 266); // 38 weeks from ovulation
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text-large">Your Fertile Window</p>
+                <p class="result-main-text"><strong>${formatDateRange(fertileWindowStart, fertileWindowEnd)}</strong></p>
+            </div>
+
+            <div class="bf-details-container">
+                <h4>Key Dates for Your Next Cycle</h4>
+                <div class="bf-details-item">
+                    <span>Next Estimated Ovulation</span>
+                    <strong>${formatDate(ovulationDate)}</strong>
+                </div>
+                 <div class="bf-details-item">
+                    <span>Next Period Starts</span>
+                    <strong>${formatDate(nextPeriodDate)}</strong>
+                </div>
+                <div class="bf-details-item">
+                    <span>Estimated Due Date (if you conceive)</span>
+                    <strong>${formatDate(estimatedDueDate)}</strong>
+                </div>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

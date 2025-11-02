@@ -1,0 +1,167 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="cycleForm">
+                    <div class="form-group">
+                        <label for="lmpDate">First Day of Last Menstrual Period (LMP)</label>
+                        <div class="input-wrapper">
+                            <input type="date" id="lmpDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cycleLength">Average Cycle Length (days)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="cycleLength" value="28" placeholder="e.g., 28">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your last period date and cycle length to track your cycle.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item">
+                <button class="accordion-header"><span>How does this calculator work?</span><span class="icon">+</span></button>
+                <div class="accordion-content">
+                    <p>The calculator works by taking the date of your last menstrual period (LMP) and adding your average cycle length to it. This provides an estimated date for your next period. It also calculates your current position in the cycle and identifies which phase you are likely in.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header"><span>What are the phases of the menstrual cycle?</span><span class="icon">+</span></button>
+                <div class="accordion-content">
+                    <p>A menstrual cycle has four main phases:</p>
+                    <ul>
+                        <li><strong>Menstrual Phase (Days 1-5 approx.):</strong> This is when you have your period.</li>
+                        <li><strong>Follicular Phase (Days 1-13 approx.):</strong> Starts on the first day of your period and ends at ovulation. An egg prepares to be released.</li>
+                        <li><strong>Ovulation (Day 14 approx.):</strong> The ovary releases an egg. This is the most fertile time.</li>
+                        <li><strong>Luteal Phase (Days 15-28 approx.):</strong> The body prepares for a possible pregnancy. If pregnancy doesn't occur, the cycle starts over.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button>
+                <div class="accordion-content">
+                    <p>This is an estimation tool and should not be used for medical diagnosis or as a form of contraception. Cycle lengths can vary. For any health concerns, please consult a qualified healthcare provider.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const lmpDateInput = document.getElementById('lmpDate');
+    const cycleLengthInput = document.getElementById('cycleLength');
+    const resultDiv = document.getElementById('result-section');
+    
+    lmpDateInput.max = new Date().toISOString().split("T")[0];
+
+    lmpDateInput.addEventListener('input', calculateCycle);
+    cycleLengthInput.addEventListener('input', calculateCycle);
+
+    function formatDate(date) {
+        return date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    function calculateCycle() {
+        const lmpString = lmpDateInput.value;
+        const cycleLength = parseInt(cycleLengthInput.value) || 28;
+
+        if (!lmpString) {
+            resultDiv.innerHTML = `<div class="placeholder">Enter your last period date and cycle length.</div>`;
+            return;
+        }
+
+        const lmpDate = new Date(lmpString + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (lmpDate > today) {
+            resultDiv.innerHTML = `<div class="placeholder">LMP date cannot be in the future.</div>`;
+            return;
+        }
+        
+        // Calculations
+        const timeDiff = today.getTime() - lmpDate.getTime();
+        const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+        const currentDayOfCycle = dayDiff + 1;
+
+        const nextPeriodDate = new Date(lmpDate);
+        nextPeriodDate.setDate(lmpDate.getDate() + cycleLength);
+
+        // Determine current phase (approximate)
+        let currentPhase = '';
+        const ovulationDay = cycleLength - 14;
+        if (currentDayOfCycle <= 5) {
+            currentPhase = 'Menstrual Phase';
+        } else if (currentDayOfCycle < ovulationDay) {
+            currentPhase = 'Follicular Phase';
+        } else if (currentDayOfCycle >= ovulationDay && currentDayOfCycle <= ovulationDay + 1) {
+            currentPhase = 'Ovulation Window';
+        } else {
+            currentPhase = 'Luteal Phase';
+        }
+
+        let futurePeriodsHTML = '';
+        for (let i = 2; i <= 4; i++) {
+            let futureDate = new Date(lmpDate);
+            futureDate.setDate(lmpDate.getDate() + (cycleLength * i));
+            futurePeriodsHTML += `
+                <tr>
+                    <td>Period #${i+1}</td>
+                    <td><strong>${formatDate(futureDate)}</strong></td>
+                </tr>
+            `;
+        }
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text-large">Your Next Period Starts</p>
+                <p class="result-main-text"><strong>${formatDate(nextPeriodDate)}</strong></p>
+            </div>
+
+            <div class="bf-details-container">
+                <div class="bf-details-item">
+                    <span>Current Cycle Day</span>
+                    <strong>Day ${currentDayOfCycle} of ${cycleLength}</strong>
+                </div>
+                <div class="bf-details-item">
+                    <span>Current Cycle Phase</span>
+                    <strong>${currentPhase}</strong>
+                </div>
+            </div>
+            
+            <div class="activity-table-container">
+                <h4>Future Period Predictions</h4>
+                <table class="activity-table">
+                    <tbody>
+                        ${futurePeriodsHTML}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

@@ -1,0 +1,225 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <!-- Unit Switcher -->
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+        </div>
+        
+        <!-- Pregnancy Type Switcher -->
+        <div class="gender-switcher">
+             <button id="singleBtn" class="gender-btn active">Single Pregnancy</button>
+             <button id="twinBtn" class="gender-btn">Twin Pregnancy</button>
+        </div>
+
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="weightGainForm">
+                    <div class="form-group">
+                        <label for="currentWeek">Current Week of Pregnancy</label>
+                        <div class="input-wrapper"><input type="number" id="currentWeek" min="1" max="42" placeholder="e.g., 20"></div>
+                    </div>
+                    
+                    <!-- Metric Units -->
+                    <div id="metricInputs">
+                        <div class="form-group">
+                            <label for="weightKg">Pre-Pregnancy Weight (kg)</label>
+                            <div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 65"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="heightCm">Height (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 165"></div>
+                        </div>
+                    </div>
+                    <!-- Imperial Units -->
+                    <div id="imperialInputs" style="display: none;">
+                         <div class="form-group">
+                            <label for="weightLbs">Pre-Pregnancy Weight (lbs)</label>
+                            <div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 143"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Height (ft, in)</label>
+                            <div class="height-imperial-inputs">
+                                <div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div>
+                                <div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 5"><span class="input-adornment">in</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your details to see your recommended weight gain range.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>Why is healthy weight gain important during pregnancy?</span><span class="icon">+</span></button><div class="accordion-content"><p>Gaining a healthy amount of weight supports your baby's growth and development. Gaining too little can lead to a low birth weight, while gaining too much can increase risks for both mother (e.g., gestational diabetes, high blood pressure) and baby.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Where does the weight go?</span><span class="icon">+</span></button><div class="accordion-content"><p>The gained weight isn't just fat. At the end of a typical pregnancy, it's distributed among the baby (~7.5 lbs), placenta (~1.5 lbs), amniotic fluid (~2 lbs), increased blood volume (~4 lbs), increased fluid volume (~4 lbs), breast tissue (~2 lbs), uterine enlargement (~2 lbs), and maternal fat stores (~7 lbs).</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>These recommendations are based on guidelines from the Institute of Medicine (IOM) and are for informational purposes only. Every pregnancy is unique. Please consult your doctor or healthcare provider for personalized advice regarding your pregnancy weight gain.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // State variables
+    let currentUnit = 'metric';
+    let pregnancyType = 'single';
+
+    // DOM Elements
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    const singleBtn = document.getElementById('singleBtn');
+    const twinBtn = document.getElementById('twinBtn');
+
+    // Guidelines based on IOM (in kg)
+    const guidelines = {
+        single: {
+            underweight: { total: [12.5, 18], weekly: [0.44, 0.58] },
+            normal: { total: [11.5, 16], weekly: [0.35, 0.50] },
+            overweight: { total: [7, 11.5], weekly: [0.23, 0.33] },
+            obese: { total: [5, 9], weekly: [0.17, 0.27] }
+        },
+        twin: {
+            normal: { total: [17, 25], weekly: [0.59, 0.77] },
+            overweight: { total: [14, 23], weekly: [0.55, 0.74] },
+            obese: { total: [11, 19], weekly: [0.44, 0.66] }
+        }
+    };
+    
+    // Event Listeners
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    singleBtn.addEventListener('click', () => switchType('single'));
+    twinBtn.addEventListener('click', () => switchType('twin'));
+    allInputs.forEach(input => input.addEventListener('input', calculateWeightGain));
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        calculateWeightGain();
+    }
+    
+    function switchType(type) {
+        pregnancyType = type;
+        singleBtn.classList.toggle('active', type === 'single');
+        twinBtn.classList.toggle('active', type === 'twin');
+        calculateWeightGain();
+    }
+
+    function getBmiCategory(bmi) {
+        if (bmi < 18.5) return 'underweight';
+        if (bmi >= 18.5 && bmi < 25) return 'normal';
+        if (bmi >= 25 && bmi < 30) return 'overweight';
+        return 'obese';
+    }
+    
+    function formatRange(min, max, unit, decimals = 1) {
+        return `${min.toFixed(decimals)} - ${max.toFixed(decimals)} ${unit}`;
+    }
+
+    function calculateWeightGain() {
+        let weightInKg, heightInCm;
+        const week = parseInt(document.getElementById('currentWeek').value);
+
+        if (currentUnit === 'metric') {
+            weightInKg = parseFloat(document.getElementById('weightKg').value);
+            heightInCm = parseFloat(document.getElementById('heightCm').value);
+        } else {
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            const ft = parseFloat(document.getElementById('heightFt').value);
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
+            if (!isNaN(ft)) heightInCm = (ft * 12 + inches) * 2.54;
+        }
+        
+        if (isNaN(week) || isNaN(weightInKg) || isNaN(heightInCm) || week <= 0 || weightInKg <= 0 || heightInCm <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter all your details.</div>`;
+            return;
+        }
+
+        const heightInMeters = heightInCm / 100;
+        const bmi = weightInKg / (heightInMeters * heightInMeters);
+        const bmiCategory = getBmiCategory(bmi);
+        
+        let selectedGuideline = guidelines[pregnancyType][bmiCategory];
+        
+        // Handle single, underweight for twins which is not in IOM standard guidelines
+        if (pregnancyType === 'twin' && bmiCategory === 'underweight') {
+             resultDiv.innerHTML = `<div class="result-display-new"><p class="result-sub-text">Weight gain recommendations for twin pregnancies in the underweight category should be determined by a healthcare provider. Please consult your doctor for personalized advice.</p></div>`;
+             return;
+        }
+
+        // Calculate gain for current week
+        let recommendedGainNowMin = 0;
+        let recommendedGainNowMax = 0;
+
+        if (week <= 13) { // First trimester
+            recommendedGainNowMin = 0.5; // approx 1.1 lbs
+            recommendedGainNowMax = 2;   // approx 4.4 lbs
+        } else { // Second and third trimester
+            const firstTrimesterMaxGain = 2;
+            recommendedGainNowMin = firstTrimesterMaxGain + ((week - 13) * selectedGuideline.weekly[0]);
+            recommendedGainNowMax = firstTrimesterMaxGain + ((week - 13) * selectedGuideline.weekly[1]);
+        }
+        
+        const totalGainMinKg = selectedGuideline.total[0];
+        const totalGainMaxKg = selectedGuideline.total[1];
+        
+        let unitLabel = 'kg';
+        let conversionFactor = 1;
+        if(currentUnit === 'imperial'){
+            unitLabel = 'lbs';
+            conversionFactor = 2.20462;
+        }
+
+        const categoryText = bmiCategory.charAt(0).toUpperCase() + bmiCategory.slice(1);
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text-large">Recommended gain by week ${week}</p>
+                <p class="result-main-text"><strong>${formatRange(recommendedGainNowMin * conversionFactor, recommendedGainNowMax * conversionFactor, unitLabel)}</strong></p>
+            </div>
+            <div class="bf-details-container">
+                <div class="bf-details-item">
+                    <span>Pre-Pregnancy BMI</span>
+                    <strong>${bmi.toFixed(1)} (${categoryText})</strong>
+                </div>
+                <div class="bf-details-item">
+                    <span>Total Recommended Gain</span>
+                    <strong>${formatRange(totalGainMinKg * conversionFactor, totalGainMaxKg * conversionFactor, unitLabel)}</strong>
+                </div>
+                <div class="bf-details-item">
+                    <span>Recommended Weekly Gain<br><small>(After 1st Trimester)</small></span>
+                    <strong>${formatRange(selectedGuideline.weekly[0] * conversionFactor, selectedGuideline.weekly[1] * conversionFactor, unitLabel)}</strong>
+                </div>
+            </div>
+        `;
+    }
+
+    // Accordion script
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>
