@@ -1,0 +1,161 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <!-- Unit Switcher -->
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+        </div>
+        
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="piForm">
+                    <!-- Metric Units -->
+                    <div id="metricInputs">
+                        <div class="form-group">
+                            <label for="weightKg">Weight (kg)</label>
+                            <div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="heightCm">Height (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div>
+                        </div>
+                    </div>
+                    <!-- Imperial Units -->
+                    <div id="imperialInputs" style="display: none;">
+                         <div class="form-group">
+                            <label for="weightLbs">Weight (lbs)</label>
+                            <div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Height (ft, in)</label>
+                            <div class="height-imperial-inputs">
+                                <div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div>
+                                <div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your details to calculate your Ponderal Index.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What is the Ponderal Index (PI)?</span><span class="icon">+</span></button><div class="accordion-content"><p>The Ponderal Index (PI), also known as Rohrer's Index, is a measure of leanness or corpulence. It is calculated as weight divided by height cubed (W/H³). Unlike BMI (W/H²), which scales in two dimensions, PI scales in three, which some researchers believe makes it a more accurate measure for individuals at the very tall or very short ends of the height spectrum.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Ponderal Index vs. BMI</span><span class="icon">+</span></button><div class="accordion-content"><p>BMI is widely used but has limitations. For example, it may incorrectly categorize a very tall, lean person as overweight. The Ponderal Index attempts to correct this by using the cube of the height, which better reflects the relationship between mass and volume in the human body. However, BMI remains the more commonly used metric in general health assessments.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator is an informational tool only and is not a substitute for professional medical advice. For a comprehensive assessment of your health and body composition, please consult with a qualified healthcare provider.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // State variables
+    let currentUnit = 'metric';
+
+    // DOM Elements
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+    
+    // Event Listeners
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    allInputs.forEach(input => input.addEventListener('input', calculatePI));
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        calculatePI();
+    }
+    
+    // UPDATED FUNCTION with new ranges
+    function getPiCategory(pi) {
+        if (pi < 11) return 'Underweight';
+        if (pi < 15) return 'Normal weight';
+        if (pi < 17) return 'Overweight';
+        return 'Obese';
+    }
+
+    function calculatePI() {
+        let weightInKg, heightInCm;
+
+        if (currentUnit === 'metric') {
+            weightInKg = parseFloat(document.getElementById('weightKg').value);
+            heightInCm = parseFloat(document.getElementById('heightCm').value);
+        } else {
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            const ft = parseFloat(document.getElementById('heightFt').value);
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
+            if (!isNaN(ft)) heightInCm = (ft * 12 + inches) * 2.54;
+        }
+        
+        if (isNaN(weightInKg) || isNaN(heightInCm) || weightInKg <= 0 || heightInCm <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter valid details.</div>`;
+            return;
+        }
+
+        const heightInMeters = heightInCm / 100;
+        const pi = weightInKg / (heightInMeters * heightInMeters * heightInMeters);
+        const piCategory = getPiCategory(pi);
+        const bmi = weightInKg / (heightInMeters * heightInMeters);
+
+        // UPDATED RESULT HTML to include the classification table
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Your Ponderal Index: <strong>${pi.toFixed(2)} kg/m³</strong></p>
+                <hr class="result-divider" />
+                <p class="result-sub-text">This places you in the <strong>${piCategory}</strong> category.</p>
+            </div>
+            <div class="bf-details-container">
+                <div class="bf-details-item">
+                    <span>For comparison, your BMI is:</span>
+                    <strong>${bmi.toFixed(2)}</strong>
+                </div>
+            </div>
+            
+            <div class="activity-table-container">
+                <h4>Ponderal Index Classification Chart</h4>
+                <table class="activity-table">
+                    <thead>
+                        <tr>
+                            <th>Ponderal Index (kg/m³)</th>
+                            <th>Classification</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Below 11</td><td>Underweight</td></tr>
+                        <tr><td>11 - 15</td><td>Normal weight</td></tr>
+                        <tr><td>15 - 17</td><td>Overweight</td></tr>
+                        <tr><td>17 and above</td><td>Obese</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    // Accordion script
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>
