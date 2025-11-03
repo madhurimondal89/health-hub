@@ -1,0 +1,173 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+        
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+        </div>
+
+        <div class="gender-switcher">
+            <button id="maleBtn" class="gender-btn active">Male</button>
+            <button id="femaleBtn" class="gender-btn">Female</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="bsaForm">
+                    <!-- Metric Units -->
+                    <div id="metricInputs">
+                        <div class="form-group">
+                            <label for="weightKg">Weight (kg)</label>
+                            <div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="heightCm">Height (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div>
+                        </div>
+                    </div>
+                    <!-- Imperial Units -->
+                    <div id="imperialInputs" style="display: none;">
+                         <div class="form-group">
+                            <label for="weightLbs">Weight (lbs)</label>
+                            <div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Height (ft, in)</label>
+                            <div class="height-imperial-inputs">
+                                <div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div>
+                                <div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your details to calculate your BSA using 8 different formulas.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What is Body Surface Area (BSA)?</span><span class="icon">+</span></button><div class="accordion-content"><p>Body Surface Area (BSA) is the measured or calculated total surface area of the human body. In medicine, it is a more accurate indicator of metabolic mass than body weight, as it is less affected by abnormal body fat. It's often used for calculating drug dosages, especially for chemotherapy.</p></div></div>
+            <!-- === UPDATED FAQ ITEM === -->
+            <div class="accordion-item"><button class="accordion-header"><span>Which formula is the most accurate?</span><span class="icon">+</span></button><div class="accordion-content"><p>There is no single "best" formula for everyone. However, the <strong>Du Bois</strong> and <strong>Mosteller</strong> formulas are the most widely used and validated for adults in clinical practice. Other formulas were developed for specific populations:</p><ul><li><strong>Haycock</strong> is often preferred for children.</li><li><strong>Fujimoto</strong> was developed for the Japanese population.</li></ul><p>This calculator provides an average of all formulas for a general estimate, but in a medical setting, your doctor will use the formula most appropriate for your situation.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator is intended for informational and educational purposes only. The results should not be used for medical diagnosis or to determine drug dosages. Always consult with a qualified healthcare professional for medical advice and treatment.</p></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric';
+    let gender = 'male';
+
+    const allInputs = document.querySelectorAll('input');
+    const resultDiv = document.getElementById('result-section');
+    
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    const maleBtn = document.getElementById('maleBtn');
+    const femaleBtn = document.getElementById('femaleBtn');
+
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+    maleBtn.addEventListener('click', () => switchGender('male'));
+    femaleBtn.addEventListener('click', () => switchGender('female'));
+    allInputs.forEach(input => input.addEventListener('input', calculateBSA));
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        calculateBSA();
+    }
+    
+    function switchGender(selectedGender) {
+        gender = selectedGender;
+        maleBtn.classList.toggle('active', gender === 'male');
+        femaleBtn.classList.toggle('active', gender === 'female');
+        calculateBSA();
+    }
+
+    function calculateBSA() {
+        let weightKg, heightCm;
+
+        if (currentUnit === 'metric') {
+            weightKg = parseFloat(document.getElementById('weightKg').value);
+            heightCm = parseFloat(document.getElementById('heightCm').value);
+        } else {
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            const ft = parseFloat(document.getElementById('heightFt').value) || 0;
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            if (!isNaN(lbs)) weightKg = lbs * 0.453592;
+            if (!isNaN(ft) || !isNaN(inches)) heightCm = (ft * 12 + inches) * 2.54;
+        }
+        
+        if (isNaN(weightKg) || isNaN(heightCm) || weightKg <= 0 || heightCm <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please enter valid weight and height.</div>`;
+            return;
+        }
+
+        const W = weightKg;
+        const H = heightCm;
+        const W_grams = W * 1000; // *** BUG FIX: Boyd formula requires weight in grams ***
+
+        // Calculate all 8 formulas
+        const bsaDuBois = 0.007184 * Math.pow(W, 0.425) * Math.pow(H, 0.725);
+        const bsaMosteller = Math.sqrt((W * H) / 3600);
+        const bsaHaycock = 0.024265 * Math.pow(W, 0.5378) * Math.pow(H, 0.3964);
+        const bsaGehanGeorge = 0.0235 * Math.pow(W, 0.51456) * Math.pow(H, 0.42246);
+        const bsaBoyd = 0.0003207 * Math.pow(W_grams, (0.7285 - 0.0188 * Math.log10(W_grams))) * Math.pow(H, 0.3); // *** BUG FIX: Used weight in grams ***
+        const bsaFujimoto = 0.008883 * Math.pow(W, 0.444) * Math.pow(H, 0.663);
+        const bsaTakahira = 0.007241 * Math.pow(W, 0.425) * Math.pow(H, 0.725);
+        const bsaSchlich = (gender === 'male')
+            ? 0.000579479 * Math.pow(W, 0.38) * Math.pow(H, 1.24)
+            : 0.000975482 * Math.pow(W, 0.46) * Math.pow(H, 1.08);
+
+        const allResults = [bsaDuBois, bsaMosteller, bsaHaycock, bsaGehanGeorge, bsaBoyd, bsaFujimoto, bsaTakahira, bsaSchlich];
+        const averageBsa = allResults.reduce((sum, val) => sum + val, 0) / allResults.length;
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                 <p class="result-main-text-large">Average BSA</p>
+                <p class="result-main-text" style="font-size: 2.2rem; color: var(--primary-color);"><strong>${averageBsa.toFixed(3)} m²</strong></p>
+                <p class="result-sub-text">Based on 8 common formulas</p>
+            </div>
+            
+            <div class="activity-table-container">
+                <h4>BSA Results by Formula</h4>
+                <table class="activity-table">
+                    <thead><tr><th>Formula</th><th style="text-align: right;">BSA (m²)</th></tr></thead>
+                    <tbody>
+                        <tr><td>Du Bois</td><td style="text-align: right;">${bsaDuBois.toFixed(3)}</td></tr>
+                        <tr><td>Mosteller</td><td style="text-align: right;">${bsaMosteller.toFixed(3)}</td></tr>
+                        <tr><td>Haycock</td><td style="text-align: right;">${bsaHaycock.toFixed(3)}</td></tr>
+                        <tr><td>Gehan & George</td><td style="text-align: right;">${bsaGehanGeorge.toFixed(3)}</td></tr>
+                        <tr><td>Boyd</td><td style="text-align: right;">${bsaBoyd.toFixed(3)}</td></tr>
+                        <tr><td>Fujimoto</td><td style="text-align: right;">${bsaFujimoto.toFixed(3)}</td></tr>
+                        <tr><td>Takahira</td><td style="text-align: right;">${bsaTakahira.toFixed(3)}</td></tr>
+                        <tr><td>Schlich (${gender === 'male' ? 'M' : 'F'})</td><td style="text-align: right;">${bsaSchlich.toFixed(3)}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>
