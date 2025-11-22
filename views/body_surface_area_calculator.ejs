@@ -3,6 +3,7 @@
 <div class="container">
     <div class="calculator-container">
         <h1 class="calculator-title"><%= title %></h1>
+<%- include('partials/ad_unit') %>
         
         <div class="unit-switcher">
             <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
@@ -40,6 +41,7 @@
                                 <div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div>
                                 <div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div>
                             </div>
+<%- include('partials/ad_unit') %>
                         </div>
                     </div>
                 </form>

@@ -3,16 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> | Health Hub</title>
+    
+    <!-- SEO Title & Description -->
+    <title><%= title %></title>
+    <meta name="description" content="<%= description %>">
+    
+    <!-- Google Fonts (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
+    <link rel="apple-touch-icon" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="/css/style.css">
+
+    <!-- === SCHEMA.ORG (WEBSITE) === -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Health Hub",
+      "url": "https://health-hub.calculatorfree.in/",
+      "description": "<%= description %>",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://health-hub.calculatorfree.in/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Calculator Free",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png"
+        }
+      }
+    }
+    </script>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <a href="/" class="logo"><h1>Health Hub</h1></a>
-            <nav>
-                <a href="/">Home</a>
-            </nav>
-        </div>
-    </header>
-    <main class="container">
+
+<header class="main-header">
+    <div class="container">
+        <a href="/" class="logo">HealthHub</a>
+        <nav>
+            <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener noreferrer">Home</a>
+        </nav>
+    </div>
+</header>
+
+<!-- নোট: <main> ট্যাগটি index.ejs ফাইলে থাকবে -->

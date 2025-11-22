@@ -3,26 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> | HealthHub</title>
+    
+    <!-- SEO Title & Description -->
+    <title><%= title %></title>
     <meta name="description" content="<%= description %>">
+
     <!-- Google Fonts (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Favicon Links with your new PNG -->
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
     <link rel="apple-touch-icon" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
 
+    <!-- CSS -->
     <link rel="stylesheet" href="/css/style.css">
+
+    <!-- === SCHEMA.ORG (WEB APPLICATION) === -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "<%= title %>",
+      "description": "<%= description %>",
+      "url": "https://health-hub.calculatorfree.in/",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Health Hub",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png"
+        }
+      },
+      "featureList": "Online Health Calculation, Free to use, Instant Results"
+    }
+    </script>
 </head>
 <body>
-    <header class="inner-header">
-        <div class="container">
-            <a href="/" class="logo">HealthHub</a>
-            <nav>
-                <a href="/">← Back to Home</a>
-            </nav>
-        </div>
-    </header>
-    <main class="main-content">
+
+<header class="inner-header">
+    <div class="container">
+        <a href="/" class="logo">HealthHub</a>
+        <nav>
+            <a href="/">← All Calculators</a>
+        </nav>
+    </div>
+</header>
+
+<!-- নোট: <main> ট্যাগটি প্রতিটি ক্যালকুলেটর ফাইলে (যেমন bmi_calculator.ejs) থাকবে -->

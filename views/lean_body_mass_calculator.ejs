@@ -3,6 +3,7 @@
 <div class="container">
     <div class="calculator-container">
         <h1 class="calculator-title"><%= title %></h1>
+<%- include('partials/ad_unit') %>
         
         <div class="unit-switcher">
             <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
@@ -34,6 +35,7 @@
             <div class="accordion-item"><button class="accordion-header"><span>Understanding the Formulas</span><span class="icon">+</span></button><div class="accordion-content"><p>Different formulas were developed based on studies of different population groups. This calculator uses three popular formulas:</p><ul><li><strong>Boer Formula:</strong> A widely used and generally accurate formula.</li><li><strong>James Formula:</strong> Developed in 1976, it's another well-regarded method.</li><li><strong>Hume Formula:</strong> Developed in 1966, this is one of the older but still relevant formulas.</li></ul><p>The variation in results highlights that these are estimations. The average of these formulas can provide a balanced view.</p></div></div>
             <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator provides estimations and is for informational purposes only. For a precise measurement and health assessment, consult a qualified healthcare provider.</p></div></div>
         </div>
+<%- include('partials/ad_unit') %>
     </div>
 </div>
 

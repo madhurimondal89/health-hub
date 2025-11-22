@@ -3,6 +3,7 @@
 <div class="container">
     <div class="calculator-container">
         <h1 class="calculator-title"><%= title %></h1>
+<%- include('partials/ad_unit') %>
         
         <div class="unit-switcher">
             <button id="metricBtn" class="unit-btn active">Metric (cm)</button>
@@ -34,6 +35,7 @@
             <div class="accordion-item"><button class="accordion-header"><span>Understanding the Formulas</span><span class="icon">+</span></button><div class="accordion-content"><p>This tool uses several formulas to provide a comprehensive view:</p><ul><li><strong>G.J. Hamwi Formula (1964)</strong></li><li><strong>B.J. Devine Formula (1974)</strong></li><li><strong>J.D. Robinson Formula (1983)</strong></li><li><strong>D.R. Miller Formula (1983)</strong></li></ul><p>The "Healthy BMI Range" is also provided, which is considered a good indicator of healthy weight for a given height.</p></div></div>
             <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>These results are estimations for informational purposes. They do not account for individual factors like muscle mass or body frame. For personalized health advice, please consult a qualified healthcare professional.</p></div></div>
         </div>
+<%- include('partials/ad_unit') %>
     </div>
 </div>
 
