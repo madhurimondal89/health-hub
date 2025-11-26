@@ -1,10 +1,14 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// View Engine Setup
 app.set('view engine', 'ejs');
-app.set('views', 'views');
-app.use(express.static('public'));
+app.set('views', path.join(__dirname, 'views')); // এই লাইনটি ঠিক করা হয়েছে
+
+// Static Folder Setup
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Centralized Calculator Data
 const calculatorData = {
@@ -24,8 +28,6 @@ const calculatorData = {
     'running-pace-calculator': { title: 'Running Pace Calculator', description: 'Calculate your running pace, time, or distance. An essential tool for runners to track performance and plan their training.' },
     'sleep-calculator': { title: 'Sleep Calculator', description: 'Find the best time to wake up or go to sleep based on natural 90-minute sleep cycles. Wake up feeling refreshed and energized.' },
     'water-intake-calculator': { title: 'Water Intake Calculator', description: 'Get a personalized daily water intake recommendation. Our world-class calculator considers your weight, activity level, climate, and more for accurate results.' },
-    'food-calorie-calculator': { title: 'Food Calorie Calculator', description: 'Calculate the total calories in your food based on its protein, carbohydrate, and fat content. Understand nutrition labels better.' },
-    'food-calorie-calculator': { title: 'Food Calorie Calculator', description: 'Calculate the total calories in your food based on its protein, carbohydrate, and fat content. Understand nutrition labels better.' },
     'heart-rate-zones-calculator': { title: 'Heart Rate Zones Calculator', description: 'Determine your target heart rate zones for exercise (fat burning, cardio, etc.). Optimize your workouts for better results.' },
     'ideal-weight-calculator': { title: 'Ideal Weight Calculator', description: 'Find your ideal body weight range using multiple popular formulas. Get a healthy weight estimate based on your height and gender.' },
     'pregnancy-due-date-calculator': { title: 'Pregnancy Due Date Calculator', description: 'Estimate your baby\'s due date based on your last menstrual period (LMP) and cycle length. Track your pregnancy timeline and key milestones.' },
@@ -35,6 +37,7 @@ const calculatorData = {
     'pregnancy-weight-gain-calculator': { title: 'Pregnancy Weight Gain Calculator', description: 'Track your pregnancy weight gain with our calculator. Get personalized recommendations based on your pre-pregnancy BMI for a healthy pregnancy.' },
 };
 
+// Home Route
 app.get('/', (req, res) => {
     const calculators = Object.keys(calculatorData).map(key => ({
         name: calculatorData[key].title,
@@ -48,6 +51,7 @@ app.get('/', (req, res) => {
     });
 });
 
+// Dynamic Route for Calculators
 app.get('/:calculator', (req, res) => {
     const calculatorName = req.params.calculator;
     const data = calculatorData[calculatorName];
@@ -64,6 +68,7 @@ app.get('/:calculator', (req, res) => {
     }
 });
 
+// Start Server
 app.listen(port, () => {
     console.log(`Health-Hub server is running at http://localhost:${port}`);
 });
