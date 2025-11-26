@@ -66,6 +66,12 @@
       }]
     }
     </script>
+<!-- Schema.org Structured Data -->
+    <% if (locals.schema) { %>
+    <script type="application/ld+json">
+        <%- schema %>
+    </script>
+    <% } %>
 </head>
 <body>
 

@@ -5,10 +5,64 @@ const port = process.env.PORT || 3000;
 
 // View Engine Setup
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views')); // এই লাইনটি ঠিক করা হয়েছে
+app.set('views', path.join(__dirname, 'views'));
 
 // Static Folder Setup
 app.use(express.static(path.join(__dirname, 'public')));
+
+// --- Schema Generator Helper (নতুন যোগ করা হয়েছে) ---
+function generateSchema(title, description, url, isApp = true) {
+    const baseUrl = "https://www.calculatorfree.in"; // আপনার ডোমেইন
+    const fullUrl = url === '/' ? baseUrl : baseUrl + url;
+    
+    const schema = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Organization",
+                "name": "Health Hub",
+                "url": baseUrl,
+                "logo": "https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png"
+            },
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl }]
+            }
+        ]
+    };
+
+    if (url !== '/') {
+        schema["@graph"][1].itemListElement.push({
+            "@type": "ListItem",
+            "position": 2,
+            "name": title,
+            "item": fullUrl
+        });
+    }
+
+    if (isApp) {
+        schema["@graph"].push({
+            "@type": "SoftwareApplication",
+            "name": title,
+            "operatingSystem": "Any",
+            "applicationCategory": "HealthApplication", // হেলথ ক্যাটাগরি
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+            },
+            "description": description
+        });
+    } else {
+        schema["@graph"].push({
+            "@type": "WebPage",
+            "name": title,
+            "description": description
+        });
+    }
+
+    return JSON.stringify(schema);
+}
 
 // Centralized Calculator Data
 const calculatorData = {
@@ -42,12 +96,17 @@ app.get('/', (req, res) => {
     const calculators = Object.keys(calculatorData).map(key => ({
         name: calculatorData[key].title,
         url: `/${key}`,
-        description: calculatorData[key].description.split('.')[0] + '.' // Use first sentence for card description
+        description: calculatorData[key].description.split('.')[0] + '.'
     }));
+    
+    const title = 'Health Hub - All-in-One Health Calculators';
+    const desc = 'A free collection of online health and fitness calculators to help you achieve your goals. From BMI to TDEE, we have all the tools you need.';
+
     res.render('index', { 
-        title: 'Health Hub - All-in-One Health Calculators',
-        description: 'A free collection of online health and fitness calculators to help you achieve your goals. From BMI to TDEE, we have all the tools you need.',
-        calculators: calculators 
+        title: title,
+        description: desc,
+        calculators: calculators,
+        schema: generateSchema(title, desc, '/', false) // স্কিমা পাঠানো হচ্ছে
     });
 });
 
@@ -60,10 +119,10 @@ app.get('/:calculator', (req, res) => {
         const viewName = calculatorName.replace(/-/g, '_');
         res.render(viewName, { 
             title: data.title,
-            description: data.description 
+            description: data.description,
+            schema: generateSchema(data.title, data.description, req.url, true) // স্কিমা পাঠানো হচ্ছে
         });
     } else {
-        // Handle 404 - Not Found
         res.status(404).send('Calculator not found');
     }
 });
