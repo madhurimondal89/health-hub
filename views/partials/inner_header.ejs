@@ -20,13 +20,13 @@
     <!-- CSS -->
     <link rel="stylesheet" href="/css/style.css">
 
-    <!-- === SCHEMA.ORG (WEB APPLICATION) === -->
+    <!-- === SCHEMA.ORG (WEB APPLICATION) - SAFE VERSION === -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "<%= title %>",
-      "description": "<%= description %>",
+      "description": "Calculate your health stats instantly with our free online tool. Accurate, fast, and easy to use.",
       "url": "https://health-hub.calculatorfree.in/",
       "applicationCategory": "HealthApplication",
       "operatingSystem": "All",
@@ -49,7 +49,7 @@
     }
     </script>
 
-    <!-- === SCHEMA.ORG (BREADCRUMB LIST) - NEW === -->
+    <!-- === SCHEMA.ORG (BREADCRUMB LIST) === -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -66,7 +66,8 @@
       }]
     }
     </script>
-<!-- Schema.org Structured Data -->
+
+    <!-- FAQ Schema (যদি ক্যালকুলেটর পেজে আলাদা করে থাকে) -->
     <% if (locals.schema) { %>
     <script type="application/ld+json">
         <%- schema %>
@@ -86,6 +87,7 @@
         </nav>
         
         <!-- === হেডার অ্যাড ইউনিট === -->
+        <!-- আমি এখানে 'ad_unit' ব্যবহার করছি কারণ এটি হেডারের জন্য ডিজাইন করা -->
         <%- include('ad_unit') %>
     </div>
 </header>

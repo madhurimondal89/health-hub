@@ -20,14 +20,14 @@
     <!-- CSS -->
     <link rel="stylesheet" href="/css/style.css">
 
-<!-- === SCHEMA.ORG STRUCTURED DATA (HOMEPAGE) === -->
+    <!-- === SCHEMA.ORG STRUCTURED DATA (HOMEPAGE) === -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "Health Hub",
       "url": "https://health-hub.calculatorfree.in/",
-      "description": "<%= description %>",
+      "description": "Free online health and fitness calculators. Calculate BMI, BMR, TDEE, Pregnancy Due Date, and more instantly.",
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://health-hub.calculatorfree.in/?q={search_term_string}",
@@ -43,12 +43,7 @@
       }
     }
     </script>
-<!-- Schema.org Structured Data -->
-    <% if (locals.schema) { %>
-    <script type="application/ld+json">
-        <%- schema %>
-    </script>
-    <% } %>
+    
 </head>
 <body>
 
@@ -58,5 +53,8 @@
         <nav>
             <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener noreferrer">Home</a>
         </nav>
+        
+        <!-- Header Ad Unit (Optional) -->
+        <%- include('partials/header_ad_unit') %>
     </div>
 </header>
