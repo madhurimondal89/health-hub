@@ -152,6 +152,6 @@ app.get('/:calculator', (req, res) => {
 });
 
 // Start Server
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Health-Hub server is running on port ${port}`);
 });
