@@ -8,124 +8,220 @@
 <!-- Homepage -->
 <url>
   <loc>https://health-hub.calculatorfree.in/</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>1.00</priority>
 </url>
 
 <!-- Calculator Pages -->
 <url>
   <loc>https://health-hub.calculatorfree.in/bmi-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/bmr-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/tdee-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/calorie-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/macro-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/calorie-burn-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/body-fat-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/lean-body-mass-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/waist-to-hip-ratio-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/waist-to-height-ratio-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/ideal-weight-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/running-pace-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/sleep-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/food-calorie-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/heart-rate-zones-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/pregnancy-due-date-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/ovulation-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/fertility-window-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/menstrual-cycle-and-next-period-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/pregnancy-weight-gain-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/ponderal-index-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/water-intake-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 <url>
   <loc>https://health-hub.calculatorfree.in/body-surface-area-calculator</loc>
+<<<<<<< HEAD
   <lastmod>2025-11-03T00:00:00+00:00</lastmod>
+=======
+  <lastmod>2025-11-26T00:00:00+00:00</lastmod>
+>>>>>>> 0b6526814394a0da13bfa9883e6780565122c98f
   <priority>0.90</priority>
 </url>
 </urlset>

@@ -3,6 +3,7 @@
 <div class="container">
     <div class="calculator-container">
         <h1 class="calculator-title"><%= title %></h1>
+<%- include('partials/ad_unit') %>
         
         <div class="calc-mode-switcher">
             <button id="calcPaceBtn" class="unit-btn active">Calculate Pace</button>
@@ -64,6 +65,7 @@
             <div class="accordion-item"><button class="accordion-header"><span>What is Running Pace?</span><span class="icon">+</span></button><div class="accordion-content"><p>Running pace is the time it takes to cover a specific distance, typically measured in minutes per mile or minutes per kilometer. It's a key metric for runners to track their speed and endurance.</p></div></div>
             <div class="accordion-item"><button class="accordion-header"><span>Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator provides a mathematical conversion and does not account for real-world factors like terrain, elevation, or weather. Use it as a training guide and reference.</p></div></div>
         </div>
+<%- include('partials/ad_unit') %>
     </div>
 </div>
 

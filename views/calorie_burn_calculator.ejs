@@ -3,6 +3,7 @@
 <div class="container">
     <div class="calculator-container">
         <h1 class="calculator-title"><%= title %></h1>
+<%- include('partials/ad_unit') %>
         
         <div class="unit-switcher">
             <button id="metricBtn" class="unit-btn active">Metric (kg)</button>
@@ -75,6 +76,7 @@
             <div class="accordion-item"><button class="accordion-header"><span>What is a MET Value?</span><span class="icon">+</span></button><div class="accordion-content"><p>A MET (Metabolic Equivalent of Task) is a unit that estimates the amount of energy used by the body during physical activity, as compared to resting metabolism. One MET is the energy you expend sitting at rest.</p></div></div>
             <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator provides an estimation and is for informational purposes only. Actual calories burned can vary based on individual factors like age, gender, body composition, and intensity. Always consult a healthcare professional for personalized advice.</p></div></div>
         </div>
+<%- include('partials/ad_unit') %>
     </div>
 </div>
 

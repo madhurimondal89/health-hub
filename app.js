@@ -1,10 +1,80 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// View Engine Setup
 app.set('view engine', 'ejs');
-app.set('views', 'views');
-app.use(express.static('public'));
+app.set('views', path.join(__dirname, 'views'));
+
+// Static Folder Setup
+app.use(express.static(path.join(__dirname, 'public')));
+
+// --- Helper Function: Generate Schema ---
+// এটি অবশ্যই রাউটের আগে থাকতে হবে
+function generateSchema(title, description, url, isApp = true) {
+    const baseUrl = "https://health-hub.calculatorfree.in"; // আপনার সাব-ডোমেইন
+    const fullUrl = url === '/' ? baseUrl : baseUrl + url;
+    
+    // Base Schema with Graph
+    const schema = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Organization",
+                "name": "Health Hub",
+                "url": baseUrl,
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png"
+                }
+            },
+            {
+                "@type": "WebSite",
+                "name": "Health Hub",
+                "url": baseUrl,
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": `${baseUrl}/?q={search_term_string}`,
+                    "query-input": "required name=search_term_string"
+                }
+            }
+        ]
+    };
+
+    if (isApp) {
+        // Add WebApplication Schema for calculators
+        schema["@graph"].push({
+            "@type": "SoftwareApplication",
+            "name": title,
+            "operatingSystem": "Any",
+            "applicationCategory": "HealthApplication",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+            },
+            "description": description
+        });
+        
+        // Add Breadcrumb for calculators
+        schema["@graph"].push({
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem", 
+                "position": 1, 
+                "name": "Home", 
+                "item": baseUrl 
+            }, {
+                "@type": "ListItem",
+                "position": 2,
+                "name": title
+            }]
+        });
+    }
+
+    return JSON.stringify(schema);
+}
 
 // Centralized Calculator Data
 const calculatorData = {
@@ -24,8 +94,6 @@ const calculatorData = {
     'running-pace-calculator': { title: 'Running Pace Calculator', description: 'Calculate your running pace, time, or distance. An essential tool for runners to track performance and plan their training.' },
     'sleep-calculator': { title: 'Sleep Calculator', description: 'Find the best time to wake up or go to sleep based on natural 90-minute sleep cycles. Wake up feeling refreshed and energized.' },
     'water-intake-calculator': { title: 'Water Intake Calculator', description: 'Get a personalized daily water intake recommendation. Our world-class calculator considers your weight, activity level, climate, and more for accurate results.' },
-    'food-calorie-calculator': { title: 'Food Calorie Calculator', description: 'Calculate the total calories in your food based on its protein, carbohydrate, and fat content. Understand nutrition labels better.' },
-    'food-calorie-calculator': { title: 'Food Calorie Calculator', description: 'Calculate the total calories in your food based on its protein, carbohydrate, and fat content. Understand nutrition labels better.' },
     'heart-rate-zones-calculator': { title: 'Heart Rate Zones Calculator', description: 'Determine your target heart rate zones for exercise (fat burning, cardio, etc.). Optimize your workouts for better results.' },
     'ideal-weight-calculator': { title: 'Ideal Weight Calculator', description: 'Find your ideal body weight range using multiple popular formulas. Get a healthy weight estimate based on your height and gender.' },
     'pregnancy-due-date-calculator': { title: 'Pregnancy Due Date Calculator', description: 'Estimate your baby\'s due date based on your last menstrual period (LMP) and cycle length. Track your pregnancy timeline and key milestones.' },
@@ -35,35 +103,55 @@ const calculatorData = {
     'pregnancy-weight-gain-calculator': { title: 'Pregnancy Weight Gain Calculator', description: 'Track your pregnancy weight gain with our calculator. Get personalized recommendations based on your pre-pregnancy BMI for a healthy pregnancy.' },
 };
 
+// Home Route
 app.get('/', (req, res) => {
     const calculators = Object.keys(calculatorData).map(key => ({
         name: calculatorData[key].title,
         url: `/${key}`,
-        description: calculatorData[key].description.split('.')[0] + '.' // Use first sentence for card description
+        description: calculatorData[key].description.split('.')[0] + '.'
     }));
+    
+    const title = 'Health Hub - All-in-One Health Calculators';
+    const desc = 'A free collection of online health and fitness calculators. Calculate BMI, BMR, TDEE and more instantly.';
+
     res.render('index', { 
-        title: 'Health Hub - All-in-One Health Calculators',
-        description: 'A free collection of online health and fitness calculators to help you achieve your goals. From BMI to TDEE, we have all the tools you need.',
-        calculators: calculators 
+        title: title,
+        description: desc,
+        calculators: calculators,
+        schema: generateSchema(title, desc, '/', false)
     });
 });
 
+// Disclaimer Page Route (Added based on your previous request)
+app.get('/disclaimer', (req, res) => {
+    const title = 'Disclaimer | Health Hub';
+    const desc = 'Please read the disclaimer for Health Hub. Our tools are for informational purposes only.';
+    res.render('disclaimer', { 
+        title: title,
+        description: desc,
+        schema: generateSchema(title, desc, '/disclaimer', false)
+    });
+});
+
+// Dynamic Route for Calculators
 app.get('/:calculator', (req, res) => {
     const calculatorName = req.params.calculator;
     const data = calculatorData[calculatorName];
 
     if (data) {
         const viewName = calculatorName.replace(/-/g, '_');
+        // Check if view exists would be good, but trusting express for now
         res.render(viewName, { 
             title: data.title,
-            description: data.description 
+            description: data.description,
+            schema: generateSchema(data.title, data.description, req.url, true)
         });
     } else {
-        // Handle 404 - Not Found
         res.status(404).send('Calculator not found');
     }
 });
 
+// Start Server
 app.listen(port, () => {
-    console.log(`Health-Hub server is running at http://localhost:${port}`);
+    console.log(`Health-Hub server is running on port ${port}`);
 });

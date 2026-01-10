@@ -3,6 +3,7 @@
 <div class="container">
     <div class="calculator-container">
         <h1 class="calculator-title"><%= title %></h1>
+<%- include('partials/ad_unit') %>
         
         <div class="unit-switcher">
             <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
@@ -50,6 +51,7 @@
             <div class="accordion-item"><button class="accordion-header"><span>Understanding BMI</span><span class="icon">+</span></button><div class="accordion-content"><p>Body Mass Index (BMI) is a measure that uses your height and weight to work out if your weight is healthy.</p><ul><li><strong>Below 18.5:</strong> Underweight</li><li><strong>18.5 – 24.9:</strong> Healthy Weight</li><li><strong>25.0 – 29.9:</strong> Overweight</li><li><strong>30.0 and Above:</strong> Obesity</li></ul></div></div>
             <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This BMI calculator is an informational tool only and should not be a substitute for professional medical advice. For a comprehensive assessment of your health, please consult a qualified healthcare provider.</p></div></div>
         </div>
+<%- include('partials/ad_unit') %>
     </div>
 </div>
 
