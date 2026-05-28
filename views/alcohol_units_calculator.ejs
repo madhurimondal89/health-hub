@@ -1,0 +1,182 @@
+<%- include('partials/inner_header') %>
+
+<main class="main-content">
+    <div class="container">
+        <div class="calculator-container">
+            <h1 class="calculator-title">Alcohol Units Calculator</h1>
+            <p class="calculator-subtitle">Calculate units, calories &amp; compare with safe drinking guidelines</p>
+
+            <div style="max-width:620px; margin:0 auto;">
+                <!-- Drink Builder -->
+                <div id="drinks-list"></div>
+
+                <button onclick="addDrink()" style="width:100%;padding:0.7rem;background:var(--bg-input);border:1px dashed var(--glass-border-acc);border-radius:var(--radius-sm);color:var(--accent);font-weight:600;font-size:0.9rem;cursor:pointer;margin-bottom:1.5rem;font-family:var(--font-main);transition:background 0.2s;">+ Add Drink</button>
+
+                <button class="main-action-btn" onclick="calculateAlcohol()">Calculate Units &amp; Calories</button>
+
+                <div id="alcohol-result" style="margin-top:1.5rem;"></div>
+
+                <!-- Guidelines -->
+                <div style="margin-top:2rem;padding:1.25rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-md);">
+                    <p style="margin:0;font-size:0.85rem;color:#f87171;font-weight:600;">⚠️ Safe Drinking Guidelines</p>
+                    <ul style="margin:0.5rem 0 0;padding-left:1.2rem;color:var(--text-secondary);font-size:0.83rem;line-height:1.8;">
+                        <li><strong style="color:var(--text-primary)">UK NHS:</strong> Max 14 units/week, spread over 3+ days</li>
+                        <li><strong style="color:var(--text-primary)">WHO:</strong> No safe level of alcohol for health — less is better</li>
+                        <li><strong style="color:var(--text-primary)">Binge drinking:</strong> 6+ units in one session (women), 8+ (men)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Drinks Reference -->
+            <div style="margin-top:2.5rem;border-top:1px solid var(--glass-border);padding-top:2rem;">
+                <h4 style="font-size:0.95rem;font-weight:600;color:var(--text-secondary);margin-bottom:1rem;">Unit Reference Guide</h4>
+                <div style="overflow-x:auto;">
+                    <table class="activity-table" style="font-size:0.85rem;">
+                        <thead><tr><th>Drink</th><th>Measure</th><th>ABV</th><th>Units</th><th>Calories</th></tr></thead>
+                        <tbody>
+                            <tr><td>🍺 Beer / Lager</td><td>Pint (568ml)</td><td>5%</td><td>2.8</td><td>~215</td></tr>
+                            <tr><td>🍷 Wine</td><td>Large glass (250ml)</td><td>13%</td><td>3.3</td><td>~225</td></tr>
+                            <tr><td>🥃 Spirits</td><td>Single shot (25ml)</td><td>40%</td><td>1.0</td><td>~56</td></tr>
+                            <tr><td>🍹 Cocktail</td><td>Standard (200ml)</td><td>10%</td><td>2.0</td><td>~175</td></tr>
+                            <tr><td>🍾 Champagne</td><td>Flute (125ml)</td><td>12%</td><td>1.5</td><td>~95</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.75rem;">Unit formula: Volume (ml) × ABV% ÷ 1000. One unit = 10ml (8g) of pure alcohol.</p>
+            </div>
+
+            <!-- FAQ -->
+            <div class="faq-section">
+                <h2>Frequently Asked Questions</h2>
+                <div class="accordion-item">
+                    <button class="accordion-header">What is one alcohol unit? <span class="icon">+</span></button>
+                    <div class="accordion-content"><p>One UK alcohol unit contains 10ml (8g) of pure alcohol. The formula is: Units = Volume (ml) × ABV (%) ÷ 1000. For example, a pint of 5% beer = 568 × 5 ÷ 1000 = 2.84 units.</p></div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header">How many calories are in alcohol? <span class="icon">+</span></button>
+                    <div class="accordion-content"><p>Pure alcohol contains 7 kcal per gram (almost as much as fat at 9 kcal/g). A pint of 5% beer ≈ 215 kcal, a large glass of wine ≈ 225 kcal, and a shot of spirits ≈ 56 kcal. These are "empty calories" with no nutritional value.</p></div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header">How long does alcohol stay in your system? <span class="icon">+</span></button>
+                    <div class="accordion-content"><p>The liver processes approximately 1 unit of alcohol per hour. So 10 units would take about 10 hours to clear. Factors like body weight, food intake, age, and genetics affect this rate. Never drive if you've been drinking — there is no guaranteed safe level.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/inner_footer') %>
+
+<script>
+let drinkCount = 0;
+
+const presets = {
+    beer:      { name: 'Beer / Lager', vol: 568, abv: 5.0 },
+    wine:      { name: 'Wine',         vol: 250, abv: 13.0 },
+    spirits:   { name: 'Spirits',      vol: 25,  abv: 40.0 },
+    cocktail:  { name: 'Cocktail',     vol: 200, abv: 10.0 },
+    champagne: { name: 'Champagne',    vol: 125, abv: 12.0 },
+    custom:    { name: 'Custom',       vol: '',  abv: '' },
+};
+
+function addDrink() {
+    drinkCount++;
+    const id = drinkCount;
+    const div = document.createElement('div');
+    div.id = `drink-${id}`;
+    div.style.cssText = 'background:var(--bg-input);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem;';
+    div.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <span style="font-weight:600;font-size:0.9rem;color:var(--text-secondary)">Drink #${id}</span>
+            <button onclick="document.getElementById('drink-${id}').remove()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;line-height:1;">×</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 80px;gap:0.5rem;align-items:end;">
+            <div>
+                <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:0.3rem;">TYPE</label>
+                <select onchange="applyPreset(${id}, this.value)" style="width:100%;padding:0.6rem 0.5rem;background:var(--bg-surface);border:1px solid var(--input-border-color);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-main);font-size:0.85rem;outline:none;">
+                    ${Object.entries(presets).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}
+                </select>
+            </div>
+            <div>
+                <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:0.3rem;">VOLUME (ml)</label>
+                <input type="number" id="vol-${id}" value="${presets.beer.vol}" min="1" style="width:100%;padding:0.6rem 0.5rem;background:var(--bg-surface);border:1px solid var(--input-border-color);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-main);font-size:0.85rem;outline:none;">
+            </div>
+            <div>
+                <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:0.3rem;">ABV (%)</label>
+                <input type="number" id="abv-${id}" value="${presets.beer.abv}" min="0" max="100" step="0.1" style="width:100%;padding:0.6rem 0.5rem;background:var(--bg-surface);border:1px solid var(--input-border-color);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-main);font-size:0.85rem;outline:none;">
+            </div>
+            <div>
+                <label style="font-size:0.78rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:0.3rem;">QTY</label>
+                <input type="number" id="qty-${id}" value="1" min="1" max="20" style="width:100%;padding:0.6rem 0.5rem;background:var(--bg-surface);border:1px solid var(--input-border-color);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-main);font-size:0.85rem;outline:none;">
+            </div>
+        </div>
+    `;
+    document.getElementById('drinks-list').appendChild(div);
+}
+
+function applyPreset(id, key) {
+    const p = presets[key];
+    if (p.vol) document.getElementById(`vol-${id}`).value = p.vol;
+    if (p.abv) document.getElementById(`abv-${id}`).value = p.abv;
+}
+
+function calculateAlcohol() {
+    const drinks = document.getElementById('drinks-list').querySelectorAll('[id^="drink-"]');
+    if (drinks.length === 0) {
+        document.getElementById('alcohol-result').innerHTML = '<div class="result-display-new"><p class="result-main-text" style="color:#f87171">Please add at least one drink.</p></div>';
+        return;
+    }
+
+    let totalUnits = 0, totalCal = 0;
+    drinks.forEach(drink => {
+        const id  = drink.id.replace('drink-', '');
+        const vol = parseFloat(document.getElementById(`vol-${id}`).value) || 0;
+        const abv = parseFloat(document.getElementById(`abv-${id}`).value) || 0;
+        const qty = parseInt(document.getElementById(`qty-${id}`).value) || 1;
+        const units = (vol * abv / 1000) * qty;
+        // Calories: alcohol = 7 kcal/g, 1 unit = 8g
+        const calories = Math.round(units * 8 * 7);
+        totalUnits += units;
+        totalCal   += calories;
+    });
+
+    totalUnits = Math.round(totalUnits * 10) / 10;
+    const clearHours = Math.round(totalUnits);
+    const weekPct = Math.min(100, Math.round((totalUnits / 14) * 100));
+    const weekColor = weekPct > 100 ? '#ef4444' : weekPct > 70 ? '#f59e0b' : '#00e676';
+
+    document.getElementById('alcohol-result').innerHTML = `
+        <div class="result-display-new">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;text-align:center;">
+                <div>
+                    <p style="font-size:2.2rem;font-weight:800;color:var(--accent);line-height:1">${totalUnits}</p>
+                    <p style="font-size:0.85rem;color:var(--text-muted);font-weight:600">UNITS</p>
+                </div>
+                <div>
+                    <p style="font-size:2.2rem;font-weight:800;color:#f59e0b;line-height:1">${totalCal.toLocaleString()}</p>
+                    <p style="font-size:0.85rem;color:var(--text-muted);font-weight:600">CALORIES</p>
+                </div>
+            </div>
+            <hr class="result-divider">
+            <p class="result-sub-text">⏱ Approx. time to clear: <strong>${clearHours} hour${clearHours !== 1 ? 's' : ''}</strong></p>
+            <p class="result-sub-text">📊 Weekly limit used: <strong style="color:${weekColor}">${weekPct}%</strong> of NHS 14 units</p>
+            <div style="width:100%;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;margin-top:0.75rem;">
+                <div style="width:${Math.min(weekPct,100)}%;height:100%;background:${weekColor};border-radius:4px;transition:width 0.6s ease;"></div>
+            </div>
+        </div>
+    `;
+}
+
+// Add first drink by default
+addDrink();
+
+document.querySelectorAll('.accordion-header').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        const content = btn.nextElementSibling;
+        const isActive = item.classList.contains('active');
+        document.querySelectorAll('.accordion-item').forEach(i => { i.classList.remove('active'); i.querySelector('.accordion-content').style.maxHeight = null; });
+        if (!isActive) { item.classList.add('active'); content.style.maxHeight = content.scrollHeight + 'px'; }
+    });
+});
+</script>

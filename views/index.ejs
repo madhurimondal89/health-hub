@@ -5,72 +5,248 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
     <meta name="description" content="<%= description %>">
-    
-    <!-- Google Fonts (Poppins) for a modern look -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://health-hub.calculatorfree.in/">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="<%= description %>">
+    <meta property="og:url" content="https://health-hub.calculatorfree.in/">
+    <meta property="og:type" content="website">
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Favicon Links with your new PNG -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
     <link rel="apple-touch-icon" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
-    
+
+    <!-- Schema -->
+    <script type="application/ld+json"><%- schema %></script>
+
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
+    <!-- ===== HEADER ===== -->
     <header class="main-header">
         <div class="container">
             <a href="/" class="logo">HealthHub</a>
-	<nav>
-            <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener noreferrer">Home</a>
-        </nav>
+            <nav>
+                <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener noreferrer">← Main Site</a>
+            </nav>
         </div>
     </header>
 
     <main>
         <div class="container">
-            <!-- Hero Section -->
+
+            <!-- ===== HERO ===== -->
             <section class="hero-section">
-                <div class="hero-card">
-                    <h1>Welcome to Health Hub</h1>
-                    <p>Your one-stop destination for all health-related calculations.</p>
+                <div class="hero-inner">
+                    <div class="hero-badge">
+                        <span>⚡</span> Free · Accurate · Instant Results
+                    </div>
+                    <h1 class="hero-title">
+                        Your Personal<br>
+                        <span class="gradient-text">Health Calculator</span> Hub
+                    </h1>
+                    <p class="hero-subtitle">
+                        <%= calculators.length %> free health &amp; fitness calculators — BMI, calories, sleep, pregnancy and more. No sign-up needed.
+                    </p>
+
+                    <!-- Search -->
+                    <div class="search-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            id="calculator-search"
+                            placeholder="Search calculators… e.g. BMI, sleep, calories"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="stats-bar">
+                        <div class="stat-item">
+                            <div class="stat-number"><%= calculators.length %>+</div>
+                            <div class="stat-label">Calculators</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Free</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Categories</div>
+                        </div>
+                    </div>
                 </div>
             </section>
+
 <%- include('partials/ad_unit') %>
 
-            <!-- Calculator Grid Section -->
-            <section class="calculator-section">
-                <div class="calculator-grid-home">
-                    <% calculators.forEach(calc => { %>
-                        <a href="<%= calc.url %>" class="calc-card">
-                            <div class="card-content">
-                                <h3><%= calc.name %></h3>
-                                <p><%= calc.description %></p>
+            <!-- ===== CALCULATOR CATEGORIES ===== -->
+            <section class="calculators-area">
+
+                <div id="no-results">
+                    <p>🔍 No calculators found. Try a different search term.</p>
+                </div>
+
+                <% 
+                const categories = [
+                    {
+                        id: 'cat-body',
+                        cls: 'cat-body',
+                        icon: '🏋️',
+                        title: 'Body Composition',
+                        items: [
+                            { url: '/bmi-calculator', name: 'BMI Calculator', icon: '⚖️', desc: 'Check if you\'re in a healthy weight range.' },
+                            { url: '/bmr-calculator', name: 'BMR Calculator', icon: '🔥', desc: 'Calories your body burns at rest.' },
+                            { url: '/body-fat-calculator', name: 'Body Fat Calculator', icon: '📊', desc: 'Estimate body fat % using Navy method.' },
+                            { url: '/lean-body-mass-calculator', name: 'Lean Body Mass', icon: '💪', desc: 'Calculate your fat-free body mass.' },
+                            { url: '/ideal-weight-calculator', name: 'Ideal Weight', icon: '🎯', desc: 'Find your healthy weight range.' },
+                            { url: '/ponderal-index-calculator', name: 'Ponderal Index', icon: '📐', desc: 'Alternative to BMI for tall/short individuals.' },
+                            { url: '/waist-to-hip-ratio-calculator', name: 'Waist-to-Hip Ratio', icon: '📏', desc: 'Assess abdominal fat and health risk.' },
+                            { url: '/waist-to-height-ratio-calculator', name: 'Waist-to-Height Ratio', icon: '📏', desc: 'Central obesity indicator.' },
+                            { url: '/body-surface-area-calculator', name: 'Body Surface Area', icon: '🫁', desc: 'Total BSA using 8 popular formulas.' },
+                        ]
+                    },
+                    {
+                        id: 'cat-fitness',
+                        cls: 'cat-fitness',
+                        icon: '🏃',
+                        title: 'Fitness & Activity',
+                        items: [
+                            { url: '/tdee-calculator', name: 'TDEE Calculator', icon: '⚡', desc: 'Total daily energy expenditure.' },
+                            { url: '/calorie-burn-calculator', name: 'Calorie Burn', icon: '🔥', desc: 'Calories burned during exercise.' },
+                            { url: '/running-pace-calculator', name: 'Running Pace', icon: '🏃', desc: 'Calculate pace, time or distance.' },
+                            { url: '/heart-rate-zones-calculator', name: 'Heart Rate Zones', icon: '❤️', desc: 'Optimize your workouts by HR zone.' },
+                            { url: '/steps-to-calories-calculator', name: 'Steps to Calories', icon: '👟', desc: 'Convert daily steps into calories burned.' },
+                        ]
+                    },
+                    {
+                        id: 'cat-nutrition',
+                        cls: 'cat-nutrition',
+                        icon: '🥗',
+                        title: 'Nutrition & Diet',
+                        items: [
+                            { url: '/calorie-calculator', name: 'Calorie Calculator', icon: '🍽️', desc: 'Daily calorie needs for your goal.' },
+                            { url: '/macro-calculator', name: 'Macro Calculator', icon: '🥦', desc: 'Protein, carbs & fat breakdown.' },
+                            { url: '/food-calorie-calculator', name: 'Food Calorie', icon: '🍎', desc: 'Calories from protein, carbs & fat.' },
+                            { url: '/water-intake-calculator', name: 'Water Intake', icon: '💧', desc: 'Personalized daily water recommendation.' },
+                            { url: '/protein-intake-calculator', name: 'Protein Intake', icon: '🥩', desc: 'Daily protein target for your goal.' },
+                            { url: '/alcohol-units-calculator', name: 'Alcohol Units', icon: '🍺', desc: 'Units, calories & safe limit guide.' },
+                        ]
+                    },
+                    {
+                        id: 'cat-health',
+                        cls: 'cat-health',
+                        icon: '💊',
+                        title: 'Health & Wellness',
+                        items: [
+                            { url: '/sleep-calculator', name: 'Sleep Calculator', icon: '😴', desc: 'Best wake-up time by sleep cycles.' },
+                            { url: '/blood-pressure-calculator', name: 'Blood Pressure', icon: '🫀', desc: 'Classify BP and assess health risk.' },
+                            { url: '/diabetes-risk-calculator', name: 'Diabetes Risk', icon: '🩺', desc: 'Type 2 diabetes risk assessment.' },
+                            { url: '/age-calculator', name: 'Age Calculator', icon: '🎂', desc: 'Exact age in years, months & days.' },
+                        ]
+                    },
+                    {
+                        id: 'cat-women',
+                        cls: 'cat-women',
+                        icon: '👶',
+                        title: "Women's Health",
+                        items: [
+                            { url: '/pregnancy-due-date-calculator', name: 'Pregnancy Due Date', icon: '🤰', desc: 'Estimate your baby\'s due date.' },
+                            { url: '/ovulation-calculator', name: 'Ovulation Calculator', icon: '📅', desc: 'Predict your most fertile days.' },
+                            { url: '/fertility-window-calculator', name: 'Fertility Window', icon: '🌸', desc: 'Identify key days to conceive.' },
+                            { url: '/menstrual-cycle-and-next-period-calculator', name: 'Menstrual Cycle', icon: '🗓️', desc: 'Track cycle & predict next period.' },
+                            { url: '/pregnancy-weight-gain-calculator', name: 'Pregnancy Weight Gain', icon: '⚖️', desc: 'Healthy weight gain during pregnancy.' },
+                        ]
+                    }
+                ];
+                %>
+
+                <% categories.forEach(cat => { %>
+                <div class="category-section <%= cat.cls %>" id="<%= cat.id %>" data-category="<%= cat.title.toLowerCase() %>">
+                    <div class="category-header">
+                        <div class="category-icon"><%= cat.icon %></div>
+                        <h2 class="category-title"><%= cat.title %></h2>
+                        <span class="category-count"><%= cat.items.length %> tools</span>
+                    </div>
+                    <div class="calculator-grid-home">
+                        <% cat.items.forEach(calc => { %>
+                        <a href="<%= calc.url %>" class="calc-card" data-name="<%= calc.name.toLowerCase() %>" data-desc="<%= calc.desc.toLowerCase() %>">
+                            <div class="card-top">
+                                <div class="card-icon"><%= calc.icon %></div>
+                                <div class="card-content">
+                                    <h3><%= calc.name %></h3>
+                                    <p><%= calc.desc %></p>
+                                </div>
                             </div>
-                            <div class="card-button">
-                                Go to Calculator
+                            <div class="card-footer">
+                                <div class="card-button">
+                                    Calculate
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </div>
                             </div>
                         </a>
-                    <% }) %>
+                        <% }) %>
+                    </div>
                 </div>
+                <% }) %>
+
             </section>
+
 <%- include('partials/ad_unit') %>
+
         </div>
     </main>
 
     <footer class="main-footer">
         <div class="footer-links">
             <a href="https://www.calculatorfree.in/about-us/" target="_blank" rel="noopener noreferrer">About Us</a>
-            <a href="https://www.calculatorfree.in/contact-us/" target="_blank" rel="noopener noreferrer">Contact Us</a>
+            <a href="https://www.calculatorfree.in/contact-us/" target="_blank" rel="noopener noreferrer">Contact</a>
             <a href="https://www.calculatorfree.in/disclaimer/" target="_blank" rel="noopener noreferrer">Disclaimer</a>
-            <a href="https://www.calculatorfree.in/dmca-policy/" target="_blank" rel="noopener noreferrer">DMCA Policy</a>
+            <a href="https://www.calculatorfree.in/dmca-policy/" target="_blank" rel="noopener noreferrer">DMCA</a>
             <a href="https://www.calculatorfree.in/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-            <a href="https://www.calculatorfree.in/terms-conditions/" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
+            <a href="https://www.calculatorfree.in/terms-conditions/" target="_blank" rel="noopener noreferrer">Terms</a>
         </div>
-        <p>&copy; <%= new Date().getFullYear() %> calculatorfree.in All Rights Reserved.</p>
+        <p>&copy; <%= new Date().getFullYear() %> calculatorfree.in — All Rights Reserved.</p>
     </footer>
+
+    <script>
+    // Real-time search
+    const searchInput = document.getElementById('calculator-search');
+    const categories  = document.querySelectorAll('.category-section');
+    const noResults   = document.getElementById('no-results');
+
+    searchInput.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        let totalVisible = 0;
+
+        categories.forEach(cat => {
+            const cards = cat.querySelectorAll('.calc-card');
+            let visibleInCat = 0;
+
+            cards.forEach(card => {
+                const name = card.dataset.name || '';
+                const desc = card.dataset.desc || '';
+                const match = !q || name.includes(q) || desc.includes(q);
+                card.classList.toggle('search-hidden', !match);
+                if (match) visibleInCat++;
+            });
+
+            cat.classList.toggle('hidden', visibleInCat === 0);
+            totalVisible += visibleInCat;
+        });
+
+        noResults.style.display = totalVisible === 0 ? 'block' : 'none';
+    });
+    </script>
 
 </body>
 </html>

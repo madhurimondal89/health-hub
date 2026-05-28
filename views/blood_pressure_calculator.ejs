@@ -1,0 +1,163 @@
+<%- include('partials/inner_header') %>
+
+<main class="main-content">
+    <div class="container">
+        <div class="calculator-container">
+            <h1 class="calculator-title">Blood Pressure Calculator</h1>
+            <p class="calculator-subtitle">Enter your BP reading to check your category and health risk</p>
+
+            <div class="calculator-grid">
+                <!-- Input Side -->
+                <div class="input-side">
+                    <div class="form-group">
+                        <label for="systolic">Systolic Pressure (mmHg) <small style="color:var(--text-muted)">— top number</small></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="systolic" placeholder="e.g. 120" min="60" max="250">
+                            <span class="input-adornment">mmHg</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="diastolic">Diastolic Pressure (mmHg) <small style="color:var(--text-muted)">— bottom number</small></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="diastolic" placeholder="e.g. 80" min="40" max="150">
+                            <span class="input-adornment">mmHg</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="age-bp">Your Age</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="age-bp" placeholder="e.g. 35" min="1" max="120">
+                            <span class="input-adornment">yrs</span>
+                        </div>
+                    </div>
+                    <button class="main-action-btn" onclick="calculateBP()">Check My Blood Pressure</button>
+                </div>
+
+                <!-- Result Side -->
+                <div class="result-section" id="bp-result">
+                    <div class="placeholder">
+                        <div class="placeholder-icon">🫀</div>
+                        <p>Enter your BP reading above</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BP Reference Chart -->
+            <div style="margin-top:2.5rem; border-top:1px solid var(--glass-border); padding-top:2rem;">
+                <h4 style="font-size:0.95rem; font-weight:600; color:var(--text-secondary); margin-bottom:1rem;">Blood Pressure Categories (AHA Guidelines)</h4>
+                <div style="overflow-x:auto;">
+                    <table class="activity-table" style="font-size:0.88rem;">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Systolic</th>
+                                <th></th>
+                                <th>Diastolic</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><span class="risk-indicator risk-healthy">Normal</span></td><td>&lt; 120</td><td>and</td><td>&lt; 80</td></tr>
+                            <tr><td><span class="risk-indicator risk-low">Elevated</span></td><td>120–129</td><td>and</td><td>&lt; 80</td></tr>
+                            <tr><td><span class="risk-indicator risk-moderate">High Stage 1</span></td><td>130–139</td><td>or</td><td>80–89</td></tr>
+                            <tr><td><span class="risk-indicator risk-high">High Stage 2</span></td><td>≥ 140</td><td>or</td><td>≥ 90</td></tr>
+                            <tr><td><span class="risk-indicator" style="background:#7c3aed">Crisis</span></td><td>&gt; 180</td><td>and/or</td><td>&gt; 120</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="faq-section">
+                <h2>Frequently Asked Questions</h2>
+                <div class="accordion-item">
+                    <button class="accordion-header">What is blood pressure? <span class="icon">+</span></button>
+                    <div class="accordion-content"><p>Blood pressure is the force of blood pushing against the walls of your arteries. It is measured in two numbers: systolic (when your heart beats) over diastolic (when your heart rests between beats), expressed in mmHg.</p></div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header">What causes high blood pressure? <span class="icon">+</span></button>
+                    <div class="accordion-content"><p>High blood pressure (hypertension) can be caused by a poor diet (high sodium), lack of exercise, obesity, smoking, excessive alcohol, stress, age, genetics, and certain medical conditions. Lifestyle changes and medication can help manage it.</p></div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header">When should I see a doctor? <span class="icon">+</span></button>
+                    <div class="accordion-content"><p>If your reading consistently falls in Stage 1 or Stage 2 hypertension, consult your doctor. A hypertensive crisis (above 180/120) requires immediate medical attention, especially if accompanied by chest pain, shortness of breath, or severe headache.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/inner_footer') %>
+
+<script>
+function calculateBP() {
+    const sys = parseInt(document.getElementById('systolic').value);
+    const dia = parseInt(document.getElementById('diastolic').value);
+    const age = parseInt(document.getElementById('age-bp').value);
+    const resultEl = document.getElementById('bp-result');
+
+    if (!sys || !dia || sys < 60 || sys > 250 || dia < 40 || dia > 150) {
+        resultEl.innerHTML = '<div class="result-display-new"><p class="result-main-text" style="color:#f87171">Please enter valid BP values (Systolic: 60–250, Diastolic: 40–150).</p></div>';
+        return;
+    }
+
+    let category, color, advice, riskClass;
+
+    if (sys > 180 || dia > 120) {
+        category = 'Hypertensive Crisis'; color = '#7c3aed'; riskClass = 'risk-high';
+        advice = '⚠️ Seek emergency care immediately. If accompanied by chest pain, shortness of breath, or vision changes, call emergency services now.';
+    } else if (sys >= 140 || dia >= 90) {
+        category = 'High Blood Pressure — Stage 2'; color = '#ef4444'; riskClass = 'risk-high';
+        advice = 'Consult your doctor promptly. Lifestyle changes and medication are typically required.';
+    } else if (sys >= 130 || dia >= 80) {
+        category = 'High Blood Pressure — Stage 1'; color = '#f59e0b'; riskClass = 'risk-moderate';
+        advice = 'Talk to your doctor. Lifestyle changes (diet, exercise, stress management) are recommended.';
+    } else if (sys >= 120 && dia < 80) {
+        category = 'Elevated Blood Pressure'; color = '#3b82f6'; riskClass = 'risk-low';
+        advice = 'Your BP is slightly above normal. Adopt a heart-healthy lifestyle to prevent hypertension.';
+    } else {
+        category = 'Normal Blood Pressure'; color = '#00e676'; riskClass = 'risk-healthy';
+        advice = 'Great! Maintain a healthy lifestyle including regular exercise and a balanced diet.';
+    }
+
+    const pulse = sys - dia;
+    const map = Math.round(dia + (pulse / 3));
+
+    resultEl.innerHTML = `
+        <div class="result-display-new" style="width:100%">
+            <p class="result-main-text"><strong>${sys}/${dia}</strong> mmHg</p>
+            <div style="margin:0.75rem 0;">
+                <span class="risk-indicator ${riskClass}" style="background:${color};color:${riskClass==='risk-healthy'||riskClass==='risk-moderate'?'#060d1a':'#fff'};font-size:0.9rem;padding:0.35rem 1rem;">${category}</span>
+            </div>
+            <hr class="result-divider">
+            <p class="result-sub-text">${advice}</p>
+        </div>
+        <div class="activity-table-container">
+            <h4>Additional Readings</h4>
+            <table class="activity-table">
+                <tbody>
+                    <tr><td>Pulse Pressure</td><td><strong>${pulse} mmHg</strong></td></tr>
+                    <tr><td>Mean Arterial Pressure</td><td><strong>${map} mmHg</strong></td></tr>
+                    ${age ? `<tr><td>Your Age</td><td><strong>${age} years</strong></td></tr>` : ''}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+// Accordion
+document.querySelectorAll('.accordion-header').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        const content = btn.nextElementSibling;
+        const isActive = item.classList.contains('active');
+        document.querySelectorAll('.accordion-item').forEach(i => {
+            i.classList.remove('active');
+            i.querySelector('.accordion-content').style.maxHeight = null;
+        });
+        if (!isActive) {
+            item.classList.add('active');
+            content.style.maxHeight = content.scrollHeight + 'px';
+        }
+    });
+});
+</script>

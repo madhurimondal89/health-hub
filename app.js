@@ -101,6 +101,12 @@ const calculatorData = {
     'fertility-window-calculator': { title: 'Fertility Window Calculator', description: 'Pinpoint your most fertile days to increase your chances of conception. This calculator identifies your key fertility window based on your cycle.' },
     'menstrual-cycle-and-next-period-calculator': { title: 'Menstrual Cycle & Next Period Calculator', description: 'Track your menstrual cycle and predict your next period date. Get insights into your cycle phases and plan ahead with our easy-to-use calculator.' },
     'pregnancy-weight-gain-calculator': { title: 'Pregnancy Weight Gain Calculator', description: 'Track your pregnancy weight gain with our calculator. Get personalized recommendations based on your pre-pregnancy BMI for a healthy pregnancy.' },
+    'blood-pressure-calculator': { title: 'Blood Pressure Calculator', description: 'Check your blood pressure category (Normal, Elevated, High Stage 1 & 2, or Hypertensive Crisis) using your systolic and diastolic readings. Understand your cardiovascular health risk.' },
+    'diabetes-risk-calculator': { title: 'Diabetes Risk Calculator', description: 'Assess your risk of developing Type 2 diabetes using the FINDRISC method. Based on age, BMI, waist circumference, physical activity, diet, blood glucose history, and family history.' },
+    'protein-intake-calculator': { title: 'Protein Intake Calculator', description: 'Calculate your optimal daily protein intake based on your weight, activity level, and fitness goal (muscle gain, fat loss, or maintenance). Get a personalized protein recommendation.' },
+    'steps-to-calories-calculator': { title: 'Steps to Calories Calculator', description: 'Convert your daily step count into calories burned. Find out how many calories you burn walking 5,000, 10,000 or more steps based on your weight and stride.' },
+    'age-calculator': { title: 'Age Calculator', description: 'Calculate your exact age in years, months, days, hours, and minutes from your date of birth. Also find the day of the week you were born and days until your next birthday.' },
+    'alcohol-units-calculator': { title: 'Alcohol Units Calculator', description: 'Calculate the number of alcohol units and calories in your drinks. Compare with UK and WHO safe drinking limits and understand your weekly alcohol consumption.' },
 };
 
 // Home Route

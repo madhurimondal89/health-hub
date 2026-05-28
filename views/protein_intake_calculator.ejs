@@ -1,0 +1,149 @@
+<%- include('partials/inner_header') %>
+
+<main class="main-content">
+    <div class="container">
+        <div class="calculator-container">
+            <h1 class="calculator-title">Protein Intake Calculator</h1>
+            <p class="calculator-subtitle">Find your optimal daily protein target based on your goal</p>
+
+            <div class="calculator-grid">
+                <!-- Input -->
+                <div class="input-side">
+                    <div class="unit-switcher">
+                        <button class="unit-btn active" id="btn-metric" onclick="switchUnit('metric')">Metric (kg)</button>
+                        <button class="unit-btn" id="btn-imperial" onclick="switchUnit('imperial')">Imperial (lbs)</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pi-weight">Body Weight</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="pi-weight" placeholder="e.g. 70" min="30" max="300">
+                            <span class="input-adornment" id="pi-unit-label">kg</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Your Goal</label>
+                        <div class="input-wrapper">
+                            <select id="pi-goal">
+                                <option value="muscle">Muscle Gain / Bulking</option>
+                                <option value="maintain" selected>Maintenance / General Health</option>
+                                <option value="loss">Fat Loss / Cutting</option>
+                                <option value="endurance">Endurance Sports</option>
+                                <option value="strength">Strength / Powerlifting</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Activity Level</label>
+                        <div class="input-wrapper">
+                            <select id="pi-activity">
+                                <option value="sedentary">Sedentary (little or no exercise)</option>
+                                <option value="light">Light (1–3 days/week)</option>
+                                <option value="moderate" selected>Moderate (3–5 days/week)</option>
+                                <option value="active">Active (6–7 days/week)</option>
+                                <option value="veryactive">Very Active (2x/day or physical job)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="main-action-btn" onclick="calculateProtein()">Calculate My Protein</button>
+                </div>
+
+                <!-- Result -->
+                <div class="result-section" id="protein-result">
+                    <div class="placeholder">
+                        <div class="placeholder-icon">🥩</div>
+                        <p>Fill in your details to get your protein target</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="faq-section">
+                <h2>Frequently Asked Questions</h2>
+                <div class="accordion-item">
+                    <button class="accordion-header">How much protein do I need daily? <span class="icon">+</span></button>
+                    <div class="accordion-content"><p>The RDA is 0.8g per kg of body weight, but active individuals and those seeking muscle growth need more — typically 1.6–2.2g/kg. Athletes may need up to 3.1g/kg during aggressive fat loss phases.</p></div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header">Can you eat too much protein? <span class="icon">+</span></button>
+                    <div class="accordion-content"><p>For healthy individuals, high protein intake (up to 3g/kg) appears safe. However, very high intakes with pre-existing kidney disease may be harmful. Focus on variety: lean meats, eggs, legumes, dairy, and plant sources.</p></div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header">When should I eat protein? <span class="icon">+</span></button>
+                    <div class="accordion-content"><p>Spreading protein intake across 3–5 meals (20–40g each) maximizes muscle protein synthesis. A protein-rich meal within 2 hours post-workout is beneficial, though total daily intake matters most.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/inner_footer') %>
+
+<script>
+let unitMode = 'metric';
+
+function switchUnit(mode) {
+    unitMode = mode;
+    document.getElementById('btn-metric').classList.toggle('active', mode === 'metric');
+    document.getElementById('btn-imperial').classList.toggle('active', mode === 'imperial');
+    document.getElementById('pi-unit-label').textContent = mode === 'metric' ? 'kg' : 'lbs';
+    document.getElementById('pi-weight').placeholder = mode === 'metric' ? 'e.g. 70' : 'e.g. 154';
+}
+
+function calculateProtein() {
+    let weight = parseFloat(document.getElementById('pi-weight').value);
+    if (!weight || weight <= 0) {
+        document.getElementById('protein-result').innerHTML = '<div class="result-display-new"><p class="result-main-text" style="color:#f87171">Please enter a valid weight.</p></div>';
+        return;
+    }
+    if (unitMode === 'imperial') weight = weight * 0.453592;
+
+    const goal     = document.getElementById('pi-goal').value;
+    const activity = document.getElementById('pi-activity').value;
+
+    // Base multipliers (g per kg lean body weight)
+    const ranges = {
+        muscle:    { min: 1.6, max: 2.2, label: 'Muscle Gain' },
+        maintain:  { min: 1.0, max: 1.4, label: 'Maintenance' },
+        loss:      { min: 1.8, max: 2.7, label: 'Fat Loss (preserve muscle)' },
+        endurance: { min: 1.2, max: 1.6, label: 'Endurance Sports' },
+        strength:  { min: 1.7, max: 2.5, label: 'Strength / Powerlifting' },
+    };
+
+    const actMult = { sedentary: 0.95, light: 1.0, moderate: 1.05, active: 1.1, veryactive: 1.15 };
+    const r = ranges[goal];
+    const m = actMult[activity];
+    const low  = Math.round(r.min * weight * m);
+    const high = Math.round(r.max * weight * m);
+    const mid  = Math.round((low + high) / 2);
+
+    // Per meal (4 meals)
+    const perMeal = Math.round(mid / 4);
+
+    document.getElementById('protein-result').innerHTML = `
+        <div class="result-display-new" style="width:100%">
+            <p class="result-main-text">Daily Protein Target</p>
+            <p class="result-main-text-large"><strong>${low}–${high}</strong></p>
+            <p class="result-main-unit">grams / day</p>
+            <hr class="result-divider">
+            <p class="result-sub-text">Goal: <strong style="color:var(--accent)">${r.label}</strong></p>
+            <p class="result-sub-text">≈ <strong>${perMeal}g</strong> per meal (4 meals/day)</p>
+            <p class="result-sub-text">Based on <strong>${weight.toFixed(1)} kg</strong> body weight</p>
+            <p class="result-sub-text" style="margin-top:0.75rem; font-size:0.8rem; color:var(--text-muted);">Per kg of body weight: ${r.min}–${r.max}g/kg</p>
+        </div>
+    `;
+}
+
+document.querySelectorAll('.accordion-header').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        const content = btn.nextElementSibling;
+        const isActive = item.classList.contains('active');
+        document.querySelectorAll('.accordion-item').forEach(i => { i.classList.remove('active'); i.querySelector('.accordion-content').style.maxHeight = null; });
+        if (!isActive) { item.classList.add('active'); content.style.maxHeight = content.scrollHeight + 'px'; }
+    });
+});
+</script>
