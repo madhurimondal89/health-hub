@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="en" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,9 +35,15 @@
     <header class="main-header">
         <div class="container">
             <a href="/" class="logo">HealthHub</a>
-            <nav>
-                <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener noreferrer">← Main Site</a>
-            </nav>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+                <nav>
+                    <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener noreferrer">← Main Site</a>
+                </nav>
+                <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark theme" aria-label="Toggle theme">
+                    <span class="icon-sun">&#9728;</span>
+                    <span class="icon-moon">&#9790;</span>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -246,6 +252,22 @@
 
         noResults.style.display = totalVisible === 0 ? 'block' : 'none';
     });
+    <script>
+    // Theme Toggle
+    (function() {
+        const saved = localStorage.getItem('hh-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    const toggleBtn = document.getElementById('theme-toggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('hh-theme', next);
+        });
+    }
     </script>
 
 </body>

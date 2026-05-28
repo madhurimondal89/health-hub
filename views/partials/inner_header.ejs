@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,18 +30,45 @@
     <% if (locals.schema) { %>
     <script type="application/ld+json"><%- schema %></script>
     <% } %>
+
+    <!-- Apply saved theme instantly (before paint) -->
+    <script>
+    (function() {
+        var t = localStorage.getItem('hh-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+    })();
+    </script>
 </head>
 <body>
 
 <header class="inner-header">
     <div class="container">
         <a href="/" class="logo">HealthHub</a>
-        <nav>
-            <a href="/">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                All Calculators
-            </a>
-        </nav>
-        <%- include('ad_unit') %>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+            <nav>
+                <a href="/">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    All Calculators
+                </a>
+            </nav>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark theme" aria-label="Toggle theme">
+                <span class="icon-sun">&#9728;</span>
+                <span class="icon-moon">&#9790;</span>
+            </button>
+            <%- include('ad_unit') %>
+        </div>
     </div>
 </header>
+
+<script>
+// Theme toggle for inner pages
+var toggleBtn = document.getElementById('theme-toggle');
+if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+        var current = document.documentElement.getAttribute('data-theme');
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('hh-theme', next);
+    });
+}
+</script>
