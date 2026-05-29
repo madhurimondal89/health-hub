@@ -167,4 +167,42 @@
   <priority>0.85</priority>
 </url>
 
+
+<!-- New High-Priority Calculators -->
+<url>
+  <loc>https://health-hub.calculatorfree.in/calorie-deficit-calculator</loc>
+  <lastmod>2026-05-29T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/keto-calculator</loc>
+  <lastmod>2026-05-29T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/intermittent-fasting-calculator</loc>
+  <lastmod>2026-05-29T00:00:00+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/one-rep-max-calculator</loc>
+  <lastmod>2026-05-29T00:00:00+00:00</lastmod>
+  <priority>0.85</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/vo2-max-calculator</loc>
+  <lastmod>2026-05-29T00:00:00+00:00</lastmod>
+  <priority>0.85</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/child-bmi-calculator</loc>
+  <lastmod>2026-05-29T00:00:00+00:00</lastmod>
+  <priority>0.85</priority>
+</url>
+<url>
+  <loc>https://health-hub.calculatorfree.in/body-type-calculator</loc>
+  <lastmod>2026-05-29T00:00:00+00:00</lastmod>
+  <priority>0.85</priority>
+</url>
+
 </urlset>

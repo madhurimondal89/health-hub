@@ -1,0 +1,208 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+<%- include('partials/ad_unit') %>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="ifForm">
+                    <div class="form-group">
+                        <label for="ifProtocol">Fasting Protocol</label>
+                        <div class="input-wrapper">
+                            <select id="ifProtocol">
+                                <option value="16">16:8 — Fast 16 hrs, Eat 8 hrs (Most Popular)</option>
+                                <option value="18">18:6 — Fast 18 hrs, Eat 6 hrs</option>
+                                <option value="20">20:4 — Fast 20 hrs, Eat 4 hrs (Warrior Diet)</option>
+                                <option value="23">OMAD — One Meal A Day (23:1)</option>
+                                <option value="14">14:10 — Fast 14 hrs, Eat 10 hrs (Beginner Friendly)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="eatStart">Eating Window Start Time</label>
+                        <div class="input-wrapper"><input type="time" id="eatStart" value="08:00"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="currentTime">Current Time</label>
+                        <div class="input-wrapper"><input type="time" id="currentTime"></div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Select your fasting protocol and eating window start time.</div>
+            </div>
+        </div>
+
+        <!-- 24-Hour Visual Timeline -->
+        <div id="timeline-section" style="display:none;margin-top:1.5rem;padding:1.5rem;background:var(--card-bg);border-radius:12px;border:1px solid var(--border-color);">
+            <h3 style="margin:0 0 1rem;font-size:1rem;color:var(--text-muted);">⏱️ 24-Hour Cycle Timeline</h3>
+            <div id="timeline-bar" style="position:relative;height:40px;border-radius:8px;overflow:hidden;background:#3b3b5c;display:flex;"></div>
+            <div style="display:flex;gap:1.5rem;margin-top:0.75rem;font-size:0.82rem;">
+                <span style="display:flex;align-items:center;gap:0.35rem;"><span style="width:14px;height:14px;border-radius:3px;background:#6c47ff;display:inline-block;"></span>Fasting Window</span>
+                <span style="display:flex;align-items:center;gap:0.35rem;"><span style="width:14px;height:14px;border-radius:3px;background:#22c55e;display:inline-block;"></span>Eating Window</span>
+                <span id="now-legend" style="display:flex;align-items:center;gap:0.35rem;display:none;"><span style="width:14px;height:14px;border-radius:3px;background:#f59e0b;display:inline-block;"></span>Now</span>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What is Intermittent Fasting?</span><span class="icon">+</span></button><div class="accordion-content"><p>Intermittent fasting (IF) is an eating pattern that cycles between periods of fasting and eating. It does not specify which foods to eat but focuses on <em>when</em> to eat them. Popular methods include 16:8, 18:6, and OMAD, each differing in the length of the fasting window.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Which IF protocol is best for beginners?</span><span class="icon">+</span></button><div class="accordion-content"><p>The <strong>14:10</strong> or <strong>16:8</strong> method is recommended for beginners. The 16:8 aligns naturally with sleep patterns — for example, finishing dinner by 8 PM and skipping breakfast until noon. This makes the fasting window largely painless as most of it occurs during sleep.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Can I drink anything during the fast?</span><span class="icon">+</span></button><div class="accordion-content"><p>Yes. Water, plain black coffee, and unsweetened tea are generally allowed during fasting windows as they contain negligible calories and do not significantly break a fast. Avoid sugary drinks, milk, juices, or anything with calories during the fasting period.</p></div></div>
+        </div>
+
+<%- include('partials/ad_unit') %>
+
+        <div style="margin-top:2rem;padding:1.5rem;background:var(--card-bg);border-radius:12px;border:1px solid var(--border-color);">
+            <h3 style="margin:0 0 1rem;font-size:1rem;color:var(--text-muted);">🔗 Related Calculators</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                <a href="/calorie-deficit-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">📉 Calorie Deficit</a>
+                <a href="/tdee-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">⚡ TDEE Calculator</a>
+                <a href="/calorie-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🍽️ Calorie Calculator</a>
+                <a href="/water-intake-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">💧 Water Intake</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const resultDiv = document.getElementById('result-section');
+    const timelineSection = document.getElementById('timeline-section');
+    const timelineBar = document.getElementById('timeline-bar');
+
+    // Default current time
+    (function setCurrentTime() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('currentTime').value = `${hh}:${mm}`;
+    })();
+
+    function toMinutes(timeStr) {
+        const [h, m] = timeStr.split(':').map(Number);
+        return h * 60 + m;
+    }
+
+    function formatTime(totalMinutes) {
+        totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
+        const h = Math.floor(totalMinutes / 60);
+        const m = totalMinutes % 60;
+        const suffix = h < 12 ? 'AM' : 'PM';
+        const displayH = h % 12 === 0 ? 12 : h % 12;
+        return `${displayH}:${String(m).padStart(2, '0')} ${suffix}`;
+    }
+
+    function formatDuration(totalMinutes) {
+        const h = Math.floor(totalMinutes / 60);
+        const m = totalMinutes % 60;
+        return m > 0 ? `${h}h ${m}m` : `${h}h`;
+    }
+
+    function calculateIF() {
+        const protocol = parseInt(document.getElementById('ifProtocol').value);
+        const eatStartStr = document.getElementById('eatStart').value;
+        const currentTimeStr = document.getElementById('currentTime').value;
+
+        if (!eatStartStr || !currentTimeStr) {
+            resultDiv.innerHTML = `<div class="placeholder">Please fill in all fields.</div>`;
+            return;
+        }
+
+        const fastHours = protocol;
+        const eatHours = 24 - fastHours;
+        const eatStartMin = toMinutes(eatStartStr);
+        const eatEndMin = eatStartMin + eatHours * 60;
+        const fastStartMin = eatEndMin;
+
+        const nowMin = toMinutes(currentTimeStr);
+        const nowMod = ((nowMin % 1440) + 1440) % 1440;
+        const eatStartMod = ((eatStartMin % 1440) + 1440) % 1440;
+        const eatEndMod = ((eatEndMin % 1440) + 1440) % 1440;
+
+        let isEating;
+        if (eatEndMod > eatStartMod) {
+            isEating = nowMod >= eatStartMod && nowMod < eatEndMod;
+        } else {
+            isEating = nowMod >= eatStartMod || nowMod < eatEndMod;
+        }
+
+        let timeStatus = '';
+        if (isEating) {
+            const minsLeft = ((eatEndMod - nowMod + 1440) % 1440);
+            timeStatus = `⏳ You are in your <strong>eating window</strong>. Fasting begins in <strong>${formatDuration(minsLeft)}</strong>.`;
+        } else {
+            const minsLeft = ((eatStartMod - nowMod + 1440) % 1440);
+            timeStatus = `🔒 You are currently <strong>fasting</strong>. Eating window opens in <strong>${formatDuration(minsLeft)}</strong>.`;
+        }
+
+        const weeklyFastHours = fastHours * 7;
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">🍽️ Eating Window: <strong>${formatTime(eatStartMod)} – ${formatTime(eatEndMod)}</strong></p>
+                <hr class="result-divider" />
+                <p class="result-sub-text">🔒 Fasting Window: <strong>${formatTime(fastStartMin)} – ${formatTime(eatStartMod)}</strong></p>
+            </div>
+            <div style="margin-top:1rem;padding:0.85rem 1rem;background:var(--card-bg);border-radius:8px;border:1px solid var(--border-color);font-size:0.9rem;line-height:1.7;">
+                <div>${timeStatus}</div>
+                <div style="margin-top:0.5rem;">📅 Weekly fasting total: <strong>${weeklyFastHours} hours</strong></div>
+            </div>
+        `;
+
+        // Draw timeline
+        timelineSection.style.display = 'block';
+        timelineBar.innerHTML = '';
+
+        const eatPct = (eatHours / 24) * 100;
+        const fastPct = 100 - eatPct;
+
+        // Fasting first segment (from midnight to eat start)
+        const fastBefore = (eatStartMod / 1440) * 100;
+        const eatPctBar = (eatHours * 60 / 1440) * 100;
+        const fastAfter = 100 - fastBefore - eatPctBar;
+
+        if (fastBefore > 0) {
+            const seg = document.createElement('div');
+            seg.style.cssText = `width:${fastBefore}%;background:#6c47ff;height:100%;`;
+            seg.title = 'Fasting';
+            timelineBar.appendChild(seg);
+        }
+        const eatSeg = document.createElement('div');
+        eatSeg.style.cssText = `width:${eatPctBar}%;background:#22c55e;height:100%;`;
+        eatSeg.title = 'Eating';
+        timelineBar.appendChild(eatSeg);
+        if (fastAfter > 0) {
+            const seg2 = document.createElement('div');
+            seg2.style.cssText = `width:${fastAfter}%;background:#6c47ff;height:100%;`;
+            seg2.title = 'Fasting';
+            timelineBar.appendChild(seg2);
+        }
+
+        // Now marker
+        const nowPct = (nowMod / 1440) * 100;
+        const nowMarker = document.createElement('div');
+        nowMarker.style.cssText = `position:absolute;left:${nowPct}%;top:0;width:3px;height:100%;background:#f59e0b;z-index:2;`;
+        nowMarker.title = 'Current time';
+        timelineBar.appendChild(nowMarker);
+        document.getElementById('now-legend').style.display = 'flex';
+    }
+
+    document.querySelectorAll('select, input').forEach(el => {
+        el.addEventListener('input', calculateIF);
+        el.addEventListener('change', calculateIF);
+    });
+    calculateIF();
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

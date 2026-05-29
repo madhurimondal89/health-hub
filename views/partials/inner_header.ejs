@@ -30,6 +30,10 @@
     <% if (locals.schema) { %>
     <script type="application/ld+json"><%- schema %></script>
     <% } %>
+    <% if (locals.faqSchema) { %>
+    <script type="application/ld+json"><%- faqSchema %></script>
+    <% } %>
+
 
     <!-- Apply saved theme instantly (before paint) -->
     <script>

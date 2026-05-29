@@ -1,0 +1,235 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+<%- include('partials/ad_unit') %>
+
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="ketoForm">
+                    <!-- Metric Units -->
+                    <div id="metricInputs">
+                        <div class="form-group">
+                            <label for="weightKg">Weight (kg)</label>
+                            <div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 80"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="heightCm">Height (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div>
+                        </div>
+                    </div>
+                    <!-- Imperial Units -->
+                    <div id="imperialInputs" style="display: none;">
+                        <div class="form-group">
+                            <label for="weightLbs">Weight (lbs)</label>
+                            <div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 176"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Height (ft, in)</label>
+                            <div class="height-imperial-inputs">
+                                <div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div>
+                                <div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Age (years)</label>
+                        <div class="input-wrapper"><input type="number" id="age" step="1" placeholder="e.g., 30"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <div class="input-wrapper">
+                            <select id="gender">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="activityLevel">Activity Level</label>
+                        <div class="input-wrapper">
+                            <select id="activityLevel">
+                                <option value="1.2">Sedentary (little or no exercise)</option>
+                                <option value="1.375">Lightly Active (1–3 days/week)</option>
+                                <option value="1.55">Moderately Active (3–5 days/week)</option>
+                                <option value="1.725">Very Active (6–7 days/week)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="goal">Goal</label>
+                        <div class="input-wrapper">
+                            <select id="goal">
+                                <option value="lose">Lose Weight (-20% calories)</option>
+                                <option value="maintain" selected>Maintain Weight</option>
+                                <option value="gain">Gain Muscle (+10% calories)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bodyFat">Body Fat % <span style="font-size:0.8rem;color:var(--text-muted);">(optional)</span></label>
+                        <div class="input-wrapper"><input type="number" id="bodyFat" step="0.5" min="1" max="70" placeholder="e.g., 20 (leave blank to skip)"></div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your details to calculate your keto macros.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What is the ketogenic diet?</span><span class="icon">+</span></button><div class="accordion-content"><p>The ketogenic (keto) diet is a very low-carbohydrate, high-fat diet. By drastically reducing carbohydrate intake and replacing it with fat, your body enters a metabolic state called ketosis — where it becomes highly efficient at burning fat for energy instead of glucose. It also turns fat into ketones in the liver, which can supply energy for the brain.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>How many carbs can I eat on keto?</span><span class="icon">+</span></button><div class="accordion-content"><p>Most people need to stay under 20–50g of net carbs per day to enter and maintain ketosis. Net carbs = total carbs minus fiber. Most people successfully enter ketosis below 25g of net carbs. Individual carb tolerance varies, so some people may need to stay even lower.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>What foods are keto-friendly?</span><span class="icon">+</span></button><div class="accordion-content"><p>Keto-friendly foods include:</p><ul><li><strong>Proteins:</strong> Meat, poultry, fish, seafood, eggs</li><li><strong>Dairy:</strong> Cheese, butter, heavy cream, Greek yogurt (in moderation)</li><li><strong>Fats:</strong> Avocado, olive oil, coconut oil, nuts and seeds</li><li><strong>Vegetables:</strong> Leafy greens, broccoli, cauliflower, zucchini, peppers</li></ul><p>Avoid: bread, pasta, rice, sugar, most fruits, and starchy vegetables.</p></div></div>
+        </div>
+
+<%- include('partials/ad_unit') %>
+
+        <div style="margin-top:2rem;padding:1.5rem;background:var(--card-bg);border-radius:12px;border:1px solid var(--border-color);">
+            <h3 style="margin:0 0 1rem;font-size:1rem;color:var(--text-muted);">🔗 Related Calculators</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                <a href="/macro-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🥦 Macro Calculator</a>
+                <a href="/calorie-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🍽️ Calorie Calculator</a>
+                <a href="/tdee-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">⚡ TDEE Calculator</a>
+                <a href="/protein-intake-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🥩 Protein Intake</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric';
+    const resultDiv = document.getElementById('result-section');
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        document.querySelectorAll('input').forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate your keto macros.</div>`;
+    }
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+
+    document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', calculateKeto);
+        el.addEventListener('change', calculateKeto);
+    });
+
+    function calculateKeto() {
+        let weightInKg, heightInCm;
+        if (currentUnit === 'metric') {
+            weightInKg = parseFloat(document.getElementById('weightKg').value);
+            heightInCm = parseFloat(document.getElementById('heightCm').value);
+        } else {
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            const ft = parseFloat(document.getElementById('heightFt').value);
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
+            if (!isNaN(ft)) heightInCm = (ft * 12 + inches) * 2.54;
+        }
+
+        const age = parseFloat(document.getElementById('age').value);
+        const gender = document.getElementById('gender').value;
+        const activityMultiplier = parseFloat(document.getElementById('activityLevel').value);
+        const goal = document.getElementById('goal').value;
+        const bodyFatPct = parseFloat(document.getElementById('bodyFat').value);
+
+        if (isNaN(weightInKg) || isNaN(heightInCm) || isNaN(age) || weightInKg <= 0 || heightInCm <= 0 || age <= 0) {
+            resultDiv.innerHTML = `<div class="placeholder">Please fill in all required fields.</div>`;
+            return;
+        }
+
+        // Mifflin-St Jeor BMR
+        let bmr;
+        if (gender === 'male') {
+            bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) + 5;
+        } else {
+            bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) - 161;
+        }
+
+        let tdee = bmr * activityMultiplier;
+
+        // Goal adjustment
+        let goalMultiplier = 1;
+        if (goal === 'lose') goalMultiplier = 0.80;
+        else if (goal === 'gain') goalMultiplier = 1.10;
+        const dailyCalories = Math.round(tdee * goalMultiplier);
+
+        // Keto macro split: Fat 70%, Protein 25%, Carbs 5%
+        // But protein minimum = 1.6g/kg bodyweight
+        const netCarbs = 22; // ~22g net carbs (within 20-25g range)
+        const carbCalories = netCarbs * 4;
+
+        let proteinG = Math.max(
+            Math.round((dailyCalories * 0.25) / 4),
+            Math.round(weightInKg * 1.6)
+        );
+        const proteinCalories = proteinG * 4;
+        const fatCalories = dailyCalories - carbCalories - proteinCalories;
+        const fatG = Math.round(fatCalories / 9);
+
+        // Macro percentages for chart
+        const totalCals = proteinCalories + fatCalories + carbCalories;
+        const fatPct = Math.round((fatCalories / totalCals) * 100);
+        const proteinPct = Math.round((proteinCalories / totalCals) * 100);
+        const carbPct = 100 - fatPct - proteinPct;
+
+        const bodyFatNote = !isNaN(bodyFatPct) && bodyFatPct > 0
+            ? `<p class="result-sub-text">💪 Lean Body Mass: <strong>${(weightInKg * (1 - bodyFatPct / 100)).toFixed(1)} kg</strong></p>`
+            : '';
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">Daily Calories: <strong>${dailyCalories.toLocaleString()} kcal</strong></p>
+                <hr class="result-divider" />
+                <p class="result-sub-text">🥩 Protein: <strong>${proteinG}g</strong> (${proteinPct}%)</p>
+                <p class="result-sub-text">🧈 Fat: <strong>${fatG}g</strong> (${fatPct}%)</p>
+                <p class="result-sub-text">🌿 Net Carbs: <strong>${netCarbs}g</strong> (${carbPct}%)</p>
+                ${bodyFatNote}
+                <hr class="result-divider" />
+                <p class="result-sub-text" style="margin-bottom:0.5rem;font-weight:600;">Macro Distribution</p>
+                <div style="display:flex;height:16px;border-radius:8px;overflow:hidden;width:100%;">
+                    <div style="width:${fatPct}%;background:#f59e0b;" title="Fat ${fatPct}%"></div>
+                    <div style="width:${proteinPct}%;background:#6366f1;" title="Protein ${proteinPct}%"></div>
+                    <div style="width:${carbPct}%;background:#10b981;" title="Carbs ${carbPct}%"></div>
+                </div>
+                <div style="display:flex;gap:1rem;margin-top:0.4rem;font-size:0.78rem;color:var(--text-muted);">
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#f59e0b;border-radius:2px;margin-right:3px;"></span>Fat</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#6366f1;border-radius:2px;margin-right:3px;"></span>Protein</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#10b981;border-radius:2px;margin-right:3px;"></span>Carbs</span>
+                </div>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>

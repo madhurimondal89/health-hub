@@ -1,0 +1,278 @@
+<%- include('partials/inner_header') %>
+
+<div class="container">
+    <div class="calculator-container">
+        <h1 class="calculator-title"><%= title %></h1>
+<%- include('partials/ad_unit') %>
+
+        <div class="unit-switcher">
+            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
+            <button id="imperialBtn" class="unit-btn">Imperial (lbs, in)</button>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="form-section">
+                <form id="bodyTypeForm">
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <div class="input-wrapper">
+                            <select id="gender">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Metric Inputs -->
+                    <div id="metricInputs">
+                        <div class="form-group">
+                            <label for="heightCm">Height (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="heightCm" step="0.5" placeholder="e.g., 178"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="weightKg">Weight (kg)</label>
+                            <div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 75"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="wristCm">Wrist Circumference (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="wristCm" step="0.1" placeholder="e.g., 17"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ankleCm">Ankle Circumference (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="ankleCm" step="0.1" placeholder="e.g., 22"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shoulderCm">Shoulder Width (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="shoulderCm" step="0.1" placeholder="e.g., 46"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hipCm">Hip Width (cm)</label>
+                            <div class="input-wrapper"><input type="number" id="hipCm" step="0.1" placeholder="e.g., 38"></div>
+                        </div>
+                    </div>
+
+                    <!-- Imperial Inputs -->
+                    <div id="imperialInputs" style="display:none;">
+                        <div class="form-group">
+                            <label>Height (ft, in)</label>
+                            <div class="height-imperial-inputs">
+                                <div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div>
+                                <div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 10"><span class="input-adornment">in</span></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="weightLbs">Weight (lbs)</label>
+                            <div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 165"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="wristIn">Wrist Circumference (in)</label>
+                            <div class="input-wrapper"><input type="number" id="wristIn" step="0.1" placeholder="e.g., 6.5"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ankleIn">Ankle Circumference (in)</label>
+                            <div class="input-wrapper"><input type="number" id="ankleIn" step="0.1" placeholder="e.g., 8.5"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="shoulderIn">Shoulder Width (in)</label>
+                            <div class="input-wrapper"><input type="number" id="shoulderIn" step="0.1" placeholder="e.g., 18"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hipIn">Hip Width (in)</label>
+                            <div class="input-wrapper"><input type="number" id="hipIn" step="0.1" placeholder="e.g., 15"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="result-section" id="result-section">
+                <div class="placeholder">Enter your measurements to determine your body type.</div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="accordion-item"><button class="accordion-header"><span>What are the 3 body types?</span><span class="icon">+</span></button><div class="accordion-content"><p><strong>Ectomorph:</strong> Naturally thin with a fast metabolism, long limbs, and difficulty gaining weight or muscle. <strong>Mesomorph:</strong> Naturally muscular and athletic with a medium frame, gains and loses weight relatively easily. <strong>Endomorph:</strong> Naturally higher body fat, wider frame, slower metabolism, tends to gain weight more easily.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Can I change my body type?</span><span class="icon">+</span></button><div class="accordion-content"><p>Your somatotype is largely determined by genetics and cannot be fundamentally changed. However, with consistent training and proper nutrition, you can significantly alter your body composition — building more muscle or reducing fat — regardless of your natural body type. Many people are a blend of two types (e.g., Ecto-Meso).</p></div></div>
+            <div class="accordion-item"><button class="accordion-header"><span>Is the body type theory scientifically proven?</span><span class="icon">+</span></button><div class="accordion-content"><p>The somatotype theory, originally developed by William Sheldon in the 1940s, is debated in modern scientific literature. Most people fall on a spectrum between types rather than fitting neatly into one category. Nonetheless, it remains a useful practical framework for personalizing fitness and nutrition approaches.</p></div></div>
+        </div>
+
+<%- include('partials/ad_unit') %>
+
+        <div style="margin-top:2rem;padding:1.5rem;background:var(--card-bg);border-radius:12px;border:1px solid var(--border-color);">
+            <h3 style="margin:0 0 1rem;font-size:1rem;color:var(--text-muted);">🔗 Related Calculators</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                <a href="/bmi-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">⚖️ BMI Calculator</a>
+                <a href="/body-fat-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">📊 Body Fat</a>
+                <a href="/ideal-weight-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🎯 Ideal Weight</a>
+                <a href="/lean-body-mass-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">💪 Lean Body Mass</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUnit = 'metric';
+    const resultDiv = document.getElementById('result-section');
+    const metricBtn = document.getElementById('metricBtn');
+    const imperialBtn = document.getElementById('imperialBtn');
+    const metricInputsDiv = document.getElementById('metricInputs');
+    const imperialInputsDiv = document.getElementById('imperialInputs');
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        metricBtn.classList.toggle('active', unit === 'metric');
+        imperialBtn.classList.toggle('active', unit === 'imperial');
+        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
+        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
+        document.querySelectorAll('input[type="number"]').forEach(i => i.value = '');
+        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate.</div>`;
+    }
+    metricBtn.addEventListener('click', () => switchUnit('metric'));
+    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
+
+    const bodyTypeInfo = {
+        Ectomorph: {
+            emoji: '🏃',
+            color: '#3b82f6',
+            description: 'You have a lean, narrow frame with long limbs and a fast metabolism. You may find it difficult to gain weight or build muscle mass.',
+            diet: '🍚 <strong>Diet Tip:</strong> Eat more — aim for a calorie surplus with higher carbohydrates and adequate protein (1.2–1.6g/kg). Frequent meals help maintain energy balance.',
+            training: '🏋️ <strong>Training Tip:</strong> Focus on compound strength training (squats, deadlifts, bench press) with lower cardio volume. Prioritize progressive overload and sufficient rest between sessions.',
+        },
+        Mesomorph: {
+            emoji: '💪',
+            color: '#22c55e',
+            description: 'You have a naturally athletic, medium build with well-defined muscles. You respond well to both strength training and cardio.',
+            diet: '🥗 <strong>Diet Tip:</strong> Aim for balanced macros — roughly 40% carbs, 30% protein, 30% fat. Adjust calories based on your goal (gain, maintain, or cut).',
+            training: '⚡ <strong>Training Tip:</strong> A mix of strength training and moderate cardio works best. You can cycle between bulking and cutting phases effectively.',
+        },
+        Endomorph: {
+            emoji: '🛡️',
+            color: '#f59e0b',
+            description: 'You have a wider, rounder frame with a tendency to store fat more easily. Your metabolism may be slower, but you have good strength potential.',
+            diet: '🥦 <strong>Diet Tip:</strong> Focus on calorie awareness — slightly lower carb intake (35–40%), higher protein, and moderate healthy fats. Avoid processed foods and excess sugar.',
+            training: '🚴 <strong>Training Tip:</strong> Include more cardio (HIIT is highly effective) alongside strength training. Aim for 3–4 cardio sessions per week to boost metabolism.',
+        },
+        'Ecto-Meso': {
+            emoji: '🏆',
+            color: '#8b5cf6',
+            description: 'You are a blend of Ectomorph and Mesomorph — lean but with good athletic potential. You respond well to training and can build a balanced physique.',
+            diet: '🥗 <strong>Diet Tip:</strong> Slightly higher calorie intake with balanced macros. Prioritize protein around workouts to support muscle growth.',
+            training: '💡 <strong>Training Tip:</strong> Strength training is your friend. Mix compound lifts with isolation exercises. Moderate cardio to maintain cardiovascular health.',
+        },
+        'Meso-Endo': {
+            emoji: '⚖️',
+            color: '#ec4899',
+            description: 'You are a blend of Mesomorph and Endomorph — strong build but with a tendency to accumulate body fat. You have good strength but need to manage calorie intake.',
+            diet: '🍗 <strong>Diet Tip:</strong> Moderate carbs, high protein, healthy fats. Track calories carefully and avoid large surpluses.',
+            training: '🔥 <strong>Training Tip:</strong> Combine strength training with regular cardio sessions. HIIT is especially effective for this body type.',
+        },
+    };
+
+    function calculateBodyType() {
+        const gender = document.getElementById('gender').value;
+        let heightM, weightKg, wristCm, ankleCm, shoulderCm, hipCm;
+
+        if (currentUnit === 'metric') {
+            heightM = (parseFloat(document.getElementById('heightCm').value) || 0) / 100;
+            weightKg = parseFloat(document.getElementById('weightKg').value);
+            wristCm = parseFloat(document.getElementById('wristCm').value);
+            ankleCm = parseFloat(document.getElementById('ankleCm').value);
+            shoulderCm = parseFloat(document.getElementById('shoulderCm').value);
+            hipCm = parseFloat(document.getElementById('hipCm').value);
+        } else {
+            const ft = parseFloat(document.getElementById('heightFt').value) || 0;
+            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
+            heightM = ((ft * 12 + inches) * 2.54) / 100;
+            const lbs = parseFloat(document.getElementById('weightLbs').value);
+            weightKg = isNaN(lbs) ? NaN : lbs * 0.453592;
+            wristCm = (parseFloat(document.getElementById('wristIn').value) || NaN) * 2.54;
+            ankleCm = (parseFloat(document.getElementById('ankleIn').value) || NaN) * 2.54;
+            shoulderCm = (parseFloat(document.getElementById('shoulderIn').value) || NaN) * 2.54;
+            hipCm = (parseFloat(document.getElementById('hipIn').value) || NaN) * 2.54;
+        }
+
+        if (!heightM || heightM <= 0 || isNaN(weightKg) || isNaN(wristCm) || isNaN(ankleCm) || isNaN(shoulderCm) || isNaN(hipCm)) {
+            resultDiv.innerHTML = `<div class="placeholder">Please fill in all measurements.</div>`; return;
+        }
+
+        const heightCmVal = heightM * 100;
+        // Frame score: (wrist/height * 100) + (ankle/height * 100)
+        const wristRatio = (wristCm / heightCmVal) * 100;
+        const ankleRatio = (ankleCm / heightCmVal) * 100;
+        const frameScore = wristRatio + ankleRatio;
+        // Shoulder-to-hip ratio
+        const shr = shoulderCm / hipCm;
+        // BMI-like density
+        const bmi = weightKg / (heightM * heightM);
+
+        // Thresholds vary by gender
+        let ectoWrist, endoWrist;
+        if (gender === 'male') {
+            ectoWrist = 10.4; endoWrist = 11.0;
+        } else {
+            ectoWrist = 10.0; endoWrist = 10.7;
+        }
+
+        // Scoring system
+        let ectoScore = 0, mesoScore = 0, endoScore = 0;
+
+        // Frame score contribution
+        if (wristRatio < ectoWrist) ectoScore += 2;
+        else if (wristRatio > endoWrist) endoScore += 2;
+        else mesoScore += 2;
+
+        // Shoulder-to-hip ratio
+        if (shr > 1.15) mesoScore += 2;
+        else if (shr < 0.95) endoScore += 2;
+        else { mesoScore += 1; endoScore += 1; }
+
+        // BMI contribution
+        const bmiBoundLow = gender === 'male' ? 21 : 20;
+        const bmiBoundHigh = gender === 'male' ? 26 : 25;
+        if (bmi < bmiBoundLow) ectoScore += 2;
+        else if (bmi > bmiBoundHigh) endoScore += 2;
+        else mesoScore += 2;
+
+        // Determine type
+        let bodyType;
+        const total = ectoScore + mesoScore + endoScore;
+        const ectoP = ectoScore / total;
+        const mesoP = mesoScore / total;
+        const endoP = endoScore / total;
+
+        if (mesoP > 0.5) bodyType = 'Mesomorph';
+        else if (ectoP > 0.5) bodyType = 'Ectomorph';
+        else if (endoP > 0.5) bodyType = 'Endomorph';
+        else if (ectoP > endoP) bodyType = 'Ecto-Meso';
+        else bodyType = 'Meso-Endo';
+
+        const info = bodyTypeInfo[bodyType];
+
+        resultDiv.innerHTML = `
+            <div class="result-display-new">
+                <p class="result-main-text">${info.emoji} Body Type: <strong style="color:${info.color}">${bodyType}</strong></p>
+                <hr class="result-divider" />
+                <p class="result-sub-text">${info.description}</p>
+            </div>
+            <div style="margin-top:1rem;padding:0.85rem 1rem;background:var(--card-bg);border-radius:8px;border:1px solid var(--border-color);font-size:0.87rem;line-height:1.8;">
+                <div>${info.diet}</div>
+                <div style="margin-top:0.5rem;">${info.training}</div>
+            </div>
+        `;
+    }
+
+    document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', calculateBodyType);
+        el.addEventListener('change', calculateBodyType);
+    });
+
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const accordionItem = header.parentElement;
+            accordionItem.classList.toggle('active');
+            const content = header.nextElementSibling;
+            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
+        });
+    });
+</script>
+
+<%- include('partials/inner_footer') %>
