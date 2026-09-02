@@ -1,0 +1,284 @@
+<%- include('partials/inner_header') %>
+
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#sleep-wellness">Sleep &amp; Wellness</a> <span>›</span>
+                <span>Live UV Index &amp; Vitamin D Calculator</span>
+            </div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">☀️</div>
+                <div class="calc-hero-text">
+                    <h1>Live Solar UV Index &amp; Vitamin D Sun Exposure Calculator</h1>
+                    <p>Calculate the exact safe sun exposure time needed for optimal Vitamin D synthesis (1,000–2,000 IU) without sunburn based on your Fitzpatrick skin type and live solar radiation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="calc-workspace">
+            <!-- Left: Inputs -->
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>☀️</span> Solar &amp; Skin Parameters
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">City / Region Selection</label>
+                    <select id="inp-city" class="calc-input" onchange="fetchCityUv()">
+                        <option value="22.5726,88.3639" selected>Kolkata, India (Tropical)</option>
+                        <option value="28.6139,77.2090">New Delhi, India</option>
+                        <option value="19.0760,72.8777">Mumbai, India</option>
+                        <option value="12.9716,77.5946">Bengaluru, India</option>
+                        <option value="40.7128,-74.0060">New York, USA</option>
+                        <option value="51.5074,-0.1278">London, UK</option>
+                        <option value="-33.8688,151.2093">Sydney, Australia</option>
+                        <option value="35.6762,139.6503">Tokyo, Japan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-skin-type">Fitzpatrick Skin Phototype</label>
+                    <select id="inp-skin-type" class="calc-input" onchange="calculateSunExposure()">
+                        <option value="1">Type I: Pale White, Freckles (Always burns, never tans)</option>
+                        <option value="2">Type II: Fair White, Blue Eyes (Burns easily, tans minimally)</option>
+                        <option value="3" selected>Type III: Medium White / Olive (Burns moderately, tans gradually)</option>
+                        <option value="4">Type IV: Olive / Mediterranean / Light Brown (Rarely burns, tans easily)</option>
+                        <option value="5">Type V: Brown / South Asian (Very rarely burns, tans darkly)</option>
+                        <option value="6">Type VI: Deeply Pigmented Dark Brown / Black (Never burns)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" for="inp-uv-manual">UV Index Level</label>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-uv" class="calc-input has-suffix" value="7.2" min="0" max="15" step="0.1" oninput="syncSlider('inp-uv'); calculateSunExposure();">
+                        <span class="input-symbol-suffix">UVI</span>
+                    </div>
+                    <div class="range-slider-wrap">
+                        <input type="range" id="inp-uv-slider" class="calc-slider" value="7.2" min="0" max="14" step="0.1" oninput="syncInput('inp-uv'); calculateSunExposure();">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-clothing">Skin Exposure (Clothing Coverage)</label>
+                    <select id="inp-clothing" class="calc-input" onchange="calculateSunExposure()">
+                        <option value="0.25" selected>Shorts &amp; T-Shirt (~25% body surface exposed)</option>
+                        <option value="0.50">Swimsuit / Shorts (~50% body surface exposed)</option>
+                        <option value="0.10">Full Sleeves &amp; Long Pants (Face &amp; Hands only ~10%)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Optimal Vitamin D Synthesis Time</div>
+                    <div class="result-main-val" id="sun-time-val">15 – 20 Minutes</div>
+                    <div style="margin-top:0.5rem;">
+                        <span id="uv-badge" class="card-category-tag" style="background:#f59e0b; color:#ffffff; font-size:0.92rem; padding:0.35rem 1.15rem;">
+                            High UV Index (7.2) · Sunscreen Advised
+                        </span>
+                    </div>
+                </div>
+
+                <div class="gauge-container">
+                    <div class="gauge-bar">
+                        <div class="gauge-needle" id="uv-needle" style="left: 60%;"></div>
+                    </div>
+                    <div class="gauge-labels">
+                        <span style="color:#10b981;">Low (0-2)</span>
+                        <span style="color:#f59e0b;">Moderate (3-5)</span>
+                        <span style="color:#f97316;">High (6-7)</span>
+                        <span style="color:#f43f5e;">Very High (8-10)</span>
+                        <span style="color:#8b5cf6;">Extreme (11+)</span>
+                    </div>
+                </div>
+
+                <div class="result-metric-grid" style="margin-top:1rem;">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Estimated Vitamin D Produced</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="vitd-val">1,500 IU</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Maximum Burn Time (Erythema)</div>
+                        <div class="metric-item-val" style="color:var(--accent-rose);" id="burn-time-val">35 Minutes</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="uvChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>WHO UV Index Classifications &amp; Protection Rules</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>UV Range</th>
+                            <th>Risk Level</th>
+                            <th>Sun Protection Guidance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:var(--primary-light);">
+                            <td>0 – 2</td>
+                            <td><strong style="color:#10b981;">Low</strong></td>
+                            <td>Minimal sun protection required. Safe for extended outdoor activity.</td>
+                        </tr>
+                        <tr>
+                            <td>3 – 5</td>
+                            <td><strong style="color:#f59e0b;">Moderate</strong></td>
+                            <td>Wear sunglasses, hat, and apply SPF 30+ if staying out &gt;45 min.</td>
+                        </tr>
+                        <tr>
+                            <td>6 – 7</td>
+                            <td><strong style="color:#f97316;">High</strong></td>
+                            <td>Seek shade during midday (11am-3pm). Apply SPF 50 sunscreen.</td>
+                        </tr>
+                        <tr>
+                            <td>8 – 10</td>
+                            <td><strong style="color:#f43f5e;">Very High</strong></td>
+                            <td>Extra protection required. Unprotected skin can burn in under 20 minutes.</td>
+                        </tr>
+                        <tr style="background:rgba(139, 92, 246, 0.1);">
+                            <td>11+</td>
+                            <td><strong style="color:#8b5cf6;">Extreme</strong></td>
+                            <td>Take full precautions. Avoid midday direct sun exposure completely.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    let uvChart = null;
+
+    function syncSlider(id) {
+        document.getElementById(id + '-slider').value = document.getElementById(id).value;
+    }
+
+    function syncInput(id) {
+        document.getElementById(id).value = document.getElementById(id + '-slider').value;
+    }
+
+    async function fetchCityUv() {
+        const val = document.getElementById('inp-city').value;
+        const [lat, lon] = val.split(',');
+        try {
+            const res = await fetch(`/api/uv-index?lat=${lat}&lon=${lon}`);
+            const data = await res.json();
+            if (data.success && data.currentUv !== undefined) {
+                document.getElementById('inp-uv').value = data.currentUv;
+                document.getElementById('inp-uv-slider').value = data.currentUv;
+                calculateSunExposure(data.hourly);
+            } else {
+                calculateSunExposure();
+            }
+        } catch (err) {
+            calculateSunExposure();
+        }
+    }
+
+    function calculateSunExposure(hourlyData) {
+        const uv = parseFloat(document.getElementById('inp-uv').value) || 7.2;
+        const skinType = parseInt(document.getElementById('inp-skin-type').value) || 3;
+        const clothing = parseFloat(document.getElementById('inp-clothing').value) || 0.25;
+
+        // Base MED (Minimal Erythema Dose) minutes at UV index 1:
+        // Skin Type 1: ~67 min, Type 2: ~100 min, Type 3: ~133 min, Type 4: ~167 min, Type 5: ~200 min, Type 6: ~300 min
+        const baseMed = [0, 67, 100, 133, 167, 200, 300][skinType];
+        
+        // Burn time at current UV
+        const burnMin = uv > 0 ? Math.round(baseMed / uv) : 180;
+        
+        // Optimal Vitamin D synthesis requires ~1/3 of the MED exposure on 25% skin surface
+        const vitDMin = uv > 0 ? Math.round((burnMin / 3) * (0.25 / clothing)) : 60;
+        const safeVitDMin = Math.min(vitDMin, Math.round(burnMin * 0.7));
+
+        let category = 'Moderate UV';
+        let badgeColor = '#f59e0b';
+        let needlePct = 40;
+
+        if (uv < 3) {
+            category = `Low UV (${uv})`;
+            badgeColor = '#10b981';
+            needlePct = 15;
+        } else if (uv < 6) {
+            category = `Moderate UV (${uv})`;
+            badgeColor = '#f59e0b';
+            needlePct = 38;
+        } else if (uv < 8) {
+            category = `High UV (${uv}) · Sunscreen Advised`;
+            badgeColor = '#f97316';
+            needlePct = 60;
+        } else if (uv < 11) {
+            category = `Very High UV (${uv}) · Strict Protection`;
+            badgeColor = '#f43f5e';
+            needlePct = 80;
+        } else {
+            category = `Extreme UV (${uv}) · Avoid Direct Sun`;
+            badgeColor = '#8b5cf6';
+            needlePct = 95;
+        }
+
+        document.getElementById('sun-time-val').innerText = uv > 0 ? `${Math.max(5, safeVitDMin - 3)} – ${safeVitDMin + 3} Minutes` : 'Sun exposure not effective (Low UV)';
+        document.getElementById('burn-time-val').innerText = `${burnMin} Minutes`;
+        document.getElementById('vitd-val').innerText = uv >= 2 ? '1,500 – 2,000 IU' : 'Minimal (< 400 IU)';
+        
+        const badge = document.getElementById('uv-badge');
+        badge.innerText = category;
+        badge.style.background = badgeColor;
+        document.getElementById('uv-needle').style.left = `${needlePct}%`;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('uvChart');
+            if (ctx) {
+                if (uvChart) uvChart.destroy();
+                const times = hourlyData?.times || ['8 AM', '10 AM', '12 PM', '2 PM', '4 PM', '6 PM'];
+                const uvs = hourlyData?.uv || [1.2, 4.5, 7.8, 6.9, 3.2, 0.4];
+
+                uvChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: times,
+                        datasets: [{
+                            label: 'Solar UV Index Curve',
+                            data: uvs,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f293d' : '#f1f5f9' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchCityUv);
+</script>
+
+<%- include('partials/inner_footer') %>

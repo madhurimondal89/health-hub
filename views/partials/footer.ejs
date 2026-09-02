@@ -1,8 +1,87 @@
-</main>
-    <footer>
+    <footer class="main-footer">
         <div class="container">
-            <p>&copy; <%= new Date().getFullYear() %> calculatorfree.in All Rights Reserved.</p>
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="brand-logo" style="margin-bottom:0.75rem;">
+                        <div class="logo-icon">🌿</div>
+                        <div class="logo-text">Health<span>Hub</span></div>
+                    </div>
+                    <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6;margin-bottom:1rem;">
+                        Free, medically verified, and private online health, fitness, nutrition, and clinical calculators to empower your wellness journey.
+                    </p>
+                    <p style="font-size:0.8rem;color:var(--text-muted);">
+                        Part of the <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener" style="text-decoration:underline;">Calculator Free Network</a>.
+                    </p>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Body &amp; Weight</h4>
+                    <ul class="footer-links">
+                        <li><a href="/bmi-calculator">BMI Calculator</a></li>
+                        <li><a href="/bmr-calculator">BMR Calculator</a></li>
+                        <li><a href="/tdee-calculator">TDEE Calculator</a></li>
+                        <li><a href="/body-fat-calculator">Body Fat Calculator</a></li>
+                        <li><a href="/ideal-weight-calculator">Ideal Weight</a></li>
+                        <li><a href="/lean-body-mass-calculator">Lean Body Mass</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Diet &amp; Nutrition</h4>
+                    <ul class="footer-links">
+                        <li><a href="/calorie-calculator">Calorie Calculator</a></li>
+                        <li><a href="/calorie-deficit-calculator">Calorie Deficit</a></li>
+                        <li><a href="/macro-calculator">Macro Calculator</a></li>
+                        <li><a href="/keto-calculator">Keto Macros</a></li>
+                        <li><a href="/protein-intake-calculator">Protein Intake</a></li>
+                        <li><a href="/intermittent-fasting-calculator">Intermittent Fasting</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Fitness &amp; Medical</h4>
+                    <ul class="footer-links">
+                        <li><a href="/vo2-max-calculator">VO2 Max Calculator</a></li>
+                        <li><a href="/one-rep-max-calculator">One Rep Max (1RM)</a></li>
+                        <li><a href="/blood-pressure-calculator">Blood Pressure</a></li>
+                        <li><a href="/sleep-calculator">Sleep Cycles</a></li>
+                        <li><a href="/pregnancy-due-date-calculator">Pregnancy Due Date</a></li>
+                        <li><a href="/water-intake-calculator">Water Intake</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div>
+                    &copy; <%= new Date().getFullYear() %> Health Hub. All rights reserved. For educational and personal tracking use only.
+                </div>
+                <div style="display:flex;gap:1rem;">
+                    <a href="/disclaimer" style="color:var(--text-muted);">Medical Disclaimer</a>
+                    <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener" style="color:var(--text-muted);">Privacy Policy</a>
+                    <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener" style="color:var(--text-muted);">Terms of Service</a>
+                </div>
+            </div>
         </div>
     </footer>
+
+    <!-- Theme Toggle & Interactions -->
+    <script>
+        document.getElementById('theme-toggle')?.addEventListener('click', () => {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('hh_theme', next);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.innerText = next === 'dark' ? '☀️' : '🌙';
+        });
+
+        // Initialize icon
+        (function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.innerText = current === 'dark' ? '☀️' : '🌙';
+        })();
+    </script>
 </body>
 </html>

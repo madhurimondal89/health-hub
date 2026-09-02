@@ -1,204 +1,222 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-        
-        <div class="unit-switcher">
-            <button id="metricBtn" class="unit-btn active">Metric (kg)</button>
-            <button id="imperialBtn" class="unit-btn">Imperial (lbs)</button>
-        </div>
-
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="waterIntakeForm">
-                    <div class="multi-input-group" style="margin-bottom: 1.5rem;">
-                        <div class="form-group">
-                            <label for="age">Age</label>
-                            <div class="input-wrapper"><input type="number" id="age" min="1" max="120" placeholder="e.g., 30"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="gender">Gender</label>
-                            <div class="input-wrapper"><select id="gender"><option value="male">Male</option><option value="female">Female</option></select></div>
-                        </div>
-                    </div>
-
-                    <!-- Weight Inputs -->
-                    <div id="metricInputs" class="form-group">
-                        <label for="weightKg">Weight (kg)</label>
-                        <div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div>
-                    </div>
-                    <div id="imperialInputs" class="form-group" style="display: none;">
-                        <label for="weightLbs">Weight (lbs)</label>
-                        <div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="activityLevel">Daily Activity Level</label>
-                        <div class="input-wrapper">
-                            <select id="activityLevel">
-                                <option value="sedentary">Sedentary (little or no exercise)</option>
-                                <option value="light">Lightly Active (exercise 1-3 days/week)</option>
-                                <option value="moderate">Moderately Active (exercise 3-5 days/week)</option>
-                                <option value="very">Very Active (hard exercise 6-7 days/week)</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="climate">Climate</label>
-                        <div class="input-wrapper">
-                            <select id="climate">
-                                <option value="temperate">Temperate / Cool</option>
-                                <option value="warm">Warm</option>
-                                <option value="hot">Hot & Humid</option>
-                            </select>
-                        </div>
-                    </div>
-                     <div class="form-group">
-                         <label>Special Conditions (Optional)</label>
-                         <div class="calc-mode-switcher">
-                            <button type="button" id="pregnantBtn" class="gender-btn">Pregnant</button>
-                            <button type="button" id="breastfeedingBtn" class="gender-btn">Breastfeeding</button>
-                         </div>
-                     </div>
-                </form>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#hydration-lifestyle">Hydration &amp; Vitals</a> <span>›</span>
+                <span>Water Intake Calculator</span>
             </div>
-            
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Fill in your details for a personalized hydration plan.</div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">💧</div>
+                <div class="calc-hero-text">
+                    <h1>Daily Water Intake &amp; Hydration Calculator</h1>
+                    <p>Calculate your daily water requirement based on body weight, workout intensity, climate temperature, and hydration goals.</p>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>Why is staying hydrated so important?</span><span class="icon">+</span></button><div class="accordion-content"><p>Water is crucial for nearly every bodily function. Proper hydration helps regulate body temperature, deliver nutrients to cells, keep organs functioning properly, prevent infections, and improve sleep quality and mood.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>What are the signs of dehydration?</span><span class="icon">+</span></button><div class="accordion-content"><p>Common signs of mild to moderate dehydration include thirst, dry mouth, infrequent urination, dark-colored urine, fatigue, dizziness, and headache. It's best to drink water consistently throughout the day to avoid these symptoms.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Do other drinks like coffee and tea count?</span><span class="icon">+</span></button><div class="accordion-content"><p>Yes, they contribute to your daily fluid intake. While caffeinated drinks have a mild diuretic effect, the water in them still results in a net positive fluid gain. However, plain water is the best source of hydration as it's calorie-free and sugar-free.</p></div></div>
-	    <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This water intake calculator is an informational tool only and should not be a substitute for professional medical advice. For a comprehensive assessment of water intake, please consult a qualified healthcare provider.</p></div>
-    </div>
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>💧</span> Hydration Parameters
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Measurement System</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="unit-metric" class="toggle-pill-btn active" style="flex:1;" onclick="switchUnit('metric')">📏 Metric (kg, ml, °C)</button>
+                        <button type="button" id="unit-imperial" class="toggle-pill-btn" style="flex:1;" onclick="switchUnit('imperial')">📐 Imperial (lbs, fl oz, °F)</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" id="lbl-weight" for="inp-weight">Body Weight</label>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-weight" class="calc-input has-suffix" value="70" step="0.5" oninput="syncSlider('inp-weight'); calculateWater();">
+                        <span class="input-symbol-suffix" id="unit-weight">kg</span>
+                    </div>
+                    <div class="range-slider-wrap">
+                        <input type="range" id="inp-weight-slider" class="calc-slider" value="70" min="30" max="160" step="0.5" oninput="syncInput('inp-weight'); calculateWater();">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" for="inp-exercise">Daily Exercise Duration</label>
+                        <div class="preset-chips">
+                            <span class="chip" onclick="setExercise(0)">None</span>
+                            <span class="chip" onclick="setExercise(30)">30 min</span>
+                            <span class="chip" onclick="setExercise(60)">60 min</span>
+                            <span class="chip" onclick="setExercise(90)">90 min</span>
+                        </div>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-exercise" class="calc-input has-suffix" value="45" min="0" max="240" oninput="syncSlider('inp-exercise'); calculateWater();">
+                        <span class="input-symbol-suffix">min</span>
+                    </div>
+                    <div class="range-slider-wrap">
+                        <input type="range" id="inp-exercise-slider" class="calc-slider" value="45" min="0" max="180" oninput="syncInput('inp-exercise'); calculateWater();">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-climate">Climate / Environment</label>
+                    <select id="inp-climate" class="calc-input" onchange="calculateWater()">
+                        <option value="1.0">Moderate / Normal (20°C / 68°F)</option>
+                        <option value="1.15" selected>Warm / Summer Climate (28°C / 82°F)</option>
+                        <option value="1.3">Hot / Humid &amp; Sunny (35°C+ / 95°F)</option>
+                        <option value="0.95">Cold / Winter Climate</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Target Daily Water Intake</div>
+                    <div class="result-main-val" id="water-main-val">2.8 Liters/day</div>
+                    <div style="margin-top:0.5rem;">
+                        <span id="water-glasses-val" class="card-category-tag" style="background:#0284c7; color:#ffffff; font-size:0.92rem; padding:0.35rem 1.15rem;">
+                            ~ 11 Standard Glasses (250ml)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="gauge-container">
+                    <div class="gauge-bar">
+                        <div class="gauge-needle" id="water-needle" style="left: 60%;"></div>
+                    </div>
+                    <div class="gauge-labels">
+                        <span style="color:#0284c7;">Light (1.5L)</span>
+                        <span style="color:#10b981;">Optimal (2.5L)</span>
+                        <span style="color:#06b6d4;">Active (3.5L)</span>
+                        <span style="color:#3b82f6;">Athletic (4.5L+)</span>
+                    </div>
+                </div>
+
+                <div class="result-metric-grid" style="margin-top:1rem;">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Hourly Sip Target</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="hourly-target-val">175 ml/hr</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Workout Electrolyte Fluid</div>
+                        <div class="metric-item-val" id="workout-fluid-val">525 ml</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="waterChart"></canvas>
+                </div>
+            </div>
         </div>
-<%- include('partials/ad_unit') %>
-    </div>
-</div>
 
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>Scientific Hydration Guidelines (WHO &amp; EFSA)</h2>
+            <p>
+                Adequate hydration maintains cardiovascular efficiency, prevents muscle cramps, lubricates joints, aids digestion, and optimizes brain cognition.
+            </p>
+        </section>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    const allInputs = document.querySelectorAll('input, select');
-    const resultDiv = document.getElementById('result-section');
-    
-    // Unit Switcher
-    const metricBtn = document.getElementById('metricBtn');
-    const imperialBtn = document.getElementById('imperialBtn');
-    const metricInputsDiv = document.getElementById('metricInputs');
-    const imperialInputsDiv = document.getElementById('imperialInputs');
-    
-    // Special conditions buttons
-    const pregnantBtn = document.getElementById('pregnantBtn');
-    const breastfeedingBtn = document.getElementById('breastfeedingBtn');
-    let isPregnant = false;
-    let isBreastfeeding = false;
     let currentUnit = 'metric';
-
-    // Event Listeners
-    allInputs.forEach(input => input.addEventListener('input', calculateWaterIntake));
-    metricBtn.addEventListener('click', () => switchUnit('metric'));
-    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
-    pregnantBtn.addEventListener('click', toggleCondition.bind(null, 'pregnant'));
-    breastfeedingBtn.addEventListener('click', toggleCondition.bind(null, 'breastfeeding'));
+    let waterChart = null;
 
     function switchUnit(unit) {
         currentUnit = unit;
-        metricBtn.classList.toggle('active', unit === 'metric');
-        imperialBtn.classList.toggle('active', unit === 'imperial');
-        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
-        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
-        calculateWaterIntake();
+        document.getElementById('unit-metric').classList.toggle('active', unit === 'metric');
+        document.getElementById('unit-imperial').classList.toggle('active', unit === 'imperial');
+        const isMetric = unit === 'metric';
+        document.getElementById('unit-weight').innerText = isMetric ? 'kg' : 'lbs';
+        document.getElementById('inp-weight').value = isMetric ? 70 : 154;
+        document.getElementById('inp-weight-slider').value = isMetric ? 70 : 154;
+        document.getElementById('inp-weight-slider').max = isMetric ? 160 : 350;
+        calculateWater();
     }
-    
-    function toggleCondition(condition) {
-        if (condition === 'pregnant') {
-            isPregnant = !isPregnant;
-            pregnantBtn.classList.toggle('active', isPregnant);
-            // Can't be pregnant and breastfeeding for this model's purpose
-            if (isPregnant && isBreastfeeding) {
-                isBreastfeeding = false;
-                breastfeedingBtn.classList.remove('active');
-            }
-        } else if (condition === 'breastfeeding') {
-            isBreastfeeding = !isBreastfeeding;
-            breastfeedingBtn.classList.toggle('active', isBreastfeeding);
-            if (isBreastfeeding && isPregnant) {
-                isPregnant = false;
-                pregnantBtn.classList.remove('active');
+
+    function setExercise(e) {
+        document.getElementById('inp-exercise').value = e;
+        document.getElementById('inp-exercise-slider').value = e;
+        calculateWater();
+    }
+
+    function syncSlider(id) {
+        document.getElementById(id + '-slider').value = document.getElementById(id).value;
+    }
+
+    function syncInput(id) {
+        document.getElementById(id).value = document.getElementById(id + '-slider').value;
+    }
+
+    function calculateWater() {
+        let weightKg = parseFloat(document.getElementById('inp-weight').value) || 70;
+        if (currentUnit === 'imperial') weightKg = weightKg * 0.45359237;
+
+        const exerciseMin = parseFloat(document.getElementById('inp-exercise').value) || 0;
+        const climateMod = parseFloat(document.getElementById('inp-climate').value) || 1.15;
+
+        // Baseline: 35 ml per kg + (exerciseMin / 30 * 350 ml) * climate
+        const baselineMl = weightKg * 35;
+        const exerciseMl = (exerciseMin / 30) * 350;
+        const totalMl = Math.round((baselineMl + exerciseMl) * climateMod);
+        const liters = (totalMl / 1000).toFixed(1);
+        const flOz = Math.round(totalMl * 0.033814);
+        const glasses = Math.round(totalMl / 250);
+
+        const hourlyMl = Math.round(totalMl / 16); // 16 waking hours
+
+        if (currentUnit === 'metric') {
+            document.getElementById('water-main-val').innerText = `${liters} Liters/day`;
+            document.getElementById('hourly-target-val').innerText = `${hourlyMl} ml/hr`;
+            document.getElementById('workout-fluid-val').innerText = `${Math.round(exerciseMl)} ml`;
+        } else {
+            document.getElementById('water-main-val').innerText = `${flOz} fl oz/day`;
+            document.getElementById('hourly-target-val').innerText = `${Math.round(hourlyMl * 0.033814)} fl oz/hr`;
+            document.getElementById('workout-fluid-val').innerText = `${Math.round(exerciseMl * 0.033814)} fl oz`;
+        }
+
+        document.getElementById('water-glasses-val').innerText = `~ ${glasses} Standard Glasses (${currentUnit === 'metric' ? '250ml' : '8 fl oz'})`;
+        const needlePct = Math.min(95, Math.max(10, (totalMl / 4500) * 100));
+        document.getElementById('water-needle').style.left = `${needlePct}%`;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('waterChart');
+            if (ctx) {
+                if (waterChart) waterChart.destroy();
+                waterChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [`Baseline Need (${Math.round(baselineMl)} ml)`, `Workout Hydration (${Math.round(exerciseMl * climateMod)} ml)`],
+                        datasets: [{
+                            data: [baselineMl, Math.max(100, exerciseMl * climateMod)],
+                            backgroundColor: ['#0284c7', '#10b981'],
+                            borderWidth: 2,
+                            borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }
+                    }
+                });
             }
         }
-        calculateWaterIntake();
     }
 
-    function calculateWaterIntake() {
-        // Get all values
-        const age = parseInt(document.getElementById('age').value);
-        const weightKg = (currentUnit === 'metric') 
-            ? parseFloat(document.getElementById('weightKg').value)
-            : parseFloat(document.getElementById('weightLbs').value) * 0.453592;
-        
-        const activityLevel = document.getElementById('activityLevel').value;
-        const climate = document.getElementById('climate').value;
-        
-        if (isNaN(age) || isNaN(weightKg) || age <= 0 || weightKg <= 0) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter your age and weight.</div>`;
-            return;
-        }
-
-        // 1. Base calculation on weight (ml)
-        let baseIntake = weightKg * 33;
-
-        // 2. Adjust for activity (ml)
-        let activityBonus = 0;
-        if (activityLevel === 'light') activityBonus = 350;
-        else if (activityLevel === 'moderate') activityBonus = 500;
-        else if (activityLevel === 'very') activityBonus = 750;
-        
-        // 3. Adjust for climate (ml)
-        let climateBonus = 0;
-        if (climate === 'warm') climateBonus = 250;
-        else if (climate === 'hot') climateBonus = 500;
-        
-        // 4. Adjust for special conditions (ml)
-        let conditionBonus = 0;
-        if (isPregnant) conditionBonus = 300;
-        else if (isBreastfeeding) conditionBonus = 700;
-
-        const totalIntakeMl = baseIntake + activityBonus + climateBonus + conditionBonus;
-
-        const totalLiters = totalIntakeMl / 1000;
-        const totalOunces = totalIntakeMl / 29.574;
-        const totalGlasses = totalIntakeMl / 240; // Assuming 8 oz / 240 ml glass
-
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text-large">Your Recommended Daily Intake</p>
-                <p class="result-main-text" style="font-size: 2.2rem; color: var(--primary-color);"><strong>${totalLiters.toFixed(1)} Liters</strong></p>
-                <p class="result-sub-text" style="font-size: 1.2rem;">or ~ ${totalOunces.toFixed(0)} oz / ${totalGlasses.toFixed(0)} glasses (8oz)</p>
-            </div>
-            <div class="bf-details-container">
-                <h4>How we calculated this:</h4>
-                <div class="bf-details-item"><span>Base intake (from weight)</span><strong>${(baseIntake/1000).toFixed(1)} L</strong></div>
-                ${activityBonus > 0 ? `<div class="bf-details-item"><span>+ For Activity</span><strong>${(activityBonus/1000).toFixed(1)} L</strong></div>` : ''}
-                ${climateBonus > 0 ? `<div class="bf-details-item"><span>+ For Climate</span><strong>${(climateBonus/1000).toFixed(1)} L</strong></div>` : ''}
-                ${conditionBonus > 0 ? `<div class="bf-details-item"><span>+ For ${isPregnant ? 'Pregnancy' : 'Breastfeeding'}</span><strong>${(conditionBonus/1000).toFixed(1)} L</strong></div>` : ''}
-            </div>
-        `;
-    }
-// --- EI CODE-TA ADD KORA HOLO ---
-document.querySelectorAll('.accordion-header').forEach(header => {
-    header.addEventListener('click', () => {
-        const accordionItem = header.parentElement;
-        accordionItem.classList.toggle('active');
-        const content = header.nextElementSibling;
-        content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-    });
-});
+    document.addEventListener('DOMContentLoaded', calculateWater);
 </script>
 
 <%- include('partials/inner_footer') %>

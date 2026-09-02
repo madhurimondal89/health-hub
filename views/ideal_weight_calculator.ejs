@@ -1,168 +1,227 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-        
-        <div class="unit-switcher">
-            <button id="metricBtn" class="unit-btn active">Metric (cm)</button>
-            <button id="imperialBtn" class="unit-btn">Imperial (ft, in)</button>
-        </div>
-
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="idealWeightForm">
-                    <div class="form-group"><label>Gender</label><div class="gender-switcher"><button type="button" id="genderMale" class="gender-btn active">Male</button><button type="button" id="genderFemale" class="gender-btn">Female</button></div></div>
-                    
-                    <div id="metricInputs">
-                        <div class="form-group"><label for="heightCm">Height (cm)</label><div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div></div>
-                    </div>
-
-                    <div id="imperialInputs" style="display: none;">
-                        <div class="form-group"><label>Height (ft, in)</label><div class="height-imperial-inputs"><div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div><div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div></div></div>
-                    </div>
-                </form>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#body-composition">Body Composition</a> <span>›</span>
+                <span>Ideal Weight Calculator</span>
             </div>
-            
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Enter your height to find your ideal weight range.</div>
-            </div>
-        </div>
-
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>What is Ideal Weight?</span><span class="icon">+</span></button><div class="accordion-content"><p>"Ideal Weight" is not a single number but a healthy weight range. This range varies among individuals and is influenced by factors like height, gender, and body composition. This calculator provides estimates based on popular formulas.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Understanding the Formulas</span><span class="icon">+</span></button><div class="accordion-content"><p>This tool uses several formulas to provide a comprehensive view:</p><ul><li><strong>G.J. Hamwi Formula (1964)</strong></li><li><strong>B.J. Devine Formula (1974)</strong></li><li><strong>J.D. Robinson Formula (1983)</strong></li><li><strong>D.R. Miller Formula (1983)</strong></li></ul><p>The "Healthy BMI Range" is also provided, which is considered a good indicator of healthy weight for a given height.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>These results are estimations for informational purposes. They do not account for individual factors like muscle mass or body frame. For personalized health advice, please consult a qualified healthcare professional.</p></div></div>
-        </div>
-<%- include('partials/ad_unit') %>
-    </div>
-</div>
-
-<script>
-    let currentUnit = 'metric', currentGender = 'male';
-    const allInputs = document.querySelectorAll('input');
-    const resultDiv = document.getElementById('result-section');
-    const metricBtn = document.getElementById('metricBtn');
-    const imperialBtn = document.getElementById('imperialBtn');
-    const genderMaleBtn = document.getElementById('genderMale');
-    const genderFemaleBtn = document.getElementById('genderFemale');
-    const metricInputsDiv = document.getElementById('metricInputs');
-    const imperialInputsDiv = document.getElementById('imperialInputs');
-
-    // --- UNIT SWITCHER LOGIC ---
-    function switchUnit(unit) {
-        currentUnit = unit;
-        metricBtn.classList.toggle('active', unit === 'metric');
-        imperialBtn.classList.toggle('active', unit === 'imperial');
-        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
-        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
-        allInputs.forEach(i => i.value = '');
-        resultDiv.innerHTML = `<div class="placeholder">Enter your height to find your ideal weight range.</div>`;
-    }
-
-    // --- GENDER SWITCHER LOGIC ---
-    function switchGender(gender) {
-        currentGender = gender;
-        genderMaleBtn.classList.toggle('active', gender === 'male');
-        genderFemaleBtn.classList.toggle('active', gender === 'female');
-        calculateIdealWeight();
-    }
-    
-    // --- ATTACH EVENT LISTENERS ---
-    metricBtn.addEventListener('click', () => switchUnit('metric'));
-    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
-    genderMaleBtn.addEventListener('click', () => switchGender('male'));
-    genderFemaleBtn.addEventListener('click', () => switchGender('female'));
-    allInputs.forEach(input => input.addEventListener('input', calculateIdealWeight));
-
-    // --- MAIN CALCULATION FUNCTION ---
-    function calculateIdealWeight() {
-        let heightInInches;
-        if (currentUnit === 'metric') {
-            const heightCm = parseFloat(document.getElementById('heightCm').value);
-            if (!isNaN(heightCm)) heightInInches = heightCm / 2.54;
-        } else {
-            const ft = parseFloat(document.getElementById('heightFt').value);
-            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
-            if (!isNaN(ft)) heightInInches = ft * 12 + inches;
-        }
-
-        if (isNaN(heightInInches) || heightInInches <= 0) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter a valid height.</div>`;
-            return;
-        }
-        
-        if (heightInInches < 60) { // Height less than 5ft
-            resultDiv.innerHTML = `<div class="placeholder">Formulas are most accurate for heights above 5ft (152.4cm).</div>`;
-            return;
-        }
-
-        const baseHeight = 60; // 5 ft in inches
-        const inchesOverBase = heightInInches - baseHeight;
-        let hamwi, devine, robinson, miller;
-
-        if (currentGender === 'male') {
-            hamwi = 48 + (2.7 * inchesOverBase);
-            devine = 50 + (2.3 * inchesOverBase);
-            robinson = 52 + (1.9 * inchesOverBase);
-            miller = 56.2 + (1.41 * inchesOverBase);
-        } else { // female
-            hamwi = 45.5 + (2.2 * inchesOverBase);
-            devine = 45.5 + (2.3 * inchesOverBase);
-            robinson = 49 + (1.7 * inchesOverBase);
-            miller = 53.1 + (1.36 * inchesOverBase);
-        }
-        
-        const heightInMeters = heightInInches * 0.0254;
-        const healthyBmiLower = 18.5 * (heightInMeters ** 2);
-        const healthyBmiUpper = 25 * (heightInMeters ** 2);
-        
-        const averageIdeal = (hamwi + devine + robinson + miller) / 4;
-        const massUnit = currentUnit === 'metric' ? 'kg' : 'lbs';
-        const displayWeight = (kg) => (currentUnit === 'metric') ? kg.toFixed(1) : (kg * 2.20462).toFixed(1);
-
-        const results = [
-            { formula: 'G.J. Hamwi', weight: hamwi },
-            { formula: 'B.J. Devine', weight: devine },
-            { formula: 'J.D. Robinson', weight: robinson },
-            { formula: 'D.R. Miller', weight: miller }
-        ];
-
-        const tableRows = results.map(res => {
-            return `<tr><td>${res.formula}</td><td><strong>${displayWeight(res.weight)} ${massUnit}</strong></td></tr>`;
-        }).join('');
-
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text">Your Ideal Weight (Average):</p>
-                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${displayWeight(averageIdeal)} ${massUnit}</strong></p>
-            </div>
-            <div class="bf-details-container">
-                <div class="bf-details-item">
-                    <div>Healthy BMI Range</div>
-                    <div><strong>${displayWeight(healthyBmiLower)} - ${displayWeight(healthyBmiUpper)} ${massUnit}</strong></div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">🎯</div>
+                <div class="calc-hero-text">
+                    <h1>Ideal Body Weight (IBW) Calculator</h1>
+                    <p>Compare your ideal healthy weight across 5 clinical formulas (Devine, Robinson, Miller, Hamwi, and Broca).</p>
                 </div>
             </div>
-            <div class="activity-table-container">
-                <h4>Ideal Weight by different formulas:</h4>
-                <table class="activity-table">
-                    <thead><tr><th>Formula</th><th>Ideal Weight</th></tr></thead>
-                    <tbody>${tableRows}</tbody>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>📏</span> Height &amp; Gender
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Measurement System</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="unit-metric" class="toggle-pill-btn active" style="flex:1;" onclick="switchUnit('metric')">📏 Metric (cm, kg)</button>
+                        <button type="button" id="unit-imperial" class="toggle-pill-btn" style="flex:1;" onclick="switchUnit('imperial')">📐 Imperial (ft-in, lbs)</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Biological Gender</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="btn-male" class="toggle-pill-btn active" style="flex:1;" onclick="setGender('male')">👨 Male</button>
+                        <button type="button" id="btn-female" class="toggle-pill-btn" style="flex:1;" onclick="setGender('female')">👩 Female</button>
+                    </div>
+                </div>
+
+                <div id="metric-inputs">
+                    <div class="form-group">
+                        <label class="form-label" for="inp-height-cm">Height (cm)</label>
+                        <input type="number" id="inp-height-cm" class="calc-input" value="175" min="100" max="240" step="0.5" oninput="calculateIBW()">
+                    </div>
+                </div>
+
+                <div id="imperial-inputs" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">Height (ft &amp; in)</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                            <input type="number" id="inp-height-ft" class="calc-input" value="5" min="1" max="8" oninput="calculateIBW()">
+                            <input type="number" id="inp-height-in" class="calc-input" value="9" min="0" max="11" oninput="calculateIBW()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Recommended Ideal Body Weight (Devine)</div>
+                    <div class="result-main-val" id="ibw-main-val">70.5 kg</div>
+                    <div style="margin-top:0.35rem; font-size:0.88rem; color:var(--text-secondary);">Healthy BMI Range: <strong id="ibw-range-val">56.7 – 76.3 kg</strong></div>
+                </div>
+
+                <div class="result-metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Devine Formula (1974)</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="devine-val">70.5 kg</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Robinson Formula (1983)</div>
+                        <div class="metric-item-val" id="robinson-val">68.9 kg</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Miller Formula (1983)</div>
+                        <div class="metric-item-val" id="miller-val">69.4 kg</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Hamwi Formula (1964)</div>
+                        <div class="metric-item-val" id="hamwi-val">72.7 kg</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="ibwChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>The 5 Famous Clinical Ideal Weight Formulas</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Formula</th>
+                            <th>Male Equation</th>
+                            <th>Female Equation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Devine (Standard)</strong></td>
+                            <td>50 kg + 2.3 kg per inch over 5 ft</td>
+                            <td>45.5 kg + 2.3 kg per inch over 5 ft</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Robinson</strong></td>
+                            <td>52 kg + 1.9 kg per inch over 5 ft</td>
+                            <td>49 kg + 1.7 kg per inch over 5 ft</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Miller</strong></td>
+                            <td>56.2 kg + 1.41 kg per inch over 5 ft</td>
+                            <td>53.1 kg + 1.36 kg per inch over 5 ft</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hamwi</strong></td>
+                            <td>48 kg + 2.7 kg per inch over 5 ft</td>
+                            <td>45.5 kg + 2.2 kg per inch over 5 ft</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
-        `;
+        </section>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    let currentUnit = 'metric';
+    let gender = 'male';
+    let ibwChart = null;
+
+    function switchUnit(unit) {
+        currentUnit = unit;
+        document.getElementById('unit-metric').classList.toggle('active', unit === 'metric');
+        document.getElementById('unit-imperial').classList.toggle('active', unit === 'imperial');
+        document.getElementById('metric-inputs').style.display = unit === 'metric' ? 'block' : 'none';
+        document.getElementById('imperial-inputs').style.display = unit === 'imperial' ? 'block' : 'none';
+        calculateIBW();
     }
 
-    // --- ACCORDION LOGIC ---
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-        });
-    });
+    function setGender(g) {
+        gender = g;
+        document.getElementById('btn-male').classList.toggle('active', g === 'male');
+        document.getElementById('btn-female').classList.toggle('active', g === 'female');
+        calculateIBW();
+    }
+
+    function calculateIBW() {
+        let heightCm;
+        if (currentUnit === 'metric') {
+            heightCm = parseFloat(document.getElementById('inp-height-cm').value) || 175;
+        } else {
+            const ft = parseFloat(document.getElementById('inp-height-ft').value) || 5;
+            const inches = parseFloat(document.getElementById('inp-height-in').value) || 9;
+            heightCm = (ft * 12 + inches) * 2.54;
+        }
+
+        const heightInches = heightCm / 2.54;
+        const inchesOver5Ft = Math.max(0, heightInches - 60);
+
+        let devine, robinson, miller, hamwi;
+        if (gender === 'male') {
+            devine = 50 + (2.3 * inchesOver5Ft);
+            robinson = 52 + (1.9 * inchesOver5Ft);
+            miller = 56.2 + (1.41 * inchesOver5Ft);
+            hamwi = 48 + (2.7 * inchesOver5Ft);
+        } else {
+            devine = 45.5 + (2.3 * inchesOver5Ft);
+            robinson = 49 + (1.7 * inchesOver5Ft);
+            miller = 53.1 + (1.36 * inchesOver5Ft);
+            hamwi = 45.5 + (2.2 * inchesOver5Ft);
+        }
+
+        const heightM = heightCm / 100;
+        const minHealthy = 18.5 * (heightM * heightM);
+        const maxHealthy = 24.9 * (heightM * heightM);
+
+        const fmt = (kg) => currentUnit === 'metric' ? `${kg.toFixed(1)} kg` : `${(kg * 2.20462).toFixed(1)} lbs`;
+
+        document.getElementById('ibw-main-val').innerText = fmt(devine);
+        document.getElementById('ibw-range-val').innerText = `${fmt(minHealthy)} – ${fmt(maxHealthy)}`;
+        document.getElementById('devine-val').innerText = fmt(devine);
+        document.getElementById('robinson-val').innerText = fmt(robinson);
+        document.getElementById('miller-val').innerText = fmt(miller);
+        document.getElementById('hamwi-val').innerText = fmt(hamwi);
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('ibwChart');
+            if (ctx) {
+                if (ibwChart) ibwChart.destroy();
+                ibwChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Devine', 'Robinson', 'Miller', 'Hamwi'],
+                        datasets: [{
+                            data: [devine, robinson, miller, hamwi],
+                            backgroundColor: ['#10b981', '#0284c7', '#8b5cf6', '#f59e0b'],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: false, grid: { color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f293d' : '#f1f5f9' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', calculateIBW);
 </script>
 
 <%- include('partials/inner_footer') %>

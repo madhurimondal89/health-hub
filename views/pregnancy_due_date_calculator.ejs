@@ -1,162 +1,204 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-        
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="dueDateForm">
-                    <div class="form-group">
-                        <label for="lmpDate">First Day of Last Menstrual Period (LMP)</label>
-                        <div class="input-wrapper">
-                            <input type="date" id="lmpDate">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="cycleLength">Average Cycle Length (days)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="cycleLength" value="28" placeholder="e.g., 28">
-                        </div>
-                        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem;">The average cycle is 28 days. Adjust if yours is different.</p>
-                    </div>
-                </form>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#pregnancy-pediatrics">Pregnancy &amp; Pediatrics</a> <span>›</span>
+                <span>Pregnancy Due Date Calculator</span>
             </div>
-            
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Enter your LMP date to estimate your due date and track your pregnancy timeline.</div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">🤰</div>
+                <div class="calc-hero-text">
+                    <h1>Pregnancy Due Date &amp; Trimester Calculator</h1>
+                    <p>Calculate your estimated date of delivery (EDD), current gestational age in weeks/days, and milestone calendar using Naegele's rule.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>📅</span> Conception &amp; Period Data
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Calculation Method</label>
+                    <select id="inp-calc-method" class="calc-input" onchange="calculateDueDate()">
+                        <option value="lmp" selected>First Day of Last Menstrual Period (LMP)</option>
+                        <option value="conception">Exact Conception Date</option>
+                        <option value="ivf">IVF Transfer Date (Day 3 / Day 5)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-ref-date">Reference Date</label>
+                    <input type="date" id="inp-ref-date" class="calc-input" onchange="calculateDueDate()">
+                </div>
+
+                <div class="form-group" id="cycle-length-group">
+                    <label class="form-label" for="inp-cycle">Average Menstrual Cycle Length (days)</label>
+                    <div class="preset-chips">
+                        <span class="chip" onclick="setCycle(26)">26 days</span>
+                        <span class="chip" onclick="setCycle(28)">28 days (Avg)</span>
+                        <span class="chip" onclick="setCycle(30)">30 days</span>
+                        <span class="chip" onclick="setCycle(32)">32 days</span>
+                    </div>
+                    <div class="input-with-symbol" style="margin-top:0.5rem;">
+                        <input type="number" id="inp-cycle" class="calc-input has-suffix" value="28" min="20" max="45" oninput="calculateDueDate()">
+                        <span class="input-symbol-suffix">Days</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Estimated Date of Delivery (EDD)</div>
+                    <div class="result-main-val" id="due-date-val" style="font-size:2.2rem;">November 18, 2026</div>
+                    <div style="margin-top:0.5rem;">
+                        <span id="trimester-badge" class="card-category-tag" style="background:#10b981; color:#ffffff; font-size:0.92rem; padding:0.35rem 1.15rem;">
+                            Second Trimester (Week 18)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="gauge-container">
+                    <div class="gauge-bar">
+                        <div class="gauge-needle" id="gest-needle" style="left: 45%;"></div>
+                    </div>
+                    <div class="gauge-labels">
+                        <span style="color:#0284c7;">1st Trimester (1-13w)</span>
+                        <span style="color:#10b981;">2nd Trimester (14-27w)</span>
+                        <span style="color:#f59e0b;">3rd Trimester (28-40w)</span>
+                    </div>
+                </div>
+
+                <div class="result-metric-grid" style="margin-top:1rem;">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Current Gestational Age</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="gest-age-val">18 Weeks, 2 Days</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Days Remaining to Due Date</div>
+                        <div class="metric-item-val" id="days-left-val">152 Days</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="pregChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <div class="faq-section">
-            <div class="accordion-item">
-                <button class="accordion-header"><span>How is the due date calculated?</span><span class="icon">+</span></button>
-                <div class="accordion-content">
-                    <p>This calculator uses Naegele's rule, a standard method for estimating a due date. It works by:</p>
-                    <ol>
-                        <li>Taking the first day of your last menstrual period (LMP).</li>
-                        <li>Adding 280 days (40 weeks) to that date.</li>
-                        <li>Adjusting for your cycle length. The standard 280 days assumes a 28-day cycle. If your cycle is longer or shorter, the calculator adjusts the due date accordingly.</li>
-                    </ol>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <button class="accordion-header"><span>Is this due date 100% accurate?</span><span class="icon">+</span></button>
-                <div class="accordion-content">
-                    <p>No, this is an <strong>estimated due date (EDD)</strong>. Only about 5% of babies are born on their exact due date. It provides a valuable guideline, but your actual delivery date can vary. An ultrasound performed by a healthcare professional will give a more accurate date.</p>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button>
-                <div class="accordion-content">
-                    <p>This tool is for informational purposes only and should not replace professional medical advice. Always consult with a doctor or other qualified healthcare provider for any questions you may have regarding your pregnancy.</p>
-                </div>
-            </div>
-        </div>
-<%- include('partials/ad_unit') %>
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>Naegele's Rule for Due Date Estimation</h2>
+            <p>
+                Estimated Due Date is calculated by adding <strong>280 days (40 weeks)</strong> to the first day of your last menstrual period (adjusted for cycle length variation from standard 28 days).
+            </p>
+        </section>
     </div>
-</div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    const lmpDateInput = document.getElementById('lmpDate');
-    const cycleLengthInput = document.getElementById('cycleLength');
-    const resultDiv = document.getElementById('result-section');
-    
-    // Add today's date as max for LMP date input
-    lmpDateInput.max = new Date().toISOString().split("T")[0];
+    let pregChart = null;
 
-    lmpDateInput.addEventListener('input', calculateDueDate);
-    cycleLengthInput.addEventListener('input', calculateDueDate);
+    function setCycle(c) {
+        document.getElementById('inp-cycle').value = c;
+        calculateDueDate();
+    }
 
-    function formatDate(date) {
-        return date.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+    function initDate() {
+        // Set default LMP to 18 weeks ago
+        const d = new Date();
+        d.setDate(d.getDate() - (18 * 7));
+        const iso = d.toISOString().split('T')[0];
+        document.getElementById('inp-ref-date').value = iso;
     }
 
     function calculateDueDate() {
-        const lmpString = lmpDateInput.value;
-        const cycleLength = parseInt(cycleLengthInput.value) || 28;
+        const refVal = document.getElementById('inp-ref-date').value;
+        if (!refVal) return;
 
-        if (!lmpString) {
-            resultDiv.innerHTML = `<div class="placeholder">Enter your LMP date to estimate your due date.</div>`;
-            return;
+        const method = document.getElementById('inp-calc-method').value;
+        const cycle = parseInt(document.getElementById('inp-cycle').value) || 28;
+        const cycleDiff = cycle - 28;
+
+        const lmpDate = new Date(refVal + 'T00:00:00');
+        let dueDate = new Date(lmpDate);
+
+        if (method === 'lmp') {
+            dueDate.setDate(dueDate.getDate() + 280 + cycleDiff);
+        } else if (method === 'conception') {
+            dueDate.setDate(dueDate.getDate() + 266);
+        } else {
+            dueDate.setDate(dueDate.getDate() + 266 - 5);
         }
 
-        const lmpDate = new Date(lmpString + 'T00:00:00'); // To avoid timezone issues
         const today = new Date();
         today.setHours(0,0,0,0);
+        const daysPassed = Math.max(0, Math.floor((today - lmpDate) / (1000 * 60 * 60 * 24)));
+        const weeks = Math.floor(daysPassed / 7);
+        const days = daysPassed % 7;
+        const daysLeft = Math.max(0, Math.floor((dueDate - today) / (1000 * 60 * 60 * 24)));
 
-        if (lmpDate > today) {
-            resultDiv.innerHTML = `<div class="placeholder">LMP date cannot be in the future.</div>`;
-            return;
+        let trimester = 'First Trimester';
+        let badgeColor = '#0284c7';
+        if (weeks >= 28) {
+            trimester = 'Third Trimester';
+            badgeColor = '#f59e0b';
+        } else if (weeks >= 14) {
+            trimester = 'Second Trimester';
+            badgeColor = '#10b981';
         }
 
-        // Calculate Due Date
-        const dueDate = new Date(lmpDate);
-        const daysToAdd = 280 + (cycleLength - 28);
-        dueDate.setDate(dueDate.getDate() + daysToAdd);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('due-date-val').innerText = dueDate.toLocaleDateString('en-US', options);
+        document.getElementById('gest-age-val').innerText = `${weeks} Weeks, ${days} Days`;
+        document.getElementById('days-left-val').innerText = `${daysLeft} Days`;
 
-        // Calculate Gestational Age
-        const diffTime = Math.abs(today - lmpDate);
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        const gestationalWeeks = Math.floor(diffDays / 7);
-        const gestationalDays = diffDays % 7;
+        const badge = document.getElementById('trimester-badge');
+        badge.innerText = `${trimester} (Week ${weeks})`;
+        badge.style.background = badgeColor;
 
-        // Other key dates
-        const conceptionDate = new Date(lmpDate);
-        conceptionDate.setDate(conceptionDate.getDate() + 14); // Approximate
+        const needlePct = Math.min(95, Math.max(5, (weeks / 40) * 100));
+        document.getElementById('gest-needle').style.left = `${needlePct}%`;
 
-        const endOfFirstTrimester = new Date(lmpDate);
-        endOfFirstTrimester.setDate(endOfFirstTrimester.getDate() + (13 * 7) + 6);
-
-        const endOfSecondTrimester = new Date(lmpDate);
-        endOfSecondTrimester.setDate(endOfSecondTrimester.getDate() + (27 * 7) + 6);
-        
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text-large">Estimated Due Date</p>
-                <p class="result-main-text"><strong>${formatDate(dueDate)}</strong></p>
-            </div>
-
-            <div class="bf-details-container">
-                <h4>Your Pregnancy Timeline</h4>
-                <div class="bf-details-item">
-                    <span>Current Gestational Age</span>
-                    <strong>${gestationalWeeks} weeks, ${gestationalDays} days</strong>
-                </div>
-                 <div class="bf-details-item">
-                    <span>Estimated Conception Date</span>
-                    <strong>${formatDate(conceptionDate)}</strong>
-                </div>
-                <div class="bf-details-item">
-                    <span>End of 1st Trimester</span>
-                    <strong>${formatDate(endOfFirstTrimester)}</strong>
-                </div>
-                <div class="bf-details-item">
-                    <span>End of 2nd Trimester</span>
-                    <strong>${formatDate(endOfSecondTrimester)}</strong>
-                </div>
-            </div>
-        `;
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('pregChart');
+            if (ctx) {
+                if (pregChart) pregChart.destroy();
+                pregChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [`Completed (${weeks} Weeks)`, `Remaining (${Math.max(0, 40 - weeks)} Weeks)`],
+                        datasets: [{
+                            data: [weeks, Math.max(0, 40 - weeks)],
+                            backgroundColor: [badgeColor, document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f293d' : '#e2e8f0'],
+                            borderWidth: 2,
+                            borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }
+                    }
+                });
+            }
+        }
     }
 
-    // Accordion script from your previous file
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            if (accordionItem.classList.contains('active')) {
-                content.style.maxHeight = content.scrollHeight + 'px';
-            } else {
-                content.style.maxHeight = '0px';
-            }
-        });
+    document.addEventListener('DOMContentLoaded', () => {
+        initDate();
+        calculateDueDate();
     });
 </script>
 

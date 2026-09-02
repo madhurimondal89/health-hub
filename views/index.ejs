@@ -1,282 +1,501 @@
-<!DOCTYPE html>
-<html lang="en" id="html-root">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <meta name="description" content="<%= description %>">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://health-hub.calculatorfree.in/">
+<%- include('partials/header') %>
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="<%= title %>">
-    <meta property="og:description" content="<%= description %>">
-    <meta property="og:url" content="https://health-hub.calculatorfree.in/">
-    <meta property="og:type" content="website">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
-    <link rel="apple-touch-icon" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
-
-    <!-- Schema -->
-    <script type="application/ld+json"><%- schema %></script>
-
-    <!-- Main Stylesheet -->
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-
-    <!-- ===== HEADER ===== -->
-    <header class="main-header">
-        <div class="container">
-            <a href="/" class="logo">HealthHub</a>
-            <div style="display:flex;align-items:center;gap:0.5rem;">
-                <nav>
-                    <a href="https://www.calculatorfree.in/" target="_blank" rel="noopener noreferrer">← Main Site</a>
-                </nav>
-                <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark theme" aria-label="Toggle theme">
-                    <span class="icon-sun">&#9728;</span>
-                    <span class="icon-moon">&#9790;</span>
-                </button>
+<main>
+    <div class="container">
+        <!-- ===== HERO SECTION ===== -->
+        <section class="hero-section">
+            <div class="hero-glow"></div>
+            
+            <div class="hero-badge">
+                <span>⚡</span> <%= calculators.length %>+ Medically Verified · Free · Instant Health Calculators
             </div>
-        </div>
-    </header>
 
-    <main>
-        <div class="container">
+            <h1 class="hero-title">
+                Your Complete<br>
+                <span class="gradient-text">Health &amp; Fitness Calculator</span> Hub
+            </h1>
 
-            <!-- ===== HERO ===== -->
-            <section class="hero-section">
-                <div class="hero-inner">
-                    <div class="hero-badge">
-                        <span>⚡</span> Free · Accurate · Instant Results
+            <p class="hero-subtitle">
+                Access over <strong><%= calculators.length %>+</strong> free evidence-based health calculators — Body Composition, Calories, Macros, Workouts, Clinical Vitals, Pregnancy, and Sleep.
+            </p>
+
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-pill">
+                    <span class="num"><%= calculators.length %>+</span> Health Calculators
+                </div>
+                <div class="stat-pill">
+                    <span class="num">8</span> Health Categories
+                </div>
+                <div class="stat-pill">
+                    <span class="num">100%</span> Free &amp; Private
+                </div>
+            </div>
+
+            <!-- ===== OFFICIAL PUBLIC HEALTH ADVISORY SLIDER (GOVT & WHO STANDARDS) ===== -->
+            <div class="health-advisory-carousel" id="health-advisory-widget">
+                <div class="advisory-header-row">
+                    <div class="advisory-badge-live">
+                        <span class="pulse-dot"></span>
+                        <span>Official Public Health Guidelines</span>
                     </div>
-                    <h1 class="hero-title">
-                        Your Personal<br>
-                        <span class="gradient-text">Health Calculator</span> Hub
-                    </h1>
-                    <p class="hero-subtitle">
-                        <%= calculators.length %> free health &amp; fitness calculators — BMI, calories, sleep, pregnancy and more. No sign-up needed.
-                    </p>
 
-                    <!-- Search -->
-                    <div class="search-wrapper">
-                        <span class="search-icon">🔍</span>
-                        <input
-                            type="text"
-                            id="calculator-search"
-                            placeholder="Search calculators… e.g. BMI, sleep, calories"
-                            autocomplete="off"
-                        >
-                    </div>
-
-                    <!-- Stats -->
-                    <div class="stats-bar">
-                        <div class="stat-item">
-                            <div class="stat-number"><%= calculators.length %>+</div>
-                            <div class="stat-label">Calculators</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">100%</div>
-                            <div class="stat-label">Free</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">5</div>
-                            <div class="stat-label">Categories</div>
-                        </div>
+                    <div class="advisory-controls">
+                        <button type="button" class="advisory-nav-btn" onclick="prevAdvisorySlide()" title="Previous Tip" aria-label="Previous Advisory">‹</button>
+                        <button type="button" class="advisory-nav-btn" onclick="nextAdvisorySlide()" title="Next Tip" aria-label="Next Advisory">›</button>
                     </div>
                 </div>
-            </section>
 
-<%- include('partials/ad_unit') %>
-
-            <!-- ===== CALCULATOR CATEGORIES ===== -->
-            <section class="calculators-area">
-
-                <div id="no-results">
-                    <p>🔍 No calculators found. Try a different search term.</p>
-                </div>
-
-                <% 
-                const categories = [
-                    {
-                        id: 'cat-body',
-                        cls: 'cat-body',
-                        icon: '🏋️',
-                        title: 'Body Composition',
-                        items: [
-                            { url: '/bmi-calculator', name: 'BMI Calculator', icon: '⚖️', desc: 'Check if you\'re in a healthy weight range.' },
-                            { url: '/child-bmi-calculator', name: 'Child BMI Calculator', icon: '🧒', desc: 'BMI-for-age percentile for kids aged 2–19.' },
-                            { url: '/body-type-calculator', name: 'Body Type Calculator', icon: '🧬', desc: 'Find your somatotype: Ecto, Meso or Endo.' },
-                            { url: '/bmr-calculator', name: 'BMR Calculator', icon: '🔥', desc: 'Calories your body burns at rest.' },
-                            { url: '/body-fat-calculator', name: 'Body Fat Calculator', icon: '📊', desc: 'Estimate body fat % using Navy method.' },
-                            { url: '/lean-body-mass-calculator', name: 'Lean Body Mass', icon: '💪', desc: 'Calculate your fat-free body mass.' },
-                            { url: '/ideal-weight-calculator', name: 'Ideal Weight', icon: '🎯', desc: 'Find your healthy weight range.' },
-                            { url: '/ponderal-index-calculator', name: 'Ponderal Index', icon: '📐', desc: 'Alternative to BMI for tall/short individuals.' },
-                            { url: '/waist-to-hip-ratio-calculator', name: 'Waist-to-Hip Ratio', icon: '📏', desc: 'Assess abdominal fat and health risk.' },
-                            { url: '/waist-to-height-ratio-calculator', name: 'Waist-to-Height Ratio', icon: '📏', desc: 'Central obesity indicator.' },
-                            { url: '/body-surface-area-calculator', name: 'Body Surface Area', icon: '🫁', desc: 'Total BSA using 8 popular formulas.' },
-                        ]
-                    },
-                    {
-                        id: 'cat-fitness',
-                        cls: 'cat-fitness',
-                        icon: '🏃',
-                        title: 'Fitness & Activity',
-                        items: [
-                            { url: '/tdee-calculator', name: 'TDEE Calculator', icon: '⚡', desc: 'Total daily energy expenditure.' },
-                            { url: '/one-rep-max-calculator', name: 'One Rep Max (1RM)', icon: '🏋️', desc: 'Estimate your max lift with a training table.' },
-                            { url: '/vo2-max-calculator', name: 'VO2 Max Calculator', icon: '🫁', desc: 'Estimate your cardiovascular fitness level.' },
-                            { url: '/calorie-burn-calculator', name: 'Calorie Burn', icon: '🔥', desc: 'Calories burned during exercise.' },
-                            { url: '/running-pace-calculator', name: 'Running Pace', icon: '🏃', desc: 'Calculate pace, time or distance.' },
-                            { url: '/heart-rate-zones-calculator', name: 'Heart Rate Zones', icon: '❤️', desc: 'Optimize your workouts by HR zone.' },
-                            { url: '/steps-to-calories-calculator', name: 'Steps to Calories', icon: '👟', desc: 'Convert daily steps into calories burned.' },
-                        ]
-                    },
-                    {
-                        id: 'cat-nutrition',
-                        cls: 'cat-nutrition',
-                        icon: '🥗',
-                        title: 'Nutrition & Diet',
-                        items: [
-                            { url: '/calorie-calculator', name: 'Calorie Calculator', icon: '🍽️', desc: 'Daily calorie needs for your goal.' },
-                            { url: '/calorie-deficit-calculator', name: 'Calorie Deficit', icon: '📉', desc: 'Exact calories to eat for safe weight loss.' },
-                            { url: '/keto-calculator', name: 'Keto Calculator', icon: '🥑', desc: 'Ideal macros for a ketogenic diet.' },
-                            { url: '/intermittent-fasting-calculator', name: 'Intermittent Fasting', icon: '⏱️', desc: 'Fasting & eating windows for 16:8, OMAD & more.' },
-                            { url: '/macro-calculator', name: 'Macro Calculator', icon: '🥦', desc: 'Protein, carbs & fat breakdown.' },
-                            { url: '/food-calorie-calculator', name: 'Food Calorie', icon: '🍎', desc: 'Calories from protein, carbs & fat.' },
-                            { url: '/water-intake-calculator', name: 'Water Intake', icon: '💧', desc: 'Personalized daily water recommendation.' },
-                            { url: '/protein-intake-calculator', name: 'Protein Intake', icon: '🥩', desc: 'Daily protein target for your goal.' },
-                            { url: '/alcohol-units-calculator', name: 'Alcohol Units', icon: '🍺', desc: 'Units, calories & safe limit guide.' },
-                        ]
-                    },
-                    {
-                        id: 'cat-health',
-                        cls: 'cat-health',
-                        icon: '💊',
-                        title: 'Health & Wellness',
-                        items: [
-                            { url: '/sleep-calculator', name: 'Sleep Calculator', icon: '😴', desc: 'Best wake-up time by sleep cycles.' },
-                            { url: '/blood-pressure-calculator', name: 'Blood Pressure', icon: '🫀', desc: 'Classify BP and assess health risk.' },
-                            { url: '/diabetes-risk-calculator', name: 'Diabetes Risk', icon: '🩺', desc: 'Type 2 diabetes risk assessment.' },
-                            { url: '/age-calculator', name: 'Age Calculator', icon: '🎂', desc: 'Exact age in years, months & days.' },
-                        ]
-                    },
-                    {
-                        id: 'cat-women',
-                        cls: 'cat-women',
-                        icon: '👶',
-                        title: "Women's Health",
-                        items: [
-                            { url: '/pregnancy-due-date-calculator', name: 'Pregnancy Due Date', icon: '🤰', desc: 'Estimate your baby\'s due date.' },
-                            { url: '/ovulation-calculator', name: 'Ovulation Calculator', icon: '📅', desc: 'Predict your most fertile days.' },
-                            { url: '/fertility-window-calculator', name: 'Fertility Window', icon: '🌸', desc: 'Identify key days to conceive.' },
-                            { url: '/menstrual-cycle-and-next-period-calculator', name: 'Menstrual Cycle', icon: '🗓️', desc: 'Track cycle & predict next period.' },
-                            { url: '/pregnancy-weight-gain-calculator', name: 'Pregnancy Weight Gain', icon: '⚖️', desc: 'Healthy weight gain during pregnancy.' },
-                        ]
-                    }
-                ];
-                %>
-
-                <% categories.forEach(cat => { %>
-                <div class="category-section <%= cat.cls %>" id="<%= cat.id %>" data-category="<%= cat.title.toLowerCase() %>">
-                    <div class="category-header">
-                        <div class="category-icon"><%= cat.icon %></div>
-                        <h2 class="category-title"><%= cat.title %></h2>
-                        <span class="category-count"><%= cat.items.length %> tools</span>
-                    </div>
-                    <div class="calculator-grid-home">
-                        <% cat.items.forEach(calc => { %>
-                        <a href="<%= calc.url %>" class="calc-card" data-name="<%= calc.name.toLowerCase() %>" data-desc="<%= calc.desc.toLowerCase() %>">
-                            <div class="card-top">
-                                <div class="card-icon"><%= calc.icon %></div>
-                                <div class="card-content">
-                                    <h3><%= calc.name %></h3>
-                                    <p><%= calc.desc %></p>
-                                </div>
+                <div class="advisory-slides-wrapper">
+                    <!-- Slide 1: No Smoking & Tobacco -->
+                    <div class="advisory-slide active" data-slide="0">
+                        <div class="advisory-icon-box" style="border-color:rgba(244,63,94,0.3); background:rgba(244,63,94,0.08);">🚭</div>
+                        <div class="advisory-content">
+                            <div class="advisory-title">
+                                <span>Say No to Tobacco &amp; Smoking</span>
+                                <span class="card-category-tag" style="background:#f43f5e; color:#fff; font-size:0.72rem;">WHO &amp; Ministry Advisory</span>
                             </div>
-                            <div class="card-footer">
-                                <div class="card-button">
-                                    Calculate
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                                </div>
+                            <div class="advisory-desc">
+                                Tobacco consumption causes irreversible arterial plaque, COPD, and stroke. <strong>Quitting smoking cuts coronary heart disease risk by 50% within just 1 year.</strong> Protect yourself and your family from secondhand smoke.
                             </div>
-                        </a>
-                        <% }) %>
+                            <div class="advisory-tags" style="align-items: center;">
+                                <span class="advisory-tag">#QuitSmoking</span>
+                                <span class="advisory-tag">#LungHealth</span>
+                                <span class="advisory-tag">#HeartCare</span>
+                                <a href="https://www.who.int/health-topics/tobacco" target="_blank" rel="noopener noreferrer" class="advisory-link-btn">
+                                    🏛️ Official WHO Tobacco Portal ↗
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: 150 Mins Physical Activity -->
+                    <div class="advisory-slide" data-slide="1">
+                        <div class="advisory-icon-box" style="border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.08);">🏃‍♂️</div>
+                        <div class="advisory-content">
+                            <div class="advisory-title">
+                                <span>Stay Active: 150–300 Minutes Moderate Exercise Weekly</span>
+                                <span class="card-category-tag" style="background:#10b981; color:#fff; font-size:0.72rem;">WHO Global Standard</span>
+                            </div>
+                            <div class="advisory-desc">
+                                Aim for at least <strong>30 minutes of brisk walking, cycling, or swimming 5 days a week</strong>. Regular moderate physical activity significantly lowers type 2 diabetes risk, manages resting blood pressure, and improves mental health.
+                            </div>
+                            <div class="advisory-tags" style="align-items: center;">
+                                <span class="advisory-tag">#PhysicalActivity</span>
+                                <span class="advisory-tag">#ActiveLiving</span>
+                                <span class="advisory-tag">#PreventDiabetes</span>
+                                <a href="https://www.who.int/news-room/fact-sheets/detail/physical-activity" target="_blank" rel="noopener noreferrer" class="advisory-link-btn">
+                                    🏛️ WHO Physical Activity Guidelines ↗
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Limit Salt & Sugar -->
+                    <div class="advisory-slide" data-slide="2">
+                        <div class="advisory-icon-box" style="border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.08);">🧂</div>
+                        <div class="advisory-content">
+                            <div class="advisory-title">
+                                <span>Cut Hidden Salt (&lt;5g/day) &amp; Free Added Sugars (&lt;25g/day)</span>
+                                <span class="card-category-tag" style="background:#f59e0b; color:#fff; font-size:0.72rem;">ICMR &amp; Dietary Guidelines</span>
+                            </div>
+                            <div class="advisory-desc">
+                                Excessive dietary sodium drives hypertension and kidney stress. <strong>Limit daily salt to less than 1 level teaspoon (&lt;5g)</strong> and minimize sugary sodas, packaged desserts, and ultra-processed snacks.
+                            </div>
+                            <div class="advisory-tags" style="align-items: center;">
+                                <span class="advisory-tag">#LowSodium</span>
+                                <span class="advisory-tag">#BloodPressure</span>
+                                <span class="advisory-tag">#KidneyCare</span>
+                                <a href="https://www.who.int/news-room/fact-sheets/detail/salt-reduction" target="_blank" rel="noopener noreferrer" class="advisory-link-btn">
+                                    🏛️ WHO Salt Reduction Guide ↗
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: 7-9 Hours Circadian Sleep -->
+                    <div class="advisory-slide" data-slide="3">
+                        <div class="advisory-icon-box" style="border-color:rgba(99,102,241,0.3); background:rgba(99,102,241,0.08);">😴</div>
+                        <div class="advisory-content">
+                            <div class="advisory-title">
+                                <span>Prioritize 7 to 9 Hours of Quality Nighttime Sleep</span>
+                                <span class="card-category-tag" style="background:#6366f1; color:#fff; font-size:0.72rem;">Sleep Hygiene Guideline</span>
+                            </div>
+                            <div class="advisory-desc">
+                                Consistent sleep regulates hunger hormones (ghrelin &amp; leptin), reduces systemic inflammation, and consolidates brain memory. <strong>Avoid digital screens 60 minutes before bedtime</strong> for deeper restorative sleep.
+                            </div>
+                            <div class="advisory-tags" style="align-items: center;">
+                                <span class="advisory-tag">#SleepHygiene</span>
+                                <span class="advisory-tag">#MentalWellness</span>
+                                <span class="advisory-tag">#StressRelief</span>
+                                <a href="https://www.cdc.gov/sleep/about/index.html" target="_blank" rel="noopener noreferrer" class="advisory-link-btn">
+                                    🏛️ CDC Sleep Health Portal ↗
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: Safe Hydration & Heat Wave Protection -->
+                    <div class="advisory-slide" data-slide="4">
+                        <div class="advisory-icon-box" style="border-color:rgba(2,132,199,0.3); background:rgba(2,132,199,0.08);">💧</div>
+                        <div class="advisory-content">
+                            <div class="advisory-title">
+                                <span>Drink 2.5 to 3.5 Liters of Water &amp; Avoid Peak Sun</span>
+                                <span class="card-category-tag" style="background:#0284c7; color:#fff; font-size:0.72rem;">Govt Heat &amp; Vitals Advisory</span>
+                            </div>
+                            <div class="advisory-desc">
+                                Drink water regularly throughout the day before feeling thirsty. During high summer heatwaves, avoid strenuous outdoor exertion between <strong>12 PM and 3 PM</strong>, wear breathable cottons, and stay well hydrated.
+                            </div>
+                            <div class="advisory-tags" style="align-items: center;">
+                                <span class="advisory-tag">#StayHydrated</span>
+                                <span class="advisory-tag">#HeatProtection</span>
+                                <span class="advisory-tag">#CleanWater</span>
+                                <a href="https://www.who.int/news-room/fact-sheets/detail/climate-change-heat-and-health" target="_blank" rel="noopener noreferrer" class="advisory-link-btn">
+                                    🏛️ WHO Heat &amp; Health Guide ↗
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 6: Annual Preventative Health Screenings -->
+                    <div class="advisory-slide" data-slide="5">
+                        <div class="advisory-icon-box" style="border-color:rgba(139,92,246,0.3); background:rgba(139,92,246,0.08);">🩺</div>
+                        <div class="advisory-content">
+                            <div class="advisory-title">
+                                <span>Schedule Annual Preventative Medical Screenings</span>
+                                <span class="card-category-tag" style="background:#8b5cf6; color:#fff; font-size:0.72rem;">Clinical Health Protocol</span>
+                            </div>
+                            <div class="advisory-desc">
+                                Early detection is the best cure. <strong>Check your Blood Pressure, Fasting Blood Sugar (HbA1c), and Lipid Profile annually</strong> to detect cardiovascular or metabolic risks early. Always follow a certified doctor's counsel.
+                            </div>
+                            <div class="advisory-tags" style="align-items: center;">
+                                <span class="advisory-tag">#AnnualCheckup</span>
+                                <span class="advisory-tag">#EarlyDetection</span>
+                                <span class="advisory-tag">#PreventativeCare</span>
+                                <a href="https://nhp.gov.in/" target="_blank" rel="noopener noreferrer" class="advisory-link-btn">
+                                    🏛️ National Health Portal (NHP) ↗
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <% }) %>
 
-            </section>
+                <!-- Navigation Dots -->
+                <div class="advisory-dots" id="advisory-dots-wrap">
+                    <span class="advisory-dot active" onclick="goToAdvisorySlide(0)"></span>
+                    <span class="advisory-dot" onclick="goToAdvisorySlide(1)"></span>
+                    <span class="advisory-dot" onclick="goToAdvisorySlide(2)"></span>
+                    <span class="advisory-dot" onclick="goToAdvisorySlide(3)"></span>
+                    <span class="advisory-dot" onclick="goToAdvisorySlide(4)"></span>
+                    <span class="advisory-dot" onclick="goToAdvisorySlide(5)"></span>
+                </div>
+            </div>
+        </section>
 
-<%- include('partials/ad_unit') %>
+        <!-- ===== FEATURED LIVE API ENGINES & ESSENTIAL HEALTH TOOLS ===== -->
+        <section class="featured-engines-section" style="margin: 1.5rem 0 2.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem;">
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
+                        <span class="pulse-dot"></span> Live Public Health APIs
+                    </div>
+                    <h2 style="font-family: var(--font-heading); font-size: 1.45rem; font-weight: 800; color: var(--text-primary); margin-top: 0.2rem;">
+                        ⚡ Live Health Engines &amp; Essential Tools
+                    </h2>
+                </div>
+                <span class="card-category-tag" style="background: var(--primary-light); color: var(--primary); font-weight: 700; padding: 0.4rem 1rem;">
+                    100% Free Live Public Data
+                </span>
+            </div>
 
+            <div class="featured-engines-grid">
+                <!-- 1. Live Food Nutrition -->
+                <a href="/food-nutrition-lookup" class="featured-engine-card">
+                    <div>
+                        <div class="engine-top">
+                            <div class="engine-icon" style="background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.25);">🍎</div>
+                            <span class="engine-badge" style="background:rgba(239,68,68,0.15); color:#ef4444;">
+                                Open Food Facts API
+                            </span>
+                        </div>
+                        <h3>Live Food Nutrition &amp; Calorie Lookup</h3>
+                        <p>Search over 100,000+ foods and fruits with instant calorie, protein, carbs, healthy fats, and micronutrient breakdown.</p>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:var(--primary); font-size:0.92rem; margin-top:0.5rem;">
+                        <span>Launch Food Search</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <!-- 2. OpenFDA Drug Safety -->
+                <a href="/drug-safety-checker" class="featured-engine-card">
+                    <div>
+                        <div class="engine-top">
+                            <div class="engine-icon" style="background:rgba(225,29,72,0.1); border-color:rgba(225,29,72,0.25);">💊</div>
+                            <span class="engine-badge" style="background:rgba(225,29,72,0.15); color:#e11d48;">
+                                Official FDA API
+                            </span>
+                        </div>
+                        <h3>OpenFDA Drug Safety &amp; Clinical Warnings</h3>
+                        <p>Search official US FDA drug labels, active pharmacological substances, dosage guidelines, and adverse side effects.</p>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:var(--primary); font-size:0.92rem; margin-top:0.5rem;">
+                        <span>Verify Medication</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <!-- 3. Live Workout Library -->
+                <a href="/exercise-workout-library" class="featured-engine-card">
+                    <div>
+                        <div class="engine-top">
+                            <div class="engine-icon" style="background:rgba(2,132,199,0.1); border-color:rgba(2,132,199,0.25);">🏋️‍♂️</div>
+                            <span class="engine-badge" style="background:rgba(2,132,199,0.15); color:#0284c7;">
+                                wger Exercise API
+                            </span>
+                        </div>
+                        <h3>Live Workout &amp; Muscle Exercise Explorer</h3>
+                        <p>Explore 800+ exercises by muscle anatomy (Chest, Back, Legs, Core) with real-time MET calorie burn calculations.</p>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:var(--primary); font-size:0.92rem; margin-top:0.5rem;">
+                        <span>Explore Exercises</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <!-- 4. Live Solar UV & Vitamin D -->
+                <a href="/uv-index-vitamin-d-calculator" class="featured-engine-card">
+                    <div>
+                        <div class="engine-top">
+                            <div class="engine-icon" style="background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.25);">☀️</div>
+                            <span class="engine-badge" style="background:rgba(245,158,11,0.15); color:#f59e0b;">
+                                Open-Meteo Solar API
+                            </span>
+                        </div>
+                        <h3>Live UV Index &amp; Solar Vitamin D Calculator</h3>
+                        <p>Real-time solar UV radiation calculator estimating safe sun exposure time needed for optimal Vitamin D synthesis.</p>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:var(--primary); font-size:0.92rem; margin-top:0.5rem;">
+                        <span>Check UV Forecast</span>
+                        <span>→</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Advertisement Unit Placed Above Search -->
+        <%- include('partials/ad_unit') %>
+
+        <!-- Category Filters & Live Search Box -->
+        <section style="margin-bottom: 2.5rem;">
+            <!-- Category Filter Pills with Dynamic Counts -->
+            <div class="category-filter-wrap" id="category-filters" style="margin-bottom: 2rem;">
+                <button class="filter-btn active" data-cat="all" onclick="selectCategory('all')">
+                    🌟 All Calculators (<%= calculators.length %>)
+                </button>
+                <% Object.keys(categories).forEach(function(catKey) { %>
+                    <button class="filter-btn" data-cat="<%= catKey %>" onclick="selectCategory('<%= catKey %>')">
+                        <%= categories[catKey].icon %> <%= categories[catKey].name %> (<%= categoryCounts[catKey] || 0 %>)
+                    </button>
+                <% }); %>
+            </div>
+
+            <!-- Live Search Box (Positioned directly above calculator cards) -->
+            <div class="search-wrapper" style="margin-bottom: 0;">
+                <span class="search-icon">🔍</span>
+                <input
+                    type="text"
+                    id="calc-search"
+                    class="search-input-box"
+                    placeholder="Search 500+ health calculators... (e.g. BMI, BMR, Calorie Deficit, Sleep, Blood Pressure, 1RM)"
+                    autocomplete="off"
+                    oninput="filterCalculators()"
+                >
+            </div>
+        </section>
+
+        <!-- ===== CALCULATOR CARDS GRID ===== -->
+        <div id="no-results" style="display:none; text-align:center; padding: 4rem 1rem;">
+            <div style="font-size:3rem;margin-bottom:0.75rem;">🔍</div>
+            <h3 style="font-family:var(--font-heading); margin-bottom:0.5rem;">No health calculators match your search</h3>
+            <p style="color:var(--text-muted);margin-bottom:1.5rem;">Try searching for terms like "BMI", "Calorie", "Protein", "Sleep", "Heart Rate", or "Due Date".</p>
+            <button class="filter-btn active" style="margin:0 auto;" onclick="resetSearch()">Clear Search</button>
         </div>
-    </main>
 
-    <footer class="main-footer">
-        <div class="footer-links">
-            <a href="https://www.calculatorfree.in/about-us/" target="_blank" rel="noopener noreferrer">About Us</a>
-            <a href="https://www.calculatorfree.in/contact-us/" target="_blank" rel="noopener noreferrer">Contact</a>
-            <a href="https://www.calculatorfree.in/disclaimer/" target="_blank" rel="noopener noreferrer">Disclaimer</a>
-            <a href="https://www.calculatorfree.in/dmca-policy/" target="_blank" rel="noopener noreferrer">DMCA</a>
-            <a href="https://www.calculatorfree.in/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-            <a href="https://www.calculatorfree.in/terms-conditions/" target="_blank" rel="noopener noreferrer">Terms</a>
+        <div class="calc-grid" id="calculators-container">
+            <% calculators.forEach(function(calc) { %>
+                <a 
+                    href="<%= calc.url %>" 
+                    class="calc-card" 
+                    data-category="<%= calc.category %>"
+                    data-name="<%= calc.name.toLowerCase() %>"
+                    data-desc="<%= calc.description.toLowerCase() %>"
+                    data-tags="<%= (calc.tags || []).join(' ').toLowerCase() %>"
+                >
+                    <div class="card-top">
+                        <div class="card-icon-box"><%= calc.icon %></div>
+                        <span class="card-category-tag"><%= calc.categoryName %></span>
+                    </div>
+                    <h3><%= calc.name %></h3>
+                    <p><%= calc.description %></p>
+                    
+                    <% if (calc.tags && calc.tags.length > 0) { %>
+                        <div class="card-tags">
+                            <% calc.tags.slice(0, 3).forEach(function(tag) { %>
+                                <span class="card-tag">#<%= tag %></span>
+                            <% }); %>
+                        </div>
+                    <% } %>
+
+                    <div class="card-action">
+                        <span>Calculate Now</span>
+                        <span>→</span>
+                    </div>
+                </a>
+            <% }); %>
         </div>
-        <p>&copy; <%= new Date().getFullYear() %> calculatorfree.in — All Rights Reserved.</p>
-    </footer>
 
-    <script>
-    // Real-time search
-    const searchInput = document.getElementById('calculator-search');
-    const categories  = document.querySelectorAll('.category-section');
-    const noResults   = document.getElementById('no-results');
+        <%- include('partials/ad_unit') %>
 
-    searchInput.addEventListener('input', () => {
-        const q = searchInput.value.trim().toLowerCase();
-        let totalVisible = 0;
+        <!-- ===== FAQ SECTION ===== -->
+        <section class="info-section">
+            <h2>Frequently Asked Questions About Health Hub</h2>
+            <div class="faq-list">
+                <div class="faq-item open">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Are all 500+ health calculators on Health Hub free?</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, 100% free! Every calculator on Health Hub is accessible to everyone with zero subscriptions, paywalls, or accounts needed.</p>
+                    </div>
+                </div>
 
-        categories.forEach(cat => {
-            const cards = cat.querySelectorAll('.calc-card');
-            let visibleInCat = 0;
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Are the health formulas scientifically validated?</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>All calculations utilize globally recognized medical and physiological standards, including Mifflin-St Jeor (BMR), Devine & Robinson (Ideal Weight), U.S. Navy Body Fat, FINDRISC (Diabetes), AHA (Blood Pressure), and WHO/CDC pediatric percentiles.</p>
+                    </div>
+                </div>
 
-            cards.forEach(card => {
-                const name = card.dataset.name || '';
-                const desc = card.dataset.desc || '';
-                const match = !q || name.includes(q) || desc.includes(q);
-                card.classList.toggle('search-hidden', !match);
-                if (match) visibleInCat++;
-            });
+                <div class="faq-item">
+                    <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Is my health information kept private?</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes. All calculations occur locally in your browser. We never save, store, or sell your private personal metrics or body measurements.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            cat.classList.toggle('hidden', visibleInCat === 0);
-            totalVisible += visibleInCat;
+    </div>
+</main>
+
+<script>
+    let activeCategory = 'all';
+
+    function selectCategory(cat) {
+        activeCategory = cat;
+        document.querySelectorAll('#category-filters .filter-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
+        });
+        filterCalculators();
+    }
+
+    function resetSearch() {
+        document.getElementById('calc-search').value = '';
+        selectCategory('all');
+    }
+
+    function filterCalculators() {
+        const query = document.getElementById('calc-search').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.calc-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const cardCat = card.getAttribute('data-category');
+            const cardName = card.getAttribute('data-name');
+            const cardDesc = card.getAttribute('data-desc');
+            const cardTags = card.getAttribute('data-tags');
+
+            const matchesCat = (activeCategory === 'all' || cardCat === activeCategory);
+            const matchesSearch = !query || cardName.includes(query) || cardDesc.includes(query) || cardTags.includes(query);
+
+            if (matchesCat && matchesSearch) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
         });
 
-        noResults.style.display = totalVisible === 0 ? 'block' : 'none';
-    });
-    </script>
-    <script>
-    // Theme Toggle
-    (function() {
-        const saved = localStorage.getItem('hh-theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', saved);
-    })();
+        document.getElementById('no-results').style.display = visibleCount === 0 ? 'block' : 'none';
+    }
 
-    const toggleBtn = document.getElementById('theme-toggle');
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('hh-theme', next);
+    // ===== OFFICIAL PUBLIC HEALTH ADVISORY CAROUSEL LOGIC =====
+    let currentAdvisoryIdx = 0;
+    const totalAdvisorySlides = 6;
+    let advisoryTimer = null;
+
+    function showAdvisorySlide(idx) {
+        currentAdvisoryIdx = (idx + totalAdvisorySlides) % totalAdvisorySlides;
+        
+        // Update slides
+        const slides = document.querySelectorAll('.advisory-slide');
+        slides.forEach((s, i) => {
+            s.classList.toggle('active', i === currentAdvisoryIdx);
+        });
+
+        // Update dots
+        const dots = document.querySelectorAll('.advisory-dot');
+        dots.forEach((d, i) => {
+            d.classList.toggle('active', i === currentAdvisoryIdx);
         });
     }
-    </script>
 
-</body>
-</html>
+    function nextAdvisorySlide() {
+        showAdvisorySlide(currentAdvisoryIdx + 1);
+        resetAdvisoryTimer();
+    }
+
+    function prevAdvisorySlide() {
+        showAdvisorySlide(currentAdvisoryIdx - 1);
+        resetAdvisoryTimer();
+    }
+
+    function goToAdvisorySlide(idx) {
+        showAdvisorySlide(idx);
+        resetAdvisoryTimer();
+    }
+
+    function startAdvisoryAutoPlay() {
+        if (advisoryTimer) clearInterval(advisoryTimer);
+        advisoryTimer = setInterval(() => {
+            showAdvisorySlide(currentAdvisoryIdx + 1);
+        }, 5000);
+    }
+
+    function resetAdvisoryTimer() {
+        clearInterval(advisoryTimer);
+        startAdvisoryAutoPlay();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        startAdvisoryAutoPlay();
+
+        // Pause on hover
+        const widget = document.getElementById('health-advisory-widget');
+        if (widget) {
+            widget.addEventListener('mouseenter', () => clearInterval(advisoryTimer));
+            widget.addEventListener('mouseleave', () => startAdvisoryAutoPlay());
+        }
+    });
+</script>
+
+<%- include('partials/medical_disclaimer_banner') %>
+<%- include('partials/footer') %>

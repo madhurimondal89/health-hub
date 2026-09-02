@@ -1,161 +1,283 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-        
-        <div class="unit-switcher">
-            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
-            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#diet-nutrition">Diet &amp; Nutrition</a> <span>›</span>
+                <span>Calorie Calculator</span>
+            </div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">🍎</div>
+                <div class="calc-hero-text">
+                    <h1>Daily Calorie &amp; Macro Calculator</h1>
+                    <p>Calculate your daily maintenance calories, safe fat loss targets, and personalized macronutrient splits.</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="calorieForm">
+    <div class="container">
+        <div class="calc-workspace">
+            <!-- Left: Inputs -->
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>⚡</span> Energy Parameters
+                </div>
+
+                <!-- Unit Switcher -->
+                <div class="form-group">
+                    <label class="form-label">Units</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="unit-metric" class="toggle-pill-btn active" style="flex:1;" onclick="switchUnit('metric')">📏 Metric (kg, cm)</button>
+                        <button type="button" id="unit-imperial" class="toggle-pill-btn" style="flex:1;" onclick="switchUnit('imperial')">📐 Imperial (lbs, ft-in)</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Biological Gender</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="btn-male" class="toggle-pill-btn active" style="flex:1;" onclick="setGender('male')">👨 Male</button>
+                        <button type="button" id="btn-female" class="toggle-pill-btn" style="flex:1;" onclick="setGender('female')">👩 Female</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" for="inp-age">Age</label>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-age" class="calc-input has-suffix" value="28" min="15" max="100" oninput="syncSlider('inp-age'); calculateCalories();">
+                        <span class="input-symbol-suffix">Yrs</span>
+                    </div>
+                    <div class="range-slider-wrap">
+                        <input type="range" id="inp-age-slider" class="calc-slider" value="28" min="15" max="90" oninput="syncInput('inp-age'); calculateCalories();">
+                    </div>
+                </div>
+
+                <!-- Metric Inputs -->
+                <div id="metric-inputs">
                     <div class="form-group">
-                        <label>Gender</label>
-                        <div class="gender-switcher">
-                            <button type="button" id="genderMale" class="gender-btn active">Male</button>
-                            <button type="button" id="genderFemale" class="gender-btn">Female</button>
+                        <div class="form-label-row">
+                            <label class="form-label" for="inp-height-cm">Height (cm)</label>
+                        </div>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-height-cm" class="calc-input has-suffix" value="175" min="100" max="230" step="0.5" oninput="syncSlider('inp-height-cm'); calculateCalories();">
+                            <span class="input-symbol-suffix">cm</span>
+                        </div>
+                        <div class="range-slider-wrap">
+                            <input type="range" id="inp-height-cm-slider" class="calc-slider" value="175" min="120" max="215" step="0.5" oninput="syncInput('inp-height-cm'); calculateCalories();">
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label for="age">Age (years)</label>
-                        <div class="input-wrapper"><input type="number" id="age" min="15" max="100" placeholder="e.g., 25"></div>
+                        <div class="form-label-row">
+                            <label class="form-label" for="inp-weight-kg">Weight (kg)</label>
+                        </div>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-weight-kg" class="calc-input has-suffix" value="72" min="30" max="250" step="0.5" oninput="syncSlider('inp-weight-kg'); calculateCalories();">
+                            <span class="input-symbol-suffix">kg</span>
+                        </div>
+                        <div class="range-slider-wrap">
+                            <input type="range" id="inp-weight-kg-slider" class="calc-slider" value="72" min="35" max="160" step="0.5" oninput="syncInput('inp-weight-kg'); calculateCalories();">
+                        </div>
                     </div>
-                    <div id="metricInputs">
-                        <div class="form-group"><label for="weightKg">Weight (kg)</label><div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div></div>
-                        <div class="form-group"><label for="heightCm">Height (cm)</label><div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div></div>
-                    </div>
-                    <div id="imperialInputs" style="display: none;">
-                        <div class="form-group"><label for="weightLbs">Weight (lbs)</label><div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div></div>
-                        <div class="form-group"><label>Height (ft, in)</label><div class="height-imperial-inputs"><div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div><div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div></div></div>
-                    </div>
+                </div>
+
+                <!-- Imperial Inputs -->
+                <div id="imperial-inputs" style="display:none;">
                     <div class="form-group">
-                        <label for="activityLevel">Activity Level</label>
-                        <div class="input-wrapper"><select id="activityLevel"><option value="1.2">Sedentary (little or no exercise)</option><option value="1.375">Lightly active (exercise 1-3 days/week)</option><option value="1.55">Moderately active (exercise 3-5 days/week)</option><option value="1.725">Very active (hard exercise 6-7 days/week)</option><option value="1.9">Extra active (very hard exercise & physical job)</option></select></div>
+                        <label class="form-label">Height (ft &amp; in)</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                            <div class="input-with-symbol">
+                                <input type="number" id="inp-height-ft" class="calc-input has-suffix" value="5" min="1" max="8" oninput="calculateCalories()">
+                                <span class="input-symbol-suffix">ft</span>
+                            </div>
+                            <div class="input-with-symbol">
+                                <input type="number" id="inp-height-in" class="calc-input has-suffix" value="9" min="0" max="11" oninput="calculateCalories()">
+                                <span class="input-symbol-suffix">in</span>
+                            </div>
+                        </div>
                     </div>
-                </form>
+
+                    <div class="form-group">
+                        <label class="form-label" for="inp-weight-lbs">Weight (lbs)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-weight-lbs" class="calc-input has-suffix" value="158" min="50" max="500" oninput="calculateCalories()">
+                            <span class="input-symbol-suffix">lbs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-activity">Daily Activity Level</label>
+                    <select id="inp-activity" class="calc-input" onchange="calculateCalories()">
+                        <option value="1.2">Sedentary (Desk job, little exercise)</option>
+                        <option value="1.375" selected>Lightly Active (Workout 1-3 days/week)</option>
+                        <option value="1.55">Moderately Active (Workout 3-5 days/week)</option>
+                        <option value="1.725">Very Active (Heavy training 6-7 days/week)</option>
+                        <option value="1.9">Extra Active (Athlete / Intense physical labor)</option>
+                    </select>
+                </div>
             </div>
-            
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Enter your details to get a complete calorie plan for your weight goals.</div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Daily Maintenance Calories (TDEE)</div>
+                    <div class="result-main-val" id="maintenance-val">2,324 kcal</div>
+                    <div style="margin-top:0.35rem; color:var(--text-secondary); font-size:0.88rem;">100% to maintain current body weight</div>
+                </div>
+
+                <div style="margin-bottom:1.25rem;">
+                    <div class="section-subtitle" style="margin-bottom:0.75rem; font-size:1.05rem;">🎯 Calorie Goal Breakdown</div>
+                    
+                    <div style="display:flex; flex-direction:column; gap:0.65rem;">
+                        <div class="metric-item" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <div style="font-weight:700; color:#10b981;">Mild Weight Loss (-0.25 kg/wk)</div>
+                                <div style="font-size:0.78rem; color:var(--text-muted);">-250 kcal daily deficit</div>
+                            </div>
+                            <div class="metric-item-val" style="font-size:1.2rem;" id="mild-loss-val">2,074 kcal</div>
+                        </div>
+
+                        <div class="metric-item" style="display:flex; justify-content:space-between; align-items:center; border-color:var(--primary);">
+                            <div>
+                                <div style="font-weight:700; color:var(--primary);">Optimal Weight Loss (-0.5 kg/wk)</div>
+                                <div style="font-size:0.78rem; color:var(--text-muted);">-500 kcal deficit (Recommended)</div>
+                            </div>
+                            <div class="metric-item-val" style="font-size:1.2rem; color:var(--primary);" id="opt-loss-val">1,824 kcal</div>
+                        </div>
+
+                        <div class="metric-item" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <div style="font-weight:700; color:#f59e0b;">Lean Muscle Gain (+0.25 kg/wk)</div>
+                                <div style="font-size:0.78rem; color:var(--text-muted);">+300 kcal lean surplus</div>
+                            </div>
+                            <div class="metric-item-val" style="font-size:1.2rem;" id="gain-val">2,624 kcal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="calorieChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>What is a Calorie?</span><span class="icon">+</span></button><div class="accordion-content"><p>A calorie is a unit of energy. In nutrition, calories refer to the energy people get from the food and drink they consume, and the energy they use in physical activity. Calories are essential for human health; the key is consuming the right amount.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>How to Use These Results</span><span class="icon">+</span></button><div class="accordion-content"><p>The results show your estimated daily calorie needs to maintain your current weight, as well as goals for weight loss and gain. These numbers are a starting point. Adjust your intake based on your progress over a few weeks.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator provides an estimate and should not replace professional medical advice. For personalized nutrition and health guidance, please consult a qualified healthcare provider or a registered dietitian before making any significant changes to your diet or exercise routine.</p></div></div>
-        </div>
-<%- include('partials/ad_unit') %>
+        <%- include('partials/ad_unit') %>
+
+        <!-- Educational Information -->
+        <section class="info-section">
+            <h2>How Daily Calorie Needs Are Calculated (Mifflin-St Jeor)</h2>
+            <p>
+                Our calculator uses the clinically acclaimed <strong>Mifflin-St Jeor Equation</strong>, recognized by the American Dietetic Association (ADA) as the most accurate standard for Basal Metabolic Rate estimation.
+            </p>
+            <div class="formula-box">
+                Men: BMR = (10 × weight kg) + (6.25 × height cm) - (5 × age) + 5<br>
+                Women: BMR = (10 × weight kg) + (6.25 × height cm) - (5 × age) - 161<br>
+                TDEE = BMR × Activity Multiplier
+            </div>
+        </section>
     </div>
-</div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    let currentUnit = 'metric', currentGender = 'male';
-    const allInputs = document.querySelectorAll('input, select');
-    const resultDiv = document.getElementById('result-section');
-    const metricBtn = document.getElementById('metricBtn');
-    const imperialBtn = document.getElementById('imperialBtn');
-    const genderMaleBtn = document.getElementById('genderMale');
-    const genderFemaleBtn = document.getElementById('genderFemale');
-    const metricInputsDiv = document.getElementById('metricInputs');
-    const imperialInputsDiv = document.getElementById('imperialInputs');
+    let currentUnit = 'metric';
+    let gender = 'male';
+    let calorieChart = null;
 
     function switchUnit(unit) {
         currentUnit = unit;
-        metricBtn.classList.toggle('active', unit === 'metric');
-        imperialBtn.classList.toggle('active', unit === 'imperial');
-        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
-        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
-        allInputs.forEach(i => i.value = '');
-        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate.</div>`;
-    }
-    metricBtn.addEventListener('click', () => switchUnit('metric'));
-    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
-
-    function switchGender(gender) {
-        currentGender = gender;
-        genderMaleBtn.classList.toggle('active', gender === 'male');
-        genderFemaleBtn.classList.toggle('active', gender === 'female');
+        document.getElementById('unit-metric').classList.toggle('active', unit === 'metric');
+        document.getElementById('unit-imperial').classList.toggle('active', unit === 'imperial');
+        document.getElementById('metric-inputs').style.display = unit === 'metric' ? 'block' : 'none';
+        document.getElementById('imperial-inputs').style.display = unit === 'imperial' ? 'block' : 'none';
         calculateCalories();
     }
-    genderMaleBtn.addEventListener('click', () => switchGender('male'));
-    genderFemaleBtn.addEventListener('click', () => switchGender('female'));
 
-    allInputs.forEach(input => input.addEventListener('input', calculateCalories));
+    function setGender(g) {
+        gender = g;
+        document.getElementById('btn-male').classList.toggle('active', g === 'male');
+        document.getElementById('btn-female').classList.toggle('active', g === 'female');
+        calculateCalories();
+    }
+
+    function syncSlider(id) {
+        document.getElementById(id + '-slider').value = document.getElementById(id).value;
+    }
+
+    function syncInput(id) {
+        document.getElementById(id).value = document.getElementById(id + '-slider').value;
+    }
 
     function calculateCalories() {
-        let weightInKg, heightInCm;
-        const age = parseFloat(document.getElementById('age').value);
-        const activityMultiplier = parseFloat(document.getElementById('activityLevel').value);
+        let weightKg, heightCm;
 
         if (currentUnit === 'metric') {
-            weightInKg = parseFloat(document.getElementById('weightKg').value);
-            heightInCm = parseFloat(document.getElementById('heightCm').value);
+            weightKg = parseFloat(document.getElementById('inp-weight-kg').value) || 72;
+            heightCm = parseFloat(document.getElementById('inp-height-cm').value) || 175;
         } else {
-            const lbs = parseFloat(document.getElementById('weightLbs').value);
-            const ft = parseFloat(document.getElementById('heightFt').value);
-            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
-            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
-            if (!isNaN(ft)) heightInCm = (ft * 12 + inches) * 2.54;
+            const lbs = parseFloat(document.getElementById('inp-weight-lbs').value) || 158;
+            const ft = parseFloat(document.getElementById('inp-height-ft').value) || 5;
+            const inches = parseFloat(document.getElementById('inp-height-in').value) || 9;
+            weightKg = lbs * 0.45359237;
+            heightCm = (ft * 12 + inches) * 2.54;
         }
 
-        if (isNaN(weightInKg) || isNaN(heightInCm) || isNaN(age) || age < 15) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter all valid details.</div>`;
-            return;
+        const age = parseFloat(document.getElementById('inp-age').value) || 28;
+        const activity = parseFloat(document.getElementById('inp-activity').value) || 1.375;
+
+        // BMR Mifflin-St Jeor
+        let bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age);
+        bmr = gender === 'male' ? bmr + 5 : bmr - 161;
+
+        const tdee = Math.round(bmr * activity);
+        const mildLoss = Math.max(1200, tdee - 250);
+        const optLoss = Math.max(1200, tdee - 500);
+        const leanGain = tdee + 300;
+
+        document.getElementById('maintenance-val').innerText = `${tdee.toLocaleString()} kcal`;
+        document.getElementById('mild-loss-val').innerText = `${mildLoss.toLocaleString()} kcal`;
+        document.getElementById('opt-loss-val').innerText = `${optLoss.toLocaleString()} kcal`;
+        document.getElementById('gain-val').innerText = `${leanGain.toLocaleString()} kcal`;
+
+        // Macro Split for Optimal Loss (40% Protein, 30% Carbs, 30% Fat)
+        const proteinGrams = Math.round((optLoss * 0.40) / 4);
+        const carbGrams = Math.round((optLoss * 0.30) / 4);
+        const fatGrams = Math.round((optLoss * 0.30) / 9);
+
+        // Render Chart.js
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('calorieChart');
+            if (ctx) {
+                if (calorieChart) calorieChart.destroy();
+                calorieChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [`Protein (${proteinGrams}g)`, `Carbs (${carbGrams}g)`, `Fats (${fatGrams}g)`],
+                        datasets: [{
+                            data: [proteinGrams * 4, carbGrams * 4, fatGrams * 9],
+                            backgroundColor: ['#10b981', '#0284c7', '#f59e0b'],
+                            borderWidth: 2,
+                            borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Inter', size: 12 } } }
+                        }
+                    }
+                });
+            }
         }
-
-        const bmr = (currentGender === 'male') ? (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) + 5 : (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) - 161;
-        const tdee = Math.round(bmr * activityMultiplier);
-        const bmi = weightInKg / ((heightInCm / 100) ** 2);
-        const bmiResult = bmi.toFixed(1);
-
-        let category = '';
-        if (bmi < 18.5) { category = 'Underweight'; } 
-        else if (bmi >= 18.5 && bmi < 25) { category = 'Normal'; } 
-        else { category = 'Overweight'; }
-        
-        const goals = {
-            lose_mild: tdee - 250,
-            lose_normal: tdee - 500,
-            gain_mild: tdee + 250,
-            gain_normal: tdee + 500,
-            gain_fast: tdee + 1000,
-        };
-
-        resultDiv.innerHTML = `
-            <div class="result-summary">
-                <div class="bmi-info">BMI Score: <strong>${bmiResult} kg/m²</strong> (${category})</div>
-                <div class="healthy-range">Healthy BMI Range: 18.5 - 25 kg/m²</div>
-            </div>
-
-            <div class="goals-container">
-                <h4>Energy intake to lose weight:</h4>
-                <div class="goal-card loss"><div class="goal-title">Mild weight loss<span>0.25 kg/week</span></div><div class="goal-calories">${goals.lose_mild.toLocaleString()}</div><div class="goal-details">Calories/day</div></div>
-                <div class="goal-card loss"><div class="goal-title">Weight loss<span>0.5 kg/week</span></div><div class="goal-calories">${goals.lose_normal.toLocaleString()}</div><div class="goal-details">Calories/day</div></div>
-                ${goals.lose_normal < 1500 ? `<div class="caution-box">Please consult a doctor for weight loss goals requiring less than 1,500 calories a day.</div>` : ''}
-            </div>
-            
-            <div class="goals-container">
-                <h4>Energy intake to gain weight:</h4>
-                <div class="goal-card gain"><div class="goal-title">Mild weight gain<span>0.25 kg/week</span></div><div class="goal-calories">${goals.gain_mild.toLocaleString()}</div><div class="goal-details">Calories/day</div></div>
-                <div class="goal-card gain"><div class="goal-title">Weight gain<span>0.5 kg/week</span></div><div class="goal-calories">${goals.gain_normal.toLocaleString()}</div><div class="goal-details">Calories/day</div></div>
-                <div class="goal-card gain"><div class="goal-title">Fast weight gain<span>1 kg/week</span></div><div class="goal-calories">${goals.gain_fast.toLocaleString()}</div><div class="goal-details">Calories/day</div></div>
-            </div>
-        `;
     }
-    
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-        });
-    });
+
+    document.addEventListener('DOMContentLoaded', calculateCalories);
 </script>
 
 <%- include('partials/inner_footer') %>

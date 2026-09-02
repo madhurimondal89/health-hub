@@ -1,175 +1,189 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-
-        <div class="unit-switcher">
-            <button id="metricBtn" class="unit-btn active">Metric (kg)</button>
-            <button id="imperialBtn" class="unit-btn">Imperial (lbs)</button>
-        </div>
-
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="oneRepMaxForm">
-                    <!-- Metric Units -->
-                    <div id="metricInputs">
-                        <div class="form-group">
-                            <label for="weightKg">Weight Lifted (kg)</label>
-                            <div class="input-wrapper"><input type="number" id="weightKg" step="0.5" placeholder="e.g., 100"></div>
-                        </div>
-                    </div>
-                    <!-- Imperial Units -->
-                    <div id="imperialInputs" style="display: none;">
-                        <div class="form-group">
-                            <label for="weightLbs">Weight Lifted (lbs)</label>
-                            <div class="input-wrapper"><input type="number" id="weightLbs" step="1" placeholder="e.g., 225"></div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="reps">Reps Performed</label>
-                        <div class="input-wrapper"><input type="number" id="reps" step="1" min="1" max="20" placeholder="e.g., 5 (max 20)"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="formula">Formula</label>
-                        <div class="input-wrapper">
-                            <select id="formula">
-                                <option value="epley" selected>Epley (default)</option>
-                                <option value="brzycki">Brzycki</option>
-                                <option value="lander">Lander</option>
-                                <option value="lombardi">Lombardi</option>
-                                <option value="mayhew">Mayhew</option>
-                                <option value="oconner">O'Conner</option>
-                                <option value="wathan">Wathan</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#fitness-workouts">Fitness &amp; Workouts</a> <span>›</span>
+                <span>One Rep Max (1RM) Calculator</span>
             </div>
-
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Enter the weight lifted and reps to estimate your 1RM.</div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">🏋️‍♂️</div>
+                <div class="calc-hero-text">
+                    <h1>One Rep Max (1RM) &amp; Lift Percentage Calculator</h1>
+                    <p>Calculate your 1-Rep Max for Bench Press, Squat, and Deadlift along with training percentage loads (50% to 95%) using Epley &amp; Brzycki formulas.</p>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>What is One Rep Max (1RM)?</span><span class="icon">+</span></button><div class="accordion-content"><p>Your One Rep Max (1RM) is the maximum amount of weight you can lift for a single repetition with proper form for a given exercise. It is a key metric in strength training for programming workout intensity and tracking progress over time.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Which formula is most accurate?</span><span class="icon">+</span></button><div class="accordion-content"><p>Epley and Brzycki are the most widely used and validated formulas. All formulas become less accurate as the number of reps increases beyond 10, since fatigue and technique become larger factors. For best results, use 3–5 rep sets when estimating your 1RM.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>How do I use my 1RM for training?</span><span class="icon">+</span></button><div class="accordion-content"><p>Use the percentage table to guide your training intensity:</p><ul><li><strong>50–60%:</strong> Warm-up, technique work, rehab</li><li><strong>70–80%:</strong> Hypertrophy (muscle building) — 8–12 reps</li><li><strong>80–85%:</strong> Strength-hypertrophy hybrid — 5–8 reps</li><li><strong>85–95%:</strong> Strength — 1–5 reps</li><li><strong>95–100%:</strong> Maximal strength / competition prep</li></ul></div></div>
-        </div>
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>🏋️‍♂️</span> Lift Information
+                </div>
 
-<%- include('partials/ad_unit') %>
+                <div class="form-group">
+                    <label class="form-label">Units</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="unit-metric" class="toggle-pill-btn active" style="flex:1;" onclick="switchUnit('metric')">📏 Metric (kg)</button>
+                        <button type="button" id="unit-imperial" class="toggle-pill-btn" style="flex:1;" onclick="switchUnit('imperial')">📐 Imperial (lbs)</button>
+                    </div>
+                </div>
 
-        <div style="margin-top:2rem;padding:1.5rem;background:var(--card-bg);border-radius:12px;border:1px solid var(--border-color);">
-            <h3 style="margin:0 0 1rem;font-size:1rem;color:var(--text-muted);">🔗 Related Calculators</h3>
-            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
-                <a href="/calorie-burn-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🔥 Calorie Burn</a>
-                <a href="/protein-intake-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🥩 Protein Intake</a>
-                <a href="/tdee-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">⚡ TDEE Calculator</a>
-                <a href="/body-fat-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">📊 Body Fat</a>
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" id="lbl-weight" for="inp-weight">Weight Lifted</label>
+                        <div class="preset-chips">
+                            <span class="chip" onclick="setWeight(60)">60</span>
+                            <span class="chip" onclick="setWeight(80)">80</span>
+                            <span class="chip" onclick="setWeight(100)">100</span>
+                            <span class="chip" onclick="setWeight(120)">120</span>
+                        </div>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-weight" class="calc-input has-suffix" value="80" step="2.5" oninput="calculate1RM()">
+                        <span class="input-symbol-suffix" id="unit-weight">kg</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" for="inp-reps">Repetitions Performed (1-12)</label>
+                        <div class="preset-chips">
+                            <span class="chip" onclick="setReps(3)">3 Reps</span>
+                            <span class="chip" onclick="setReps(5)">5 Reps</span>
+                            <span class="chip" onclick="setReps(8)">8 Reps</span>
+                            <span class="chip" onclick="setReps(10)">10 Reps</span>
+                        </div>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-reps" class="calc-input has-suffix" value="5" min="1" max="15" oninput="calculate1RM()">
+                        <span class="input-symbol-suffix">Reps</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Estimated One Rep Max (1RM)</div>
+                    <div class="result-main-val" id="one-rm-val">93.3 kg</div>
+                    <div style="margin-top:0.35rem; font-size:0.88rem; color:var(--text-secondary);">Epley Formula standard</div>
+                </div>
+
+                <div class="result-metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-item-label">90% 1RM (Heavy Strength)</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="pct-90-val">84.0 kg</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">80% 1RM (Hypertrophy)</div>
+                        <div class="metric-item-val" id="pct-80-val">74.7 kg</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">70% 1RM (Speed / Volume)</div>
+                        <div class="metric-item-val" id="pct-70-val">65.3 kg</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">60% 1RM (Endurance / Warmup)</div>
+                        <div class="metric-item-val" id="pct-60-val">56.0 kg</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="oneRmChart"></canvas>
+                </div>
             </div>
         </div>
 
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>Epley vs Brzycki 1RM Formulas</h2>
+            <div class="formula-box">
+                Epley Formula: 1RM = Weight × (1 + Reps / 30)<br>
+                Brzycki Formula: 1RM = Weight × (36 / (37 - Reps))
+            </div>
+        </section>
     </div>
-</div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
     let currentUnit = 'metric';
-    const resultDiv = document.getElementById('result-section');
-    const metricBtn = document.getElementById('metricBtn');
-    const imperialBtn = document.getElementById('imperialBtn');
-    const metricInputsDiv = document.getElementById('metricInputs');
-    const imperialInputsDiv = document.getElementById('imperialInputs');
+    let oneRmChart = null;
 
     function switchUnit(unit) {
         currentUnit = unit;
-        metricBtn.classList.toggle('active', unit === 'metric');
-        imperialBtn.classList.toggle('active', unit === 'imperial');
-        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
-        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
-        document.querySelectorAll('input').forEach(i => i.value = '');
-        resultDiv.innerHTML = `<div class="placeholder">Enter the weight lifted and reps to estimate your 1RM.</div>`;
-    }
-    metricBtn.addEventListener('click', () => switchUnit('metric'));
-    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
-
-    document.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('input', calculateOneRepMax);
-        el.addEventListener('change', calculateOneRepMax);
-    });
-
-    function calculateOneRepMax() {
-        let weight;
-        if (currentUnit === 'metric') {
-            weight = parseFloat(document.getElementById('weightKg').value);
-        } else {
-            const lbs = parseFloat(document.getElementById('weightLbs').value);
-            if (!isNaN(lbs)) weight = lbs * 0.453592;
-        }
-
-        const reps = parseInt(document.getElementById('reps').value);
-        const formula = document.getElementById('formula').value;
-
-        if (isNaN(weight) || isNaN(reps) || weight <= 0 || reps < 1 || reps > 20) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter valid weight and reps (1–20).</div>`;
-            return;
-        }
-
-        let oneRM;
-        const r = reps;
-        const W = weight;
-
-        switch (formula) {
-            case 'epley':    oneRM = r === 1 ? W : W * (1 + r / 30); break;
-            case 'brzycki':  oneRM = r === 1 ? W : W * (36 / (37 - r)); break;
-            case 'lander':   oneRM = (100 * W) / (101.3 - 2.67123 * r); break;
-            case 'lombardi': oneRM = W * Math.pow(r, 0.1); break;
-            case 'mayhew':   oneRM = (100 * W) / (52.2 + 41.9 * Math.exp(-0.055 * r)); break;
-            case 'oconner':  oneRM = W * (1 + 0.025 * r); break;
-            case 'wathan':   oneRM = (100 * W) / (48.8 + 53.8 * Math.exp(-0.075 * r)); break;
-            default:         oneRM = W * (1 + r / 30);
-        }
-
-        const displayUnit = currentUnit === 'metric' ? 'kg' : 'lbs';
-        const displayWeight = currentUnit === 'metric' ? oneRM : oneRM / 0.453592;
-
-        const percentages = [95, 90, 85, 80, 75, 70, 60, 50];
-        const tableRows = percentages.map(pct => {
-            const pctWeight = (displayWeight * pct / 100).toFixed(1);
-            return `<tr><td>${pct}%</td><td><strong>${pctWeight} ${displayUnit}</strong></td></tr>`;
-        }).join('');
-
-        const display1RM = displayWeight.toFixed(1);
-
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text">Estimated 1RM: <strong>${display1RM} ${displayUnit}</strong></p>
-                <hr class="result-divider" />
-                <p class="result-sub-text" style="margin-bottom:0.75rem;">📊 Training Percentage Table</p>
-                <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
-                    <thead>
-                        <tr style="border-bottom:1px solid var(--border-color);">
-                            <th style="text-align:left;padding:0.3rem 0;color:var(--text-muted);">% of 1RM</th>
-                            <th style="text-align:left;padding:0.3rem 0;color:var(--text-muted);">Weight</th>
-                        </tr>
-                    </thead>
-                    <tbody>${tableRows}</tbody>
-                </table>
-            </div>
-        `;
+        document.getElementById('unit-metric').classList.toggle('active', unit === 'metric');
+        document.getElementById('unit-imperial').classList.toggle('active', unit === 'imperial');
+        const isMetric = unit === 'metric';
+        document.getElementById('unit-weight').innerText = isMetric ? 'kg' : 'lbs';
+        document.getElementById('inp-weight').value = isMetric ? 80 : 175;
+        calculate1RM();
     }
 
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-        });
-    });
+    function setWeight(w) {
+        document.getElementById('inp-weight').value = w;
+        calculate1RM();
+    }
+
+    function setReps(r) {
+        document.getElementById('inp-reps').value = r;
+        calculate1RM();
+    }
+
+    function calculate1RM() {
+        const weight = parseFloat(document.getElementById('inp-weight').value) || 80;
+        const reps = parseFloat(document.getElementById('inp-reps').value) || 5;
+
+        // Epley Formula
+        const oneRm = reps === 1 ? weight : weight * (1 + (reps / 30));
+        const p90 = oneRm * 0.90;
+        const p80 = oneRm * 0.80;
+        const p70 = oneRm * 0.70;
+        const p60 = oneRm * 0.60;
+
+        const u = currentUnit === 'metric' ? 'kg' : 'lbs';
+
+        document.getElementById('one-rm-val').innerText = `${oneRm.toFixed(1)} ${u}`;
+        document.getElementById('pct-90-val').innerText = `${p90.toFixed(1)} ${u}`;
+        document.getElementById('pct-80-val').innerText = `${p80.toFixed(1)} ${u}`;
+        document.getElementById('pct-70-val').innerText = `${p70.toFixed(1)} ${u}`;
+        document.getElementById('pct-60-val').innerText = `${p60.toFixed(1)} ${u}`;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('oneRmChart');
+            if (ctx) {
+                if (oneRmChart) oneRmChart.destroy();
+                oneRmChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['100% 1RM', '90%', '80%', '70%', '60%', '50%'],
+                        datasets: [{
+                            data: [oneRm, p90, p80, p70, p60, oneRm * 0.50],
+                            backgroundColor: ['#10b981', '#0284c7', '#6366f1', '#8b5cf6', '#f59e0b', '#64748b'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: false, grid: { color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f293d' : '#f1f5f9' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', calculate1RM);
 </script>
 
 <%- include('partials/inner_footer') %>

@@ -1,0 +1,153 @@
+<%- include('partials/inner_header') %>
+
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#medical-clinical">Medical &amp; Clinical</a> <span>›</span>
+                <span>OpenFDA Drug Safety Checker</span>
+            </div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">💊</div>
+                <div class="calc-hero-text">
+                    <h1>OpenFDA Drug Safety, Side Effects &amp; Clinical Warnings</h1>
+                    <p>Search official US FDA drug labels, active ingredients, therapeutic indications, dosage guidance, and clinical contraindications in real-time.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Search Box -->
+        <div class="input-card" style="margin-bottom: 2rem;">
+            <div class="section-subtitle">
+                <span>🔍</span> Search Any Medicine or Generic Compound
+            </div>
+
+            <div style="display:flex; gap:0.75rem;">
+                <input
+                    type="text"
+                    id="drug-search-inp"
+                    class="calc-input"
+                    placeholder="e.g. Paracetamol, Ibuprofen, Metformin, Amoxicillin, Lisinopril, Aspirin..."
+                    value="Ibuprofen"
+                    onkeydown="if(event.key==='Enter') searchDrug()"
+                >
+                <button type="button" class="filter-btn active" style="padding:0 2rem; border-radius:var(--radius-md); font-size:1rem;" onclick="searchDrug()">
+                    Verify Medicine
+                </button>
+            </div>
+
+            <div class="preset-chips" style="margin-top: 1rem;">
+                <span style="font-size:0.85rem; color:var(--text-muted); align-self:center;">Common:</span>
+                <span class="chip" onclick="quickDrug('Ibuprofen')">💊 Ibuprofen</span>
+                <span class="chip" onclick="quickDrug('Paracetamol')">💊 Paracetamol / Acetaminophen</span>
+                <span class="chip" onclick="quickDrug('Metformin')">💊 Metformin</span>
+                <span class="chip" onclick="quickDrug('Amoxicillin')">💊 Amoxicillin</span>
+                <span class="chip" onclick="quickDrug('Aspirin')">💊 Aspirin</span>
+                <span class="chip" onclick="quickDrug('Omeprazole')">💊 Omeprazole</span>
+            </div>
+        </div>
+
+        <div id="drug-loading" style="display:none; text-align:center; padding:2rem 0; color:var(--text-muted);">
+            Connecting to official OpenFDA clinical database...
+        </div>
+
+        <!-- Drug Results Card -->
+        <div id="drug-results-container">
+            <!-- Dynamically populated via JS -->
+        </div>
+
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>Official US Food and Drug Administration (FDA) Data Source</h2>
+            <p>
+                Clinical pharmacology information is queried directly from openFDA Structured Product Labeling (SPL) database. Always consult a licensed healthcare practitioner before taking any prescription medication or altering clinical doses.
+            </p>
+        </section>
+    </div>
+</main>
+
+<script>
+    function quickDrug(name) {
+        document.getElementById('drug-search-inp').value = name;
+        searchDrug();
+    }
+
+    async function searchDrug() {
+        const q = document.getElementById('drug-search-inp').value.trim();
+        if (!q) return;
+
+        const container = document.getElementById('drug-results-container');
+        const loading = document.getElementById('drug-loading');
+        loading.style.display = 'block';
+        container.innerHTML = '';
+
+        try {
+            const res = await fetch(`/api/drug-search?q=${encodeURIComponent(q)}`);
+            const data = await res.json();
+            loading.style.display = 'none';
+
+            if (!data.success || !data.results || data.results.length === 0) {
+                container.innerHTML = `
+                    <div class="input-card" style="text-align:center; padding:2.5rem 1rem;">
+                        <div style="font-size:2.5rem; margin-bottom:0.5rem;">⚠️</div>
+                        <h3 style="font-family:var(--font-heading); margin-bottom:0.5rem;">No FDA label found for "${q}"</h3>
+                        <p style="color:var(--text-muted);">Try searching using the active generic chemical name (e.g. "Acetaminophen" instead of brand name).</p>
+                    </div>
+                `;
+                return;
+            }
+
+            data.results.forEach(d => {
+                const card = document.createElement('div');
+                card.className = 'results-card';
+                card.style.marginBottom = '2rem';
+                card.innerHTML = `
+                    <div class="result-main-banner" style="text-align:left;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+                            <div>
+                                <div class="result-main-label">FDA Approved Medication</div>
+                                <div class="result-main-val" style="font-size:1.9rem; color:var(--text-primary);">${d.brandName}</div>
+                                <div style="color:var(--primary); font-weight:700; margin-top:0.25rem;">Active Substance: ${d.genericName || d.substanceName}</div>
+                            </div>
+                            <span class="card-category-tag" style="background:#10b981; color:#ffffff; padding:0.4rem 1rem;">Route: ${d.route}</span>
+                        </div>
+                    </div>
+
+                    <div class="result-metric-grid">
+                        <div class="metric-item">
+                            <div class="metric-item-label">Medical Purpose / Indication</div>
+                            <div style="font-size:0.92rem; color:var(--text-secondary); margin-top:0.35rem; line-height:1.5;">${truncate(d.purpose, 250)}</div>
+                        </div>
+                        <div class="metric-item" style="border-left:4px solid var(--accent-amber);">
+                            <div class="metric-item-label">Dosage Guidelines</div>
+                            <div style="font-size:0.92rem; color:var(--text-secondary); margin-top:0.35rem; line-height:1.5;">${truncate(d.dosage, 250)}</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-item" style="border-left:4px solid var(--accent-rose); margin-top:1rem;">
+                        <div class="metric-item-label" style="color:var(--accent-rose); font-weight:700;">⚠️ Warnings &amp; Precautions</div>
+                        <div style="font-size:0.92rem; color:var(--text-secondary); margin-top:0.35rem; line-height:1.5;">${truncate(d.warnings, 400)}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (err) {
+            loading.style.display = 'none';
+            container.innerHTML = `<div style="color:var(--accent-rose); text-align:center; padding:2rem 0;">Network error connecting to openFDA.</div>`;
+        }
+    }
+
+    function truncate(str, len) {
+        if (!str) return 'Information available via physician label.';
+        if (str.length <= len) return str;
+        return str.substring(0, len) + '...';
+    }
+
+    document.addEventListener('DOMContentLoaded', searchDrug);
+</script>
+
+<%- include('partials/inner_footer') %>

@@ -1,100 +1,215 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-        
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="hrForm">
-                    <div class="form-group">
-                        <label for="age">Your Age (years)</label>
-                        <div class="input-wrapper"><input type="number" id="age" min="15" max="100" placeholder="e.g., 25"></div>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#fitness-workouts">Fitness &amp; Workouts</a> <span>›</span>
+                <span>Heart Rate Zones Calculator</span>
+            </div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">💓</div>
+                <div class="calc-hero-text">
+                    <h1>Target Heart Rate Zones (Karvonen &amp; Tanaka)</h1>
+                    <p>Calculate your 5 cardiovascular training zones (Warm-up, Fat Burn Zone 2, Aerobic, Anaerobic, and Redline Max) for optimal cardio efficiency.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>💓</span> Cardiac Vitals
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-age">Age (years)</label>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-age" class="calc-input has-suffix" value="28" min="15" max="95" oninput="calculateHRZones()">
+                        <span class="input-symbol-suffix">Yrs</span>
                     </div>
-                </form>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-rhr">Resting Heart Rate (BPM)</label>
+                    <div class="preset-chips">
+                        <span class="chip" onclick="setRHR(55)">55 (Athletic)</span>
+                        <span class="chip" onclick="setRHR(65)">65 (Normal)</span>
+                        <span class="chip" onclick="setRHR(75)">75 (Average)</span>
+                    </div>
+                    <div class="input-with-symbol" style="margin-top:0.5rem;">
+                        <input type="number" id="inp-rhr" class="calc-input has-suffix" value="65" min="35" max="120" oninput="calculateHRZones()">
+                        <span class="input-symbol-suffix">BPM</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-formula">Max Heart Rate Formula</label>
+                    <select id="inp-formula" class="calc-input" onchange="calculateHRZones()">
+                        <option value="tanaka" selected>Tanaka Formula (208 - 0.7 × Age) [Most Accurate]</option>
+                        <option value="fox">Fox Formula (220 - Age) [Traditional Standard]</option>
+                        <option value="gellish">Gellish Formula (207 - 0.7 × Age)</option>
+                    </select>
+                </div>
             </div>
-            
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Enter your age to see your target heart rate zones for exercise.</div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Max Heart Rate (HRmax)</div>
+                    <div class="result-main-val" id="max-hr-val">188 BPM</div>
+                    <div style="margin-top:0.35rem; font-size:0.88rem; color:var(--text-secondary);">Heart Rate Reserve (HRR): <strong id="hrr-val">123 BPM</strong></div>
+                </div>
+
+                <div class="result-metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Zone 2 (Fat Burn &amp; Base)</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="z2-val">126 – 139 BPM</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Zone 3 (Aerobic Cardio)</div>
+                        <div class="metric-item-val" style="color:var(--accent-blue);" id="z3-val">139 – 151 BPM</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Zone 4 (Anaerobic Threshold)</div>
+                        <div class="metric-item-val" style="color:var(--accent-amber);" id="z4-val">151 – 163 BPM</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Zone 5 (Peak Neuromuscular)</div>
+                        <div class="metric-item-val" style="color:var(--accent-rose);" id="z5-val">163 – 188 BPM</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="hrChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>What are Heart Rate Zones?</span><span class="icon">+</span></button><div class="accordion-content"><p>Heart rate zones are ranges based on a percentage of your maximum heart rate (MHR). Training in different zones helps you achieve specific fitness goals, such as improving endurance, burning fat, or increasing speed.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>How is Maximum Heart Rate (MHR) Calculated?</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator uses the most common formula: <strong>MHR = 220 - Your Age</strong>. While this is a reliable estimate for most people, individual MHR can vary. For a precise measurement, a clinical stress test is recommended.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This information is for educational purposes only. Consult a healthcare professional before starting any new exercise program, especially if you have pre-existing health conditions.</p></div></div>
-        </div>
-<%- include('partials/ad_unit') %>
-    </div>
-</div>
+        <%- include('partials/ad_unit') %>
 
-<script>
-    const ageInput = document.getElementById('age');
-    const resultDiv = document.getElementById('result-section');
-    
-    ageInput.addEventListener('input', calculateHeartRateZones);
-
-    function calculateHeartRateZones() {
-        const age = parseFloat(ageInput.value);
-
-        if (isNaN(age) || age < 15 || age > 100) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter a valid age between 15 and 100.</div>`;
-            return;
-        }
-
-        const maxHeartRate = 220 - age;
-
-        const zones = [
-            { name: 'Zone 1: Very Light', percentage: '50-60%', colorClass: 'zone-1' },
-            { name: 'Zone 2: Light (Fat Burning)', percentage: '60-70%', colorClass: 'zone-2' },
-            { name: 'Zone 3: Moderate (Cardio)', percentage: '70-80%', colorClass: 'zone-3' },
-            { name: 'Zone 4: Hard (Anaerobic)', percentage: '80-90%', colorClass: 'zone-4' },
-            { name: 'Zone 5: Maximum Effort', percentage: '90-100%', colorClass: 'zone-5' }
-        ];
-
-        const tableRows = zones.map(zone => {
-            const [minPercent, maxPercent] = zone.percentage.split('-').map(p => parseInt(p) / 100);
-            const minBPM = Math.round(maxHeartRate * minPercent);
-            const maxBPM = Math.round(maxHeartRate * maxPercent);
-            return `<tr>
-                        <td><span class="zone-color-dot ${zone.colorClass}"></span>${zone.name}</td>
-                        <td>${zone.percentage}</td>
-                        <td><strong>${minBPM} - ${maxBPM} BPM</strong></td>
-                    </tr>`;
-        }).join('');
-
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text">Your Estimated Max Heart Rate:</p>
-                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${maxHeartRate}</strong> BPM</p>
-            </div>
-            <div class="activity-table-container">
-                <h4>Target Heart Rate Zones:</h4>
-                <table class="activity-table">
+        <section class="info-section">
+            <h2>The 5 Heart Rate Training Zones Explained</h2>
+            <div class="table-responsive">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Zone</th>
                             <th>Intensity</th>
-                            <th>BPM Range</th>
+                            <th>Primary Metabolic Benefit</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${tableRows}
+                        <tr>
+                            <td><strong>Zone 1: Active Recovery</strong></td>
+                            <td>50% – 60%</td>
+                            <td>Warm-up, cooldown, and cellular recovery</td>
+                        </tr>
+                        <tr style="background:var(--primary-light);">
+                            <td><strong style="color:var(--primary);">Zone 2: Fat Burning &amp; Endurance</strong></td>
+                            <td>60% – 70%</td>
+                            <td>Mitochondrial biogenesis and maximal fat oxidation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zone 3: Aerobic Fitness</strong></td>
+                            <td>70% – 80%</td>
+                            <td>Cardiovascular stamina and capillary density</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zone 4: Anaerobic Lactate Threshold</strong></td>
+                            <td>80% – 90%</td>
+                            <td>High-intensity speed stamina and lactate clearance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zone 5: Maximum Effort</strong></td>
+                            <td>90% – 100%</td>
+                            <td>Fast-twitch muscle power and VO2 max development</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-        `;
+        </section>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    let hrChart = null;
+
+    function setRHR(r) {
+        document.getElementById('inp-rhr').value = r;
+        calculateHRZones();
     }
-    
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-        });
-    });
+
+    function calculateHRZones() {
+        const age = parseFloat(document.getElementById('inp-age').value) || 28;
+        const rhr = parseFloat(document.getElementById('inp-rhr').value) || 65;
+        const formula = document.getElementById('inp-formula').value;
+
+        let maxHr = 220 - age;
+        if (formula === 'tanaka') maxHr = Math.round(208 - (0.7 * age));
+        else if (formula === 'gellish') maxHr = Math.round(207 - (0.7 * age));
+
+        const hrr = Math.max(20, maxHr - rhr);
+
+        // Karvonen Formula: Target HR = ((HRmax - HRrest) * %Intensity) + HRrest
+        const calcZone = (minPct, maxPct) => {
+            const low = Math.round((hrr * minPct) + rhr);
+            const high = Math.round((hrr * maxPct) + rhr);
+            return `${low} – ${high} BPM`;
+        };
+
+        const z1 = calcZone(0.50, 0.60);
+        const z2 = calcZone(0.60, 0.70);
+        const z3 = calcZone(0.70, 0.80);
+        const z4 = calcZone(0.80, 0.90);
+        const z5 = calcZone(0.90, 1.00);
+
+        document.getElementById('max-hr-val').innerText = `${maxHr} BPM`;
+        document.getElementById('hrr-val').innerText = `${hrr} BPM`;
+        document.getElementById('z2-val').innerText = z2;
+        document.getElementById('z3-val').innerText = z3;
+        document.getElementById('z4-val').innerText = z4;
+        document.getElementById('z5-val').innerText = z5;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('hrChart');
+            if (ctx) {
+                if (hrChart) hrChart.destroy();
+                hrChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Zone 1', 'Zone 2 (Fat Burn)', 'Zone 3 (Aerobic)', 'Zone 4 (Threshold)', 'Zone 5 (Max)'],
+                        datasets: [{
+                            data: [
+                                Math.round((hrr * 0.55) + rhr),
+                                Math.round((hrr * 0.65) + rhr),
+                                Math.round((hrr * 0.75) + rhr),
+                                Math.round((hrr * 0.85) + rhr),
+                                Math.round((hrr * 0.95) + rhr)
+                            ],
+                            backgroundColor: ['#64748b', '#10b981', '#0284c7', '#f59e0b', '#f43f5e'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: false, grid: { color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f293d' : '#f1f5f9' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', calculateHRZones);
 </script>
 
 <%- include('partials/inner_footer') %>

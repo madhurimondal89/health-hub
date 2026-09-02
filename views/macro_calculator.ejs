@@ -1,178 +1,230 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-        
-        <div class="unit-switcher">
-            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
-            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#diet-nutrition">Diet &amp; Nutrition</a> <span>›</span>
+                <span>Macro Calculator</span>
+            </div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">🥗</div>
+                <div class="calc-hero-text">
+                    <h1>Macronutrient (Macro) Split Calculator</h1>
+                    <p>Calculate your exact daily targets for Protein, Carbohydrates, and Fats tailored for fat loss, lean muscle gain, or athletic performance.</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="macroForm">
-                    <div class="form-group"><label>Gender</label><div class="gender-switcher"><button type="button" id="genderMale" class="gender-btn active">Male</button><button type="button" id="genderFemale" class="gender-btn">Female</button></div></div>
-                    <div class="form-group"><label for="age">Age (years)</label><div class="input-wrapper"><input type="number" id="age" min="15" max="100" placeholder="e.g., 25"></div></div>
-                    <div id="metricInputs">
-                        <div class="form-group"><label for="weightKg">Weight (kg)</label><div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div></div>
-                        <div class="form-group"><label for="heightCm">Height (cm)</label><div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div></div>
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>🥗</span> Nutritional Setup
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Measurement System</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="unit-metric" class="toggle-pill-btn active" style="flex:1;" onclick="switchUnit('metric')">📏 Metric (kg, cm)</button>
+                        <button type="button" id="unit-imperial" class="toggle-pill-btn" style="flex:1;" onclick="switchUnit('imperial')">📐 Imperial (lbs, ft-in)</button>
                     </div>
-                    <div id="imperialInputs" style="display: none;">
-                        <div class="form-group"><label for="weightLbs">Weight (lbs)</label><div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div></div>
-                        <div class="form-group"><label>Height (ft, in)</label><div class="height-imperial-inputs"><div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div><div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div></div></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Biological Gender</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="btn-male" class="toggle-pill-btn active" style="flex:1;" onclick="setGender('male')">👨 Male</button>
+                        <button type="button" id="btn-female" class="toggle-pill-btn" style="flex:1;" onclick="setGender('female')">👩 Female</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-age">Age</label>
+                    <input type="number" id="inp-age" class="calc-input" value="28" min="15" max="100" oninput="calculateMacros()">
+                </div>
+
+                <div id="metric-inputs">
+                    <div class="form-group">
+                        <label class="form-label" for="inp-height-cm">Height (cm)</label>
+                        <input type="number" id="inp-height-cm" class="calc-input" value="175" min="100" max="230" oninput="calculateMacros()">
                     </div>
                     <div class="form-group">
-                        <label for="activityLevel">Activity Level</label>
-                        <div class="input-wrapper"><select id="activityLevel"><option value="1.2">Sedentary (little or no exercise)</option><option value="1.375">Lightly active (exercise 1-3 days/week)</option><option value="1.55" selected>Moderately active (exercise 3-5 days/week)</option><option value="1.725">Very active (hard exercise 6-7 days/week)</option><option value="1.9">Extra active (very hard exercise & physical job)</option></select></div>
+                        <label class="form-label" for="inp-weight-kg">Weight (kg)</label>
+                        <input type="number" id="inp-weight-kg" class="calc-input" value="72" min="30" max="250" oninput="calculateMacros()">
                     </div>
+                </div>
+
+                <div id="imperial-inputs" style="display:none;">
                     <div class="form-group">
-                        <label for="goal">Your Goal / Diet Plan</label>
-                        <div class="input-wrapper">
-                            <select id="goal">
-                                <option value="balanced">Balanced Diet (40/30/30)</option>
-                                <option value="lowcarb">Low Carb (25/40/35)</option>
-                                <option value="highprotein">High Protein (30/40/30)</option>
-                            </select>
+                        <label class="form-label">Height (ft &amp; in)</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                            <input type="number" id="inp-height-ft" class="calc-input" value="5" min="1" max="8" oninput="calculateMacros()">
+                            <input type="number" id="inp-height-in" class="calc-input" value="9" min="0" max="11" oninput="calculateMacros()">
                         </div>
                     </div>
-                </form>
+                    <div class="form-group">
+                        <label class="form-label" for="inp-weight-lbs">Weight (lbs)</label>
+                        <input type="number" id="inp-weight-lbs" class="calc-input" value="158" min="50" max="500" oninput="calculateMacros()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-goal">Primary Fitness Goal</label>
+                    <select id="inp-goal" class="calc-input" onchange="calculateMacros()">
+                        <option value="loss" selected>Fat Loss (-500 kcal deficit)</option>
+                        <option value="maintain">Weight Maintenance</option>
+                        <option value="gain">Lean Muscle Building (+350 kcal surplus)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-diet-type">Macro Diet Split</label>
+                    <select id="inp-diet-type" class="calc-input" onchange="calculateMacros()">
+                        <option value="balanced" selected>Balanced Fitness (40% C / 30% P / 30% F)</option>
+                        <option value="high-protein">High Protein Bodybuilding (45% P / 35% C / 20% F)</option>
+                        <option value="low-carb">Low Carb (20% C / 40% P / 40% F)</option>
+                        <option value="keto">Keto (5% C / 25% P / 70% F)</option>
+                    </select>
+                </div>
             </div>
-            
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Enter your details to calculate your daily macronutrient needs.</div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Target Daily Calories</div>
+                    <div class="result-main-val" id="macro-calories-val">1,824 kcal/day</div>
+                </div>
+
+                <div class="result-metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-item-label">🍗 Protein (4 kcal/g)</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="protein-val">137 g</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">🍚 Carbohydrates (4 kcal/g)</div>
+                        <div class="metric-item-val" style="color:var(--accent-blue);" id="carbs-val">182 g</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">🥑 Healthy Fats (9 kcal/g)</div>
+                        <div class="metric-item-val" style="color:var(--accent-amber);" id="fats-val">61 g</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">💧 Fiber Target</div>
+                        <div class="metric-item-val" id="fiber-val">30 g</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="macroChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>What are Macronutrients?</span><span class="icon">+</span></button><div class="accordion-content"><p>Macronutrients, or "macros," are the three main nutrients your body needs in large amounts: Protein, Carbohydrates, and Fat. Each provides energy (calories) and serves unique functions in the body.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Understanding the Ratios (C/P/F)</span><span class="icon">+</span></button><div class="accordion-content"><p>The ratios (e.g., 40/30/30) represent the percentage of your total daily calories that should come from Carbohydrates, Protein, and Fat, respectively. Different diet plans recommend different ratios to achieve specific health or fitness goals.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This calculator provides an estimate for informational purposes. Individual needs can vary greatly. For a personalized nutrition plan, please consult with a registered dietitian or healthcare professional.</p></div></div>
-        </div>
-<%- include('partials/ad_unit') %>
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>How Macronutrients Fuel Body Composition</h2>
+            <p>
+                <strong>Protein</strong> builds muscle and preserves lean tissue. <strong>Carbohydrates</strong> provide glycogen fuel for anaerobic workouts. <strong>Fats</strong> regulate hormones and cellular membranes.
+            </p>
+        </section>
     </div>
-</div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    let currentUnit = 'metric', currentGender = 'male';
-    const allInputs = document.querySelectorAll('input, select');
-    const resultDiv = document.getElementById('result-section');
-    const metricBtn = document.getElementById('metricBtn');
-    const imperialBtn = document.getElementById('imperialBtn');
-    const genderMaleBtn = document.getElementById('genderMale');
-    const genderFemaleBtn = document.getElementById('genderFemale');
-    const metricInputsDiv = document.getElementById('metricInputs');
-    const imperialInputsDiv = document.getElementById('imperialInputs');
+    let currentUnit = 'metric';
+    let gender = 'male';
+    let macroChart = null;
 
-    // --- UNIT SWITCHER LOGIC ---
     function switchUnit(unit) {
         currentUnit = unit;
-        metricBtn.classList.toggle('active', unit === 'metric');
-        imperialBtn.classList.toggle('active', unit === 'imperial');
-        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
-        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
-        
-        // Reset all inputs on switch, including dropdowns
-        document.querySelectorAll('input').forEach(i => i.value = '');
-        document.querySelector("#activityLevel").value = "1.55";
-        document.querySelector("#goal").value = "balanced";
-        
-        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate.</div>`;
-    }
-    metricBtn.addEventListener('click', () => switchUnit('metric'));
-    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
-
-    // --- GENDER SWITCHER LOGIC ---
-    function switchGender(gender) {
-        currentGender = gender;
-        genderMaleBtn.classList.toggle('active', gender === 'male');
-        genderFemaleBtn.classList.toggle('active', gender === 'female');
+        document.getElementById('unit-metric').classList.toggle('active', unit === 'metric');
+        document.getElementById('unit-imperial').classList.toggle('active', unit === 'imperial');
+        document.getElementById('metric-inputs').style.display = unit === 'metric' ? 'block' : 'none';
+        document.getElementById('imperial-inputs').style.display = unit === 'imperial' ? 'block' : 'none';
         calculateMacros();
     }
-    genderMaleBtn.addEventListener('click', () => switchGender('male'));
-    genderFemaleBtn.addEventListener('click', () => switchGender('female'));
 
-    // --- ATTACH EVENT LISTENER TO ALL INPUTS ---
-    allInputs.forEach(input => input.addEventListener('input', calculateMacros));
-
-    // --- MAIN CALCULATION FUNCTION ---
-    function calculateMacros() {
-        let weightInKg, heightInCm;
-        const age = parseFloat(document.getElementById('age').value);
-        const activityMultiplier = parseFloat(document.getElementById('activityLevel').value);
-        const goal = document.getElementById('goal').value;
-
-        if (currentUnit === 'metric') {
-            weightInKg = parseFloat(document.getElementById('weightKg').value);
-            heightInCm = parseFloat(document.getElementById('heightCm').value);
-        } else {
-            const lbs = parseFloat(document.getElementById('weightLbs').value);
-            const ft = parseFloat(document.getElementById('heightFt').value);
-            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
-            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
-            if (!isNaN(ft)) heightInCm = (ft * 12 + inches) * 2.54;
-        }
-
-        if (isNaN(weightInKg) || isNaN(heightInCm) || isNaN(age) || age < 15) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter all valid details.</div>`;
-            return;
-        }
-
-        const bmr = (currentGender === 'male') ? (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) + 5 : (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) - 161;
-        const tdee = Math.round(bmr * activityMultiplier);
-
-        const ratios = {
-            balanced: { carbs: 0.40, protein: 0.30, fat: 0.30 },
-            lowcarb: { carbs: 0.25, protein: 0.40, fat: 0.35 },
-            highprotein: { carbs: 0.30, protein: 0.40, fat: 0.30 }
-        };
-
-        const chosenRatios = ratios[goal];
-        const proteinCalories = tdee * chosenRatios.protein;
-        const carbsCalories = tdee * chosenRatios.carbs;
-        const fatCalories = tdee * chosenRatios.fat;
-        
-        const proteinGrams = Math.round(proteinCalories / 4);
-        const carbsGrams = Math.round(carbsCalories / 4);
-        const fatGrams = Math.round(fatCalories / 9);
-
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text-large">Your Maintenance Calories: <strong>${tdee.toLocaleString()}</strong></p>
-                <p class="result-main-unit">kcal/day</p>
-                <hr class="result-divider" />
-                <p class="result-sub-text">Based on your selected goal, here is your daily macronutrient breakdown:</p>
-            </div>
-            <div class="macro-list-container">
-                <div class="macro-list-item">
-                    <div class="macro-list-grams">${proteinGrams}g</div>
-                    <div class="macro-list-label">Protein</div>
-                    <div class="macro-list-calories">${Math.round(proteinCalories).toLocaleString()} kcal</div>
-                </div>
-                <div class="macro-list-item">
-                    <div class="macro-list-grams">${carbsGrams}g</div>
-                    <div class="macro-list-label">Carbs</div>
-                    <div class="macro-list-calories">${Math.round(carbsCalories).toLocaleString()} kcal</div>
-                </div>
-                <div class="macro-list-item">
-                    <div class="macro-list-grams">${fatGrams}g</div>
-                    <div class="macro-list-label">Fat</div>
-                    <div class="macro-list-calories">${Math.round(fatCalories).toLocaleString()} kcal</div>
-                </div>
-            </div>
-        `;
+    function setGender(g) {
+        gender = g;
+        document.getElementById('btn-male').classList.toggle('active', g === 'male');
+        document.getElementById('btn-female').classList.toggle('active', g === 'female');
+        calculateMacros();
     }
 
-    // --- ACCORDION LOGIC ---
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-        });
-    });
+    function calculateMacros() {
+        let weightKg, heightCm;
+
+        if (currentUnit === 'metric') {
+            weightKg = parseFloat(document.getElementById('inp-weight-kg').value) || 72;
+            heightCm = parseFloat(document.getElementById('inp-height-cm').value) || 175;
+        } else {
+            const lbs = parseFloat(document.getElementById('inp-weight-lbs').value) || 158;
+            const ft = parseFloat(document.getElementById('inp-height-ft').value) || 5;
+            const inches = parseFloat(document.getElementById('inp-height-in').value) || 9;
+            weightKg = lbs * 0.45359237;
+            heightCm = (ft * 12 + inches) * 2.54;
+        }
+
+        const age = parseFloat(document.getElementById('inp-age').value) || 28;
+        const goal = document.getElementById('inp-goal').value;
+        const dietType = document.getElementById('inp-diet-type').value;
+
+        let bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age);
+        bmr = gender === 'male' ? bmr + 5 : bmr - 161;
+
+        const maintenance = Math.round(bmr * 1.4);
+        let targetCalories = maintenance;
+        if (goal === 'loss') targetCalories = Math.max(1200, maintenance - 500);
+        else if (goal === 'gain') targetCalories = maintenance + 350;
+
+        let pPct = 0.30, cPct = 0.40, fPct = 0.30;
+        if (dietType === 'high-protein') { pPct = 0.45; cPct = 0.35; fPct = 0.20; }
+        else if (dietType === 'low-carb') { pPct = 0.40; cPct = 0.20; fPct = 0.40; }
+        else if (dietType === 'keto') { pPct = 0.25; cPct = 0.05; fPct = 0.70; }
+
+        const pGrams = Math.round((targetCalories * pPct) / 4);
+        const cGrams = Math.round((targetCalories * cPct) / 4);
+        const fGrams = Math.round((targetCalories * fPct) / 9);
+        const fiberGrams = Math.round((targetCalories / 1000) * 14);
+
+        document.getElementById('macro-calories-val').innerText = `${targetCalories.toLocaleString()} kcal/day`;
+        document.getElementById('protein-val').innerText = `${pGrams} g (${Math.round(pPct * 100)}%)`;
+        document.getElementById('carbs-val').innerText = `${cGrams} g (${Math.round(cPct * 100)}%)`;
+        document.getElementById('fats-val').innerText = `${fGrams} g (${Math.round(fPct * 100)}%)`;
+        document.getElementById('fiber-val').innerText = `${fiberGrams} g`;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('macroChart');
+            if (ctx) {
+                if (macroChart) macroChart.destroy();
+                macroChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [`Protein (${pGrams}g)`, `Carbs (${cGrams}g)`, `Fats (${fGrams}g)`],
+                        datasets: [{
+                            data: [pGrams * 4, cGrams * 4, fGrams * 9],
+                            backgroundColor: ['#10b981', '#0284c7', '#f59e0b'],
+                            borderWidth: 2,
+                            borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '68%',
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }
+                    }
+                });
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', calculateMacros);
 </script>
 
 <%- include('partials/inner_footer') %>

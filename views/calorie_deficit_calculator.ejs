@@ -1,200 +1,228 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-
-        <div class="unit-switcher">
-            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
-            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
-        </div>
-
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="calorieDeficitForm">
-                    <!-- Metric Units -->
-                    <div id="metricInputs">
-                        <div class="form-group">
-                            <label for="weightKg">Weight (kg)</label>
-                            <div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="heightCm">Height (cm)</label>
-                            <div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div>
-                        </div>
-                    </div>
-                    <!-- Imperial Units -->
-                    <div id="imperialInputs" style="display: none;">
-                        <div class="form-group">
-                            <label for="weightLbs">Weight (lbs)</label>
-                            <div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Height (ft, in)</label>
-                            <div class="height-imperial-inputs">
-                                <div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div>
-                                <div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="age">Age (years)</label>
-                        <div class="input-wrapper"><input type="number" id="age" step="1" placeholder="e.g., 30"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="gender">Gender</label>
-                        <div class="input-wrapper">
-                            <select id="gender">
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="activityLevel">Activity Level</label>
-                        <div class="input-wrapper">
-                            <select id="activityLevel">
-                                <option value="1.2">Sedentary (little or no exercise)</option>
-                                <option value="1.375">Lightly Active (1–3 days/week)</option>
-                                <option value="1.55">Moderately Active (3–5 days/week)</option>
-                                <option value="1.725">Very Active (6–7 days/week)</option>
-                                <option value="1.9">Extra Active (hard exercise & physical job)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="weightLossGoal">Weight Loss Goal</label>
-                        <div class="input-wrapper">
-                            <select id="weightLossGoal">
-                                <option value="275">0.25 kg/week (mild deficit)</option>
-                                <option value="550" selected>0.5 kg/week (moderate deficit)</option>
-                                <option value="825">0.75 kg/week (aggressive deficit)</option>
-                                <option value="1100">1 kg/week (very aggressive deficit)</option>
-                            </select>
-                        </div>
-                    </div>
-                </form>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#diet-nutrition">Diet &amp; Nutrition</a> <span>›</span>
+                <span>Calorie Deficit Calculator</span>
             </div>
-
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Enter your details to calculate your calorie deficit.</div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">📉</div>
+                <div class="calc-hero-text">
+                    <h1>Calorie Deficit Calculator for Fat Loss</h1>
+                    <p>Calculate your target daily calorie intake, projected weight loss timeline, and safe deficit rate without metabolic slowdown.</p>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>What is a Calorie Deficit?</span><span class="icon">+</span></button><div class="accordion-content"><p>A calorie deficit occurs when you consume fewer calories than your body burns. Since roughly 3,500 calories ≈ 0.45 kg (1 lb) of fat, creating a consistent daily deficit leads to gradual fat loss over time. For example, a 500-calorie daily deficit results in approximately 0.5 kg of fat loss per week.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>How fast should I lose weight?</span><span class="icon">+</span></button><div class="accordion-content"><p>0.5–1 kg per week is generally considered a safe and sustainable rate of weight loss. Losing weight too quickly can lead to muscle loss, nutrient deficiencies, and metabolic adaptation. A moderate, consistent deficit is the most effective long-term approach.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Will I lose muscle on a deficit?</span><span class="icon">+</span></button><div class="accordion-content"><p>Moderate deficits (around 500 calories) combined with adequate protein intake (1.6–2.2g per kg of bodyweight) and resistance training significantly minimize muscle loss. Extreme deficits are more likely to cause muscle breakdown alongside fat loss.</p></div></div>
-        </div>
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>🎯</span> Fat Loss Goal &amp; Timeline
+                </div>
 
-<%- include('partials/ad_unit') %>
+                <div class="form-group">
+                    <label class="form-label">Measurement System</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="unit-metric" class="toggle-pill-btn active" style="flex:1;" onclick="switchUnit('metric')">📏 Metric (kg, cm)</button>
+                        <button type="button" id="unit-imperial" class="toggle-pill-btn" style="flex:1;" onclick="switchUnit('imperial')">📐 Imperial (lbs, ft-in)</button>
+                    </div>
+                </div>
 
-        <div style="margin-top:2rem;padding:1.5rem;background:var(--card-bg);border-radius:12px;border:1px solid var(--border-color);">
-            <h3 style="margin:0 0 1rem;font-size:1rem;color:var(--text-muted);">🔗 Related Calculators</h3>
-            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
-                <a href="/tdee-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">⚡ TDEE Calculator</a>
-                <a href="/bmr-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🔥 BMR Calculator</a>
-                <a href="/macro-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🥦 Macro Calculator</a>
-                <a href="/calorie-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🍽️ Calorie Calculator</a>
+                <div class="form-group">
+                    <label class="form-label">Biological Gender</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="btn-male" class="toggle-pill-btn active" style="flex:1;" onclick="setGender('male')">👨 Male</button>
+                        <button type="button" id="btn-female" class="toggle-pill-btn" style="flex:1;" onclick="setGender('female')">👩 Female</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-age">Age</label>
+                    <input type="number" id="inp-age" class="calc-input" value="28" min="15" max="100" oninput="calculateDeficit()">
+                </div>
+
+                <div id="metric-inputs">
+                    <div class="form-group">
+                        <label class="form-label" for="inp-height-cm">Height (cm)</label>
+                        <input type="number" id="inp-height-cm" class="calc-input" value="175" min="100" max="230" oninput="calculateDeficit()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inp-weight-kg">Current Weight (kg)</label>
+                        <input type="number" id="inp-weight-kg" class="calc-input" value="82" min="30" max="250" oninput="calculateDeficit()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inp-target-kg">Goal Weight (kg)</label>
+                        <input type="number" id="inp-target-kg" class="calc-input" value="72" min="30" max="250" oninput="calculateDeficit()">
+                    </div>
+                </div>
+
+                <div id="imperial-inputs" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">Height (ft &amp; in)</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                            <input type="number" id="inp-height-ft" class="calc-input" value="5" min="1" max="8" oninput="calculateDeficit()">
+                            <input type="number" id="inp-height-in" class="calc-input" value="9" min="0" max="11" oninput="calculateDeficit()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inp-weight-lbs">Current Weight (lbs)</label>
+                        <input type="number" id="inp-weight-lbs" class="calc-input" value="180" min="50" max="500" oninput="calculateDeficit()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inp-target-lbs">Goal Weight (lbs)</label>
+                        <input type="number" id="inp-target-lbs" class="calc-input" value="158" min="50" max="500" oninput="calculateDeficit()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-activity">Activity Level</label>
+                    <select id="inp-activity" class="calc-input" onchange="calculateDeficit()">
+                        <option value="1.2">Sedentary (Desk job, little exercise)</option>
+                        <option value="1.375" selected>Lightly Active (Workout 1-3 days/week)</option>
+                        <option value="1.55">Moderately Active (Workout 3-5 days/week)</option>
+                        <option value="1.725">Very Active (Heavy training 6-7 days/week)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-rate">Desired Fat Loss Pace</label>
+                    <select id="inp-rate" class="calc-input" onchange="calculateDeficit()">
+                        <option value="250">Mild (-0.25 kg / 0.5 lb per week - 250 kcal deficit)</option>
+                        <option value="500" selected>Moderate / Recommended (-0.5 kg / 1.1 lb per week - 500 kcal deficit)</option>
+                        <option value="750">Aggressive (-0.75 kg / 1.65 lb per week - 750 kcal deficit)</option>
+                        <option value="1000">Extreme (-1.0 kg / 2.2 lb per week - 1,000 kcal deficit)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Target Daily Calorie Intake</div>
+                    <div class="result-main-val" id="target-cal-val">1,940 kcal/day</div>
+                    <div style="margin-top:0.35rem; font-size:0.88rem; color:var(--text-secondary);">Maintenance: <strong id="maint-cal-val">2,440 kcal</strong></div>
+                </div>
+
+                <div class="result-metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Total Weight to Lose</div>
+                        <div class="metric-item-val" id="total-loss-val">10.0 kg</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Estimated Time to Goal</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="time-to-goal-val">20 Weeks</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="deficitChart"></canvas>
+                </div>
             </div>
         </div>
 
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>The 7,700 kcal Rule for 1 kg Fat Loss</h2>
+            <p>
+                Scientific evidence demonstrates that approximately <strong>7,700 kcal deficit</strong> results in 1 kg (2.2 lbs) of pure adipose fat loss. A daily 500 kcal deficit accumulates to a 3,500 kcal weekly deficit (~0.45-0.5 kg fat loss).
+            </p>
+        </section>
     </div>
-</div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
     let currentUnit = 'metric';
-    const allInputs = document.querySelectorAll('input, select');
-    const resultDiv = document.getElementById('result-section');
-    const metricBtn = document.getElementById('metricBtn');
-    const imperialBtn = document.getElementById('imperialBtn');
-    const metricInputsDiv = document.getElementById('metricInputs');
-    const imperialInputsDiv = document.getElementById('imperialInputs');
+    let gender = 'male';
+    let deficitChart = null;
 
     function switchUnit(unit) {
         currentUnit = unit;
-        metricBtn.classList.toggle('active', unit === 'metric');
-        imperialBtn.classList.toggle('active', unit === 'imperial');
-        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
-        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
-        document.querySelectorAll('input').forEach(i => i.value = '');
-        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate your calorie deficit.</div>`;
+        document.getElementById('unit-metric').classList.toggle('active', unit === 'metric');
+        document.getElementById('unit-imperial').classList.toggle('active', unit === 'imperial');
+        document.getElementById('metric-inputs').style.display = unit === 'metric' ? 'block' : 'none';
+        document.getElementById('imperial-inputs').style.display = unit === 'imperial' ? 'block' : 'none';
+        calculateDeficit();
     }
-    metricBtn.addEventListener('click', () => switchUnit('metric'));
-    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
 
-    allInputs.forEach(input => input.addEventListener('input', calculateDeficit));
-    allInputs.forEach(input => input.addEventListener('change', calculateDeficit));
+    function setGender(g) {
+        gender = g;
+        document.getElementById('btn-male').classList.toggle('active', g === 'male');
+        document.getElementById('btn-female').classList.toggle('active', g === 'female');
+        calculateDeficit();
+    }
 
     function calculateDeficit() {
-        let weightInKg, heightInCm;
+        let currentWeight, targetWeight, heightCm;
+
         if (currentUnit === 'metric') {
-            weightInKg = parseFloat(document.getElementById('weightKg').value);
-            heightInCm = parseFloat(document.getElementById('heightCm').value);
+            currentWeight = parseFloat(document.getElementById('inp-weight-kg').value) || 82;
+            targetWeight = parseFloat(document.getElementById('inp-target-kg').value) || 72;
+            heightCm = parseFloat(document.getElementById('inp-height-cm').value) || 175;
         } else {
-            const lbs = parseFloat(document.getElementById('weightLbs').value);
-            const ft = parseFloat(document.getElementById('heightFt').value);
-            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
-            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
-            if (!isNaN(ft)) heightInCm = (ft * 12 + inches) * 2.54;
+            const curLbs = parseFloat(document.getElementById('inp-weight-lbs').value) || 180;
+            const targetLbs = parseFloat(document.getElementById('inp-target-lbs').value) || 158;
+            const ft = parseFloat(document.getElementById('inp-height-ft').value) || 5;
+            const inches = parseFloat(document.getElementById('inp-height-in').value) || 9;
+            currentWeight = curLbs * 0.45359237;
+            targetWeight = targetLbs * 0.45359237;
+            heightCm = (ft * 12 + inches) * 2.54;
         }
 
-        const age = parseFloat(document.getElementById('age').value);
-        const gender = document.getElementById('gender').value;
-        const activityMultiplier = parseFloat(document.getElementById('activityLevel').value);
-        const deficitAmount = parseFloat(document.getElementById('weightLossGoal').value);
+        const age = parseFloat(document.getElementById('inp-age').value) || 28;
+        const activity = parseFloat(document.getElementById('inp-activity').value) || 1.375;
+        const deficitAmount = parseFloat(document.getElementById('inp-rate').value) || 500;
 
-        if (isNaN(weightInKg) || isNaN(heightInCm) || isNaN(age) || weightInKg <= 0 || heightInCm <= 0 || age <= 0) {
-            resultDiv.innerHTML = `<div class="placeholder">Please fill in all fields to calculate.</div>`;
-            return;
+        let bmr = (10 * currentWeight) + (6.25 * heightCm) - (5 * age);
+        bmr = Math.round(gender === 'male' ? bmr + 5 : bmr - 161);
+
+        const maintenance = Math.round(bmr * activity);
+        const minSafe = gender === 'male' ? 1500 : 1200;
+        const targetCalories = Math.max(minSafe, maintenance - deficitAmount);
+
+        const weightDiffKg = Math.max(0, currentWeight - targetWeight);
+        const kgPerWeek = (deficitAmount * 7) / 7700;
+        const weeksNeeded = kgPerWeek > 0 ? Math.ceil(weightDiffKg / kgPerWeek) : 0;
+
+        document.getElementById('target-cal-val').innerText = `${targetCalories.toLocaleString()} kcal/day`;
+        document.getElementById('maint-cal-val').innerText = `${maintenance.toLocaleString()} kcal`;
+        document.getElementById('total-loss-val').innerText = currentUnit === 'metric' ? `${weightDiffKg.toFixed(1)} kg` : `${(weightDiffKg * 2.20462).toFixed(1)} lbs`;
+        document.getElementById('time-to-goal-val').innerText = `${weeksNeeded} Weeks (~${(weeksNeeded / 4.3).toFixed(1)} Months)`;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('deficitChart');
+            if (ctx) {
+                if (deficitChart) deficitChart.destroy();
+                deficitChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [`Target Calories (${targetCalories} kcal)`, `Daily Deficit (${deficitAmount} kcal)`],
+                        datasets: [{
+                            data: [targetCalories, deficitAmount],
+                            backgroundColor: ['#10b981', '#f59e0b'],
+                            borderWidth: 2,
+                            borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Inter', size: 12 } } }
+                        }
+                    }
+                });
+            }
         }
-
-        // Mifflin-St Jeor BMR
-        let bmr;
-        if (gender === 'male') {
-            bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) + 5;
-        } else {
-            bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) - 161;
-        }
-
-        const tdee = Math.round(bmr * activityMultiplier);
-        let dailyGoal = tdee - deficitAmount;
-        const minCalories = gender === 'male' ? 1500 : 1200;
-        const belowMinimum = dailyGoal < minCalories;
-        if (belowMinimum) dailyGoal = minCalories;
-
-        const weeklyDeficit = (tdee - dailyGoal) * 7;
-        const weeksTo5kg = (5 * 7700 / ((tdee - dailyGoal) * 7)).toFixed(1);
-
-        const warningHTML = belowMinimum
-            ? `<p style="color:#f59e0b;font-size:0.85rem;margin-top:0.5rem;">⚠️ Your calorie goal was adjusted to the safe minimum of ${minCalories} kcal/day.</p>`
-            : '';
-
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text">Daily Calorie Goal: <strong>${dailyGoal.toLocaleString()} kcal</strong></p>
-                ${warningHTML}
-                <hr class="result-divider" />
-                <p class="result-sub-text">🔥 TDEE (Maintenance): <strong>${tdee.toLocaleString()} kcal/day</strong></p>
-                <p class="result-sub-text">📉 Weekly Deficit: <strong>${weeklyDeficit.toLocaleString()} kcal</strong></p>
-                <p class="result-sub-text">📅 Est. Weeks to Lose 5 kg: <strong>${weeksTo5kg} weeks</strong></p>
-            </div>
-        `;
     }
 
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-        });
-    });
+    document.addEventListener('DOMContentLoaded', calculateDeficit);
 </script>
 
 <%- include('partials/inner_footer') %>

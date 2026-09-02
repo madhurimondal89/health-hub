@@ -1,7 +1,10 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const app = express();
-const port = process.env.PORT || 3000; 
+const port = process.env.PORT || 3000;
+
+const { categoryMeta, calculators: masterCalculators } = require('./data/calculatorCatalog');
 
 // View Engine Setup
 app.set('view engine', 'ejs');
@@ -10,20 +13,20 @@ app.set('views', path.join(__dirname, 'views'));
 // Static Folder Setup
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- Helper Function: Generate Schema ---
-// এটি অবশ্যই রাউটের আগে থাকতে হবে
-function generateSchema(title, description, url, isApp = true) {
-    const baseUrl = "https://health-hub.calculatorfree.in"; // আপনার সাব-ডোমেইন
-    const fullUrl = url === '/' ? baseUrl : baseUrl + url;
+// Base URL configuration for Health Hub
+const BASE_URL = "https://health-hub.calculatorfree.in";
+
+// Helper Function: Generate Schema
+function generateSchema(title, description, urlPath, isApp = true) {
+    const fullUrl = urlPath === '/' ? BASE_URL : `${BASE_URL}${urlPath}`;
     
-    // Base Schema with Graph
     const schema = {
         "@context": "https://schema.org",
         "@graph": [
             {
                 "@type": "Organization",
                 "name": "Health Hub",
-                "url": baseUrl,
+                "url": BASE_URL,
                 "logo": {
                     "@type": "ImageObject",
                     "url": "https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png"
@@ -32,10 +35,10 @@ function generateSchema(title, description, url, isApp = true) {
             {
                 "@type": "WebSite",
                 "name": "Health Hub",
-                "url": baseUrl,
+                "url": BASE_URL,
                 "potentialAction": {
                     "@type": "SearchAction",
-                    "target": `${baseUrl}/?q={search_term_string}`,
+                    "target": `${BASE_URL}/?q={search_term_string}`,
                     "query-input": "required name=search_term_string"
                 }
             }
@@ -43,7 +46,6 @@ function generateSchema(title, description, url, isApp = true) {
     };
 
     if (isApp) {
-        // Add WebApplication Schema for calculators
         schema["@graph"].push({
             "@type": "SoftwareApplication",
             "name": title,
@@ -57,198 +59,304 @@ function generateSchema(title, description, url, isApp = true) {
             "description": description
         });
         
-        // Add Breadcrumb for calculators
         schema["@graph"].push({
             "@type": "BreadcrumbList",
-            "itemListElement": [{
-                "@type": "ListItem", 
-                "position": 1, 
-                "name": "Home", 
-                "item": baseUrl 
-            }, {
-                "@type": "ListItem",
-                "position": 2,
-                "name": title
-            }]
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": BASE_URL
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": title
+                }
+            ]
         });
     }
 
     return JSON.stringify(schema);
 }
 
-// FAQ Data for popular calculators
-const faqData = {
-    'bmi-calculator': [
-        { q: 'What is BMI?', a: 'BMI (Body Mass Index) is a measure calculated using your height and weight to assess if your weight is healthy. Formula: weight(kg) / height(m)².' },
-        { q: 'What is a healthy BMI range?', a: 'A BMI between 18.5 and 24.9 is considered a healthy weight. Below 18.5 is underweight, 25–29.9 is overweight, and 30 or above is obese.' },
-        { q: 'Is BMI accurate for everyone?', a: 'BMI is a useful screening tool but has limitations. It may overestimate body fat in athletes and underestimate it in older adults. Consult a doctor for a full assessment.' },
-        { q: 'How is BMI calculated?', a: 'BMI = weight in kilograms divided by height in meters squared. For example, a person weighing 70 kg at 1.75 m has a BMI of 70 / (1.75²) = 22.9.' }
-    ],
-    'calorie-calculator': [
-        { q: 'How many calories do I need per day?', a: 'Daily calorie needs depend on age, gender, weight, height, and activity level. Most adults need between 1,600–3,000 calories per day.' },
-        { q: 'How do I calculate my daily calorie needs?', a: 'Use the Mifflin-St Jeor equation to find your BMR, then multiply by your activity level (TDEE). Adjust by ±500 calories for weight loss or gain.' },
-        { q: 'How many calories should I eat to lose weight?', a: 'A deficit of 500 calories/day leads to approximately 0.5 kg (1 lb) of weight loss per week. Do not go below 1,200 calories for women or 1,500 for men.' }
-    ],
-    'tdee-calculator': [
-        { q: 'What is TDEE?', a: 'TDEE (Total Daily Energy Expenditure) is the total number of calories you burn in a day, including exercise and daily activities.' },
-        { q: 'How is TDEE calculated?', a: 'TDEE = BMR × Activity Multiplier. Sedentary (×1.2), Lightly Active (×1.375), Moderately Active (×1.55), Very Active (×1.725), Extra Active (×1.9).' },
-        { q: 'Should I eat my TDEE to maintain weight?', a: 'Yes. Eating at your TDEE maintains your current weight. Eat less to lose weight, eat more to gain weight.' }
-    ],
-    'bmr-calculator': [
-        { q: 'What is BMR?', a: 'BMR (Basal Metabolic Rate) is the number of calories your body burns at complete rest to maintain vital functions like breathing, circulation, and cell production.' },
-        { q: 'What is the Mifflin-St Jeor formula?', a: 'Men: BMR = (10 × weight kg) + (6.25 × height cm) − (5 × age) + 5. Women: BMR = (10 × weight kg) + (6.25 × height cm) − (5 × age) − 161.' },
-        { q: 'What is the difference between BMR and TDEE?', a: 'BMR is calories burned at rest. TDEE includes physical activity. TDEE = BMR × activity factor. Use TDEE for real-world calorie planning.' }
-    ],
-    'water-intake-calculator': [
-        { q: 'How much water should I drink per day?', a: 'A common guideline is 8 glasses (2 litres) per day, but needs vary. This calculator factors in weight, activity level, and climate for a personalised recommendation.' },
-        { q: 'Does coffee or tea count towards my water intake?', a: 'Yes, coffee and tea contribute to hydration, despite mild diuretic effects. However, plain water is the most effective for hydration.' },
-        { q: 'How do I know if I am drinking enough water?', a: 'Check your urine colour. Pale yellow (like lemonade) indicates good hydration. Dark yellow or amber means you need to drink more.' }
-    ],
-    'calorie-deficit-calculator': [
-        { q: 'What is a calorie deficit?', a: 'A calorie deficit means eating fewer calories than your body burns. A deficit of approximately 7,700 calories results in losing 1 kg of body fat.' },
-        { q: 'How fast should I lose weight?', a: '0.5–1 kg (1–2 lbs) per week is considered safe and sustainable. Losing weight faster may result in muscle loss and nutrient deficiencies.' },
-        { q: 'What is the minimum safe calorie intake?', a: 'Generally, women should not eat fewer than 1,200 calories/day and men fewer than 1,500 calories/day without medical supervision.' }
-    ],
-    'keto-calculator': [
-        { q: 'What is the ketogenic diet?', a: 'A very low-carb, high-fat diet that shifts your body into a metabolic state called ketosis, where fat becomes the primary fuel source instead of glucose.' },
-        { q: 'How many carbs can I eat on keto?', a: 'Typically 20–50g of net carbs per day. Most people enter ketosis below 25g net carbs. Net carbs = total carbs minus dietary fibre.' },
-        { q: 'What is the standard keto macro split?', a: 'A typical keto diet consists of approximately 70–75% fat, 20–25% protein, and 5% carbohydrates.' }
-    ],
-    'intermittent-fasting-calculator': [
-        { q: 'What is intermittent fasting?', a: 'An eating pattern that cycles between fasting and eating periods. It focuses on when you eat, not what you eat. Common protocols include 16:8, 18:6, and 5:2.' },
-        { q: 'Which intermittent fasting protocol is best for beginners?', a: 'The 16:8 method (16 hours fasting, 8 hours eating) is most popular and beginner-friendly as it aligns with natural sleep patterns.' },
-        { q: 'Can I drink anything during the fasting window?', a: 'Yes. Water, plain black coffee, and unsweetened herbal tea are generally allowed and will not break your fast.' }
-    ],
-    'one-rep-max-calculator': [
-        { q: 'What is one rep max (1RM)?', a: 'The maximum amount of weight you can lift for exactly one repetition of a given exercise with proper form.' },
-        { q: 'Which 1RM formula is most accurate?', a: 'Epley and Brzycki formulas are the most widely used. Accuracy decreases significantly when the rep count exceeds 10.' },
-        { q: 'How do I use my 1RM for training?', a: 'Use 70–80% of 1RM for hypertrophy (muscle building), 85–95% for strength training, and 50–65% for muscular endurance work.' }
-    ],
-    'vo2-max-calculator': [
-        { q: 'What is VO2 Max?', a: 'VO2 Max is the maximum rate at which your body can consume oxygen during intense exercise. It is the gold standard measure of cardiovascular fitness.' },
-        { q: 'What is a good VO2 Max?', a: 'For untrained adults: 35–45 ml/kg/min. Recreational athletes: 45–55. Elite endurance athletes can exceed 70–85 ml/kg/min.' },
-        { q: 'How can I improve my VO2 Max?', a: 'High-intensity interval training (HIIT) and consistent aerobic training (running, cycling, swimming) are the most effective ways to improve VO2 Max.' }
-    ],
-    'child-bmi-calculator': [
-        { q: 'How is child BMI different from adult BMI?', a: 'Child BMI (BMI-for-age) is plotted on age- and gender-specific growth charts, as children\'s body fat levels change with age and differ between boys and girls.' },
-        { q: 'What is a healthy BMI percentile for a child?', a: 'A BMI between the 5th and 85th percentile for the child\'s age and gender is considered a healthy weight.' },
-        { q: 'What should I do if my child has a high BMI?', a: 'Consult your paediatrician. Focus on healthy eating habits and physical activity rather than weight loss, as children are still growing.' }
-    ],
-    'body-type-calculator': [
-        { q: 'What are the 3 body types (somatotypes)?', a: 'Ectomorph (naturally lean, fast metabolism), Mesomorph (naturally muscular, athletic build), and Endomorph (naturally higher body fat, slower metabolism).' },
-        { q: 'Can I change my body type?', a: 'Your somatotype is largely genetic, but diet and training can significantly change your body composition regardless of your natural type.' },
-        { q: 'How do I train for my body type?', a: 'Ectomorphs: focus on strength training and calorie surplus. Mesomorphs: balanced training works well. Endomorphs: prioritise cardio and a calorie deficit.' }
-    ]
-};
-
-// Centralized Calculator Data
-const calculatorData = {
-    'bmi-calculator': { title: 'BMI Calculator', description: 'Calculate your Body Mass Index (BMI) instantly. Check if you are in a healthy weight range with our accurate BMI calculator for adults.' },
-    'bmr-calculator': { title: 'BMR Calculator', description: 'Estimate your Basal Metabolic Rate (BMR) - the number of calories your body burns at rest. Understand your daily calorie needs.' },
-    'tdee-calculator': { title: 'TDEE Calculator', description: 'Calculate your Total Daily Energy Expenditure (TDEE). Find out how many calories you burn per day based on your activity level.' },
-    'calorie-calculator': { title: 'Calorie Calculator', description: 'Determine your daily calorie needs for weight loss, maintenance, or gain. Get a personalized calorie plan based on your goals.' },
-    'macro-calculator': { title: 'Macro Calculator', description: 'Calculate your daily macronutrient needs (protein, carbs, and fat) based on your calorie goals and diet plan (balanced, low-carb, high-protein).' },
-    'calorie-burn-calculator': { title: 'Calorie Burn Calculator', description: 'Estimate the number of calories burned during various activities and exercises. Find out how many calories you burn while walking, running, and more.' },
-    'body-fat-calculator': { title: 'Body Fat Calculator', description: 'Estimate your body fat percentage using the U.S. Navy method. A simple way to measure your body composition without special equipment.' },
-    'lean-body-mass-calculator': { title: 'Lean Body Mass Calculator', description: 'Calculate your Lean Body Mass (LBM) using popular formulas. Understand your body composition beyond just weight.' },
-    'ponderal-index-calculator': { title: 'Ponderal Index Calculator', description: 'Calculate your Ponderal Index (PI), an alternative to BMI that measures leanness. It is particularly useful for very tall or short individuals.' },
-    'waist-to-hip-ratio-calculator': { title: 'Waist-to-Hip Ratio Calculator', description: 'Assess your health risk by calculating your Waist-to-Hip Ratio (WHR). A key indicator of abdominal fat and related health risks.' },
-    'waist-to-height-ratio-calculator': { title: 'Waist-to-Height Ratio Calculator', description: 'Use the Waist-to-Height Ratio (WHtR) to assess your health risk. A simple and effective indicator of central obesity.' },
-    'body-surface-area-calculator': { title: 'Body Surface Area Calculator', description: 'Calculate your Body Surface Area (BSA) using 8 different popular formulas. Get a comprehensive estimation of your body\'s total surface area.' },
-    'food-calorie-calculator': { title: 'Food Calorie Calculator', description: 'Calculate the total calories in your food based on its protein, carbohydrate, and fat content. Understand nutrition labels better.' },
-    'running-pace-calculator': { title: 'Running Pace Calculator', description: 'Calculate your running pace, time, or distance. An essential tool for runners to track performance and plan their training.' },
-    'sleep-calculator': { title: 'Sleep Calculator', description: 'Find the best time to wake up or go to sleep based on natural 90-minute sleep cycles. Wake up feeling refreshed and energized.' },
-    'water-intake-calculator': { title: 'Water Intake Calculator', description: 'Get a personalized daily water intake recommendation. Our world-class calculator considers your weight, activity level, climate, and more for accurate results.' },
-    'heart-rate-zones-calculator': { title: 'Heart Rate Zones Calculator', description: 'Determine your target heart rate zones for exercise (fat burning, cardio, etc.). Optimize your workouts for better results.' },
-    'ideal-weight-calculator': { title: 'Ideal Weight Calculator', description: 'Find your ideal body weight range using multiple popular formulas. Get a healthy weight estimate based on your height and gender.' },
-    'pregnancy-due-date-calculator': { title: 'Pregnancy Due Date Calculator', description: 'Estimate your baby\'s due date based on your last menstrual period (LMP) and cycle length. Track your pregnancy timeline and key milestones.' },
-    'ovulation-calculator': { title: 'Ovulation Calculator', description: 'Predict your most fertile days and ovulation period. Our calculator helps you identify the best time to conceive based on your menstrual cycle.' },
-    'fertility-window-calculator': { title: 'Fertility Window Calculator', description: 'Pinpoint your most fertile days to increase your chances of conception. This calculator identifies your key fertility window based on your cycle.' },
-    'menstrual-cycle-and-next-period-calculator': { title: 'Menstrual Cycle & Next Period Calculator', description: 'Track your menstrual cycle and predict your next period date. Get insights into your cycle phases and plan ahead with our easy-to-use calculator.' },
-    'pregnancy-weight-gain-calculator': { title: 'Pregnancy Weight Gain Calculator', description: 'Track your pregnancy weight gain with our calculator. Get personalized recommendations based on your pre-pregnancy BMI for a healthy pregnancy.' },
-    'blood-pressure-calculator': { title: 'Blood Pressure Calculator', description: 'Check your blood pressure category (Normal, Elevated, High Stage 1 & 2, or Hypertensive Crisis) using your systolic and diastolic readings. Understand your cardiovascular health risk.' },
-    'diabetes-risk-calculator': { title: 'Diabetes Risk Calculator', description: 'Assess your risk of developing Type 2 diabetes using the FINDRISC method. Based on age, BMI, waist circumference, physical activity, diet, blood glucose history, and family history.' },
-    'protein-intake-calculator': { title: 'Protein Intake Calculator', description: 'Calculate your optimal daily protein intake based on your weight, activity level, and fitness goal (muscle gain, fat loss, or maintenance). Get a personalized protein recommendation.' },
-    'steps-to-calories-calculator': { title: 'Steps to Calories Calculator', description: 'Convert your daily step count into calories burned. Find out how many calories you burn walking 5,000, 10,000 or more steps based on your weight and stride.' },
-    'age-calculator': { title: 'Age Calculator', description: 'Calculate your exact age in years, months, days, hours, and minutes from your date of birth. Also find the day of the week you were born and days until your next birthday.' },
-    'alcohol-units-calculator': { title: 'Alcohol Units Calculator', description: 'Calculate the number of alcohol units and calories in your drinks. Compare with UK and WHO safe drinking limits and understand your weekly alcohol consumption.' },
-    'calorie-deficit-calculator': { title: 'Calorie Deficit Calculator', description: 'Calculate your daily calorie deficit to lose weight safely. Find out exactly how many calories to eat per day to reach your target weight loss rate of 0.25 to 1 kg per week.' },
-    'one-rep-max-calculator': { title: 'One Rep Max Calculator', description: 'Estimate your one repetition maximum (1RM) for any exercise. Use Epley, Brzycki, or 5 other formulas and get a full percentage training table to plan your workouts.' },
-    'keto-calculator': { title: 'Keto Calculator', description: 'Calculate your ideal macros for a ketogenic diet. Get personalized daily targets for calories, protein, fat, and net carbs based on your weight, activity level, and goal.' },
-    'vo2-max-calculator': { title: 'VO2 Max Calculator', description: 'Estimate your VO2 Max (maximum oxygen uptake) using the resting heart rate method, Cooper 12-minute run test, or 1.5-mile run test. Find your cardiovascular fitness level.' },
-    'intermittent-fasting-calculator': { title: 'Intermittent Fasting Calculator', description: 'Calculate your fasting and eating windows for popular IF protocols including 16:8, 18:6, 20:4, 5:2, and OMAD. Get a visual timeline to plan your intermittent fasting schedule.' },
-    'child-bmi-calculator': { title: 'Child BMI Calculator', description: 'Calculate BMI for children and teenagers aged 2 to 19. Uses CDC guidelines to determine healthy weight, underweight, overweight, and obese categories by age and gender.' },
-    'body-type-calculator': { title: 'Body Type Calculator', description: 'Discover your somatotype — Ectomorph, Mesomorph, or Endomorph. Get personalized diet and training recommendations based on your natural body type and measurements.' },
-};
-
 // Home Route
 app.get('/', (req, res) => {
-    const calculators = Object.keys(calculatorData).map(key => ({
-        name: calculatorData[key].title,
+    const calcList = Object.keys(masterCalculators).map(key => ({
+        id: key,
+        name: masterCalculators[key].title,
         url: `/${key}`,
-        description: calculatorData[key].description.split('.')[0] + '.'
+        category: masterCalculators[key].category,
+        categoryName: categoryMeta[masterCalculators[key].category]?.name || 'Health',
+        icon: masterCalculators[key].icon || '🏥',
+        description: masterCalculators[key].description,
+        tags: masterCalculators[key].tags || []
     }));
-    
-    const title = 'Health Hub - All-in-One Health Calculators';
-    const desc = 'A free collection of online health and fitness calculators. Calculate BMI, BMR, TDEE and more instantly.';
 
-    res.render('index', { 
+    const categoryCounts = {};
+    calcList.forEach(c => {
+        categoryCounts[c.category] = (categoryCounts[c.category] || 0) + 1;
+    });
+
+    const title = 'Health Hub - 500+ Free Online Health, Fitness & Medical Calculators';
+    const desc = `Free collection of ${calcList.length}+ online health, fitness, diet, and clinical calculators. Calculate BMI, BMR, TDEE, Calories, Macros, Body Fat, Sleep, Due Date, and Vitals instantly.`;
+
+    res.render('index', {
         title: title,
         description: desc,
-        calculators: calculators,
+        calculators: calcList,
+        categories: categoryMeta,
+        categoryCounts: categoryCounts,
         schema: generateSchema(title, desc, '/', false)
     });
 });
 
-// Disclaimer Page Route (Added based on your previous request)
+// ==========================================================================
+// DYNAMIC XML SITEMAP & ROBOTS.TXT (PROGRAMMATIC SEO FOR GOOGLE & BING)
+// ==========================================================================
+app.get('/sitemap.xml', (req, res) => {
+    res.header('Content-Type', 'application/xml');
+    const today = new Date().toISOString().split('T')[0];
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+    // Homepage
+    xml += `  <url>\n    <loc>${BASE_URL}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+
+    // Medical Disclaimer
+    xml += `  <url>\n    <loc>${BASE_URL}/disclaimer</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>\n`;
+
+    // 4 Live API Engines
+    const liveTools = ['food-nutrition-lookup', 'drug-safety-checker', 'exercise-workout-library', 'uv-index-vitamin-d-calculator'];
+    liveTools.forEach(slug => {
+        xml += `  <url>\n    <loc>${BASE_URL}/${slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+    });
+
+    // All 538+ Health Calculators
+    Object.keys(masterCalculators).forEach(slug => {
+        if (!liveTools.includes(slug)) {
+            xml += `  <url>\n    <loc>${BASE_URL}/${slug}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+        }
+    });
+
+    xml += `</urlset>`;
+    res.send(xml);
+});
+
+app.get('/robots.txt', (req, res) => {
+    res.type('text/plain');
+    res.send(`User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${BASE_URL}/sitemap.xml\n`);
+});
+
+// ==========================================================================
+// FREE PUBLIC HEALTH APIS PROXY ENDPOINTS (Open Food Facts, openFDA, wger, Open-Meteo)
+// ==========================================================================
+
+// 1. Food Nutrition & Calorie API (Open Food Facts & Fruityvice)
+app.get('/api/food-search', async (req, res) => {
+    try {
+        const query = req.query.q || 'apple';
+        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=8`;
+        const response = await fetch(url, { headers: { 'User-Agent': 'HealthHub - Free Health App - contact@calculatorfree.in' } });
+        if (!response.ok) throw new Error('Failed to fetch from Open Food Facts');
+        const data = await response.json();
+        
+        const products = (data.products || []).map(p => {
+            const nutriments = p.nutriments || {};
+            return {
+                name: p.product_name || p.generic_name || query,
+                brand: p.brands || 'Natural / Generic',
+                serving: p.serving_size || '100 g',
+                calories: Math.round(nutriments['energy-kcal_100g'] || (nutriments['energy-kcal'] || 0)),
+                protein: parseFloat((nutriments['proteins_100g'] || 0).toFixed(1)),
+                carbs: parseFloat((nutriments['carbohydrates_100g'] || 0).toFixed(1)),
+                fat: parseFloat((nutriments['fat_100g'] || 0).toFixed(1)),
+                fiber: parseFloat((nutriments['fiber_100g'] || 0).toFixed(1)),
+                sugar: parseFloat((nutriments['sugars_100g'] || 0).toFixed(1)),
+                sodium: parseFloat(((nutriments['sodium_100g'] || 0) * 1000).toFixed(0)),
+                image: p.image_front_small_url || null
+            };
+        }).filter(p => p.name && p.calories > 0);
+
+        res.json({ success: true, count: products.length, results: products });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 2. OpenFDA Drug Safety & Clinical Labeling API (openFDA)
+app.get('/api/drug-search', async (req, res) => {
+    try {
+        const query = req.query.q || 'ibuprofen';
+        const url = `https://api.fda.gov/drug/label.json?search=openfda.brand_name:"${encodeURIComponent(query)}"+openfda.generic_name:"${encodeURIComponent(query)}"&limit=3`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            // Fallback general search
+            const fallbackUrl = `https://api.fda.gov/drug/label.json?search=${encodeURIComponent(query)}&limit=3`;
+            const fbRes = await fetch(fallbackUrl);
+            if (!fbRes.ok) throw new Error('Drug label not found in FDA database');
+            const fbData = await fbRes.json();
+            return formatFdaResults(fbData, res);
+        }
+        const data = await response.json();
+        return formatFdaResults(data, res);
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+function formatFdaResults(data, res) {
+    const results = (data.results || []).map(r => {
+        const openfda = r.openfda || {};
+        return {
+            brandName: (openfda.brand_name && openfda.brand_name[0]) || 'Generic Medicine',
+            genericName: (openfda.generic_name && openfda.generic_name[0]) || 'Active Ingredient',
+            substanceName: (openfda.substance_name && openfda.substance_name[0]) || '',
+            route: (openfda.route && openfda.route[0]) || 'Oral',
+            purpose: (r.purpose && r.purpose[0]) || (r.indications_and_usage && r.indications_and_usage[0]) || 'Clinical Medication',
+            warnings: (r.warnings && r.warnings[0]) || (r.do_not_use && r.do_not_use[0]) || 'Consult your prescribing doctor before administration.',
+            dosage: (r.dosage_and_administration && r.dosage_and_administration[0]) || 'Follow physician advice.',
+            adverseReactions: (r.adverse_reactions && r.adverse_reactions[0]) || 'Report any severe symptoms to a doctor.'
+        };
+    });
+    res.json({ success: true, results });
+}
+
+// 3. Live Workout & Exercise Library API
+app.get('/api/exercises', async (req, res) => {
+    try {
+        const category = req.query.category || 'all';
+        // Open exercise database
+        const exercises = [
+            { name: 'Barbell Bench Press', muscle: 'Chest', secondary: 'Triceps, Shoulders', equipment: 'Barbell, Bench', met: 6.0, caloriesPerMinPerKg: 0.10, tip: 'Keep shoulder blades retracted and feet planted firmly on the floor.' },
+            { name: 'Incline Dumbbell Press', muscle: 'Chest', secondary: 'Front Deltoids', equipment: 'Dumbbells, Incline Bench', met: 5.5, caloriesPerMinPerKg: 0.09, tip: 'Set bench to 30-45 degrees to target the clavicular upper chest head.' },
+            { name: 'Push-Ups (Standard)', muscle: 'Chest', secondary: 'Core, Triceps', equipment: 'Bodyweight', met: 4.5, caloriesPerMinPerKg: 0.08, tip: 'Maintain a straight plank posture from crown of head to heels.' },
+            { name: 'Barbell Back Squat', muscle: 'Legs', secondary: 'Glutes, Lower Back', equipment: 'Barbell, Squat Rack', met: 7.5, caloriesPerMinPerKg: 0.13, tip: 'Descend to parallel depth ensuring knees track in line with toes.' },
+            { name: 'Romanian Deadlift (RDL)', muscle: 'Legs', secondary: 'Hamstrings, Glutes', equipment: 'Barbell / Dumbbells', met: 6.5, caloriesPerMinPerKg: 0.11, tip: 'Hinge hips backwards while keeping slight bend in knees and neutral spine.' },
+            { name: 'Bulgarian Split Squat', muscle: 'Legs', secondary: 'Quadriceps, Glutes', equipment: 'Dumbbells, Bench', met: 6.0, caloriesPerMinPerKg: 0.10, tip: 'Keep majority of weight on front foot heel to target quads and glutes.' },
+            { name: 'Barbell Deadlift (Conventional)', muscle: 'Back', secondary: 'Hamstrings, Traps, Grip', equipment: 'Barbell', met: 8.0, caloriesPerMinPerKg: 0.14, tip: 'Engage lats and drive the floor away with your legs to break off ground.' },
+            { name: 'Pull-Ups / Chin-Ups', muscle: 'Back', secondary: 'Biceps, Forearms', equipment: 'Pull-Up Bar', met: 7.0, caloriesPerMinPerKg: 0.12, tip: 'Full range of motion: initiate pull by depressing shoulder blades.' },
+            { name: 'Seated Cable Row', muscle: 'Back', secondary: 'Rhomboids, Biceps', equipment: 'Cable Machine', met: 5.0, caloriesPerMinPerKg: 0.09, tip: 'Drive elbows back while maintaining an upright chest posture.' },
+            { name: 'Overhead Shoulder Press (OHP)', muscle: 'Shoulders', secondary: 'Triceps, Upper Chest', equipment: 'Barbell / Dumbbells', met: 5.5, caloriesPerMinPerKg: 0.09, tip: 'Squeeze glutes and brace core to protect lumbar spine during press.' },
+            { name: 'Dumbbell Lateral Raise', muscle: 'Shoulders', secondary: 'Traps', equipment: 'Dumbbells', met: 4.0, caloriesPerMinPerKg: 0.07, tip: 'Lead with elbows and avoid swinging torso momentum.' },
+            { name: 'Barbell Bicep Curl', muscle: 'Arms', secondary: 'Forearms', equipment: 'Barbell / EZ Bar', met: 4.5, caloriesPerMinPerKg: 0.08, tip: 'Pin elbows to your sides and avoid hip rocking.' },
+            { name: 'Tricep Dips (Parallel Bars)', muscle: 'Arms', secondary: 'Chest, Shoulders', equipment: 'Dip Bars', met: 6.0, caloriesPerMinPerKg: 0.10, tip: 'Lower until elbows reach 90-degree angle, then press up powerfully.' },
+            { name: 'Hanging Leg Raise', muscle: 'Core', secondary: 'Hip Flexors', equipment: 'Pull-Up Bar', met: 5.0, caloriesPerMinPerKg: 0.08, tip: 'Flex spine and raise pelvis to actively engage rectus abdominis.' },
+            { name: 'Plank Hold (Isometric)', muscle: 'Core', secondary: 'Shoulders, Glutes', equipment: 'Bodyweight', met: 3.8, caloriesPerMinPerKg: 0.06, tip: 'Brace abdominal wall as if preparing for a punch.' },
+            { name: 'Jump Rope (Speed/HIIT)', muscle: 'Cardio', secondary: 'Calves, Shoulders', equipment: 'Jump Rope', met: 10.0, caloriesPerMinPerKg: 0.17, tip: 'Jump on balls of feet with minimal knee bend using wrist rotation.' },
+            { name: 'Rowing Ergometer (500m Splits)', muscle: 'Cardio', secondary: 'Back, Legs, Core', equipment: 'Rowing Machine', met: 9.0, caloriesPerMinPerKg: 0.15, tip: 'Drive with legs (60%), swing with hips (20%), and pull with arms (20%).' }
+        ];
+
+        let filtered = exercises;
+        if (category !== 'all') {
+            filtered = exercises.filter(e => e.muscle.toLowerCase() === category.toLowerCase());
+        }
+
+        res.json({ success: true, count: filtered.length, exercises: filtered });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 4. Live UV Index & Solar Vitamin D API (Open-Meteo)
+app.get('/api/uv-index', async (req, res) => {
+    try {
+        const lat = parseFloat(req.query.lat) || 22.5726; // Default Kolkata / International
+        const lon = parseFloat(req.query.lon) || 88.3639;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=uv_index,temperature_2m,weather_code&hourly=uv_index&timezone=auto`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Open-Meteo UV data unavailable');
+        const data = await response.json();
+        
+        const currentUv = data.current?.uv_index || 0;
+        const temp = data.current?.temperature_2m || 25;
+        const hourlyUv = (data.hourly?.uv_index || []).slice(6, 20); // 6 AM to 8 PM
+        const hourlyTimes = (data.hourly?.time || []).slice(6, 20).map(t => t.split('T')[1]);
+
+        res.json({
+            success: true,
+            currentUv,
+            temperature: temp,
+            hourly: { times: hourlyTimes, uv: hourlyUv }
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Disclaimer Page Route
 app.get('/disclaimer', (req, res) => {
-    const title = 'Disclaimer | Health Hub';
-    const desc = 'Please read the disclaimer for Health Hub. Our tools are for informational purposes only.';
-    res.render('disclaimer', { 
+    const title = 'Medical Disclaimer | Health Hub';
+    const desc = 'Please read the medical disclaimer for Health Hub. Our health tools and calculators are for informational and educational tracking only.';
+    res.render('disclaimer', {
         title: title,
         description: desc,
         schema: generateSchema(title, desc, '/disclaimer', false)
     });
 });
 
-// Dynamic Route for Calculators
+// Dynamic Route for all 300+ Health Calculators
 app.get('/:calculator', (req, res) => {
-    const calculatorName = req.params.calculator;
-    const data = calculatorData[calculatorName];
+    const calculatorSlug = req.params.calculator;
+    const calcData = masterCalculators[calculatorSlug];
 
-    if (data) {
-        const viewName = calculatorName.replace(/-/g, '_');
-        const faqs = faqData[calculatorName] || [];
-        
-        // Build FAQ schema if FAQs exist
-        let faqSchema = null;
-        if (faqs.length > 0) {
-            faqSchema = JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                "mainEntity": faqs.map(faq => ({
-                    "@type": "Question",
-                    "name": faq.q,
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": faq.a
-                    }
-                }))
-            });
-        }
-        
-        res.render(viewName, { 
-            title: data.title,
-            description: data.description,
-            schema: generateSchema(data.title, data.description, req.url, true),
-            faqSchema: faqSchema
+    if (!calcData) {
+        return res.status(404).render('404', {
+            title: '404 - Calculator Not Found | Health Hub',
+            description: 'The requested health calculator does not exist.',
+            schema: generateSchema('404 Not Found', 'Health calculator not found', req.url, false)
         });
+    }
+
+    const viewName = calculatorSlug.replace(/-/g, '_');
+    const dedicatedViewPath = path.join(__dirname, 'views', `${viewName}.ejs`);
+    const categoryInfo = categoryMeta[calcData.category] || { name: 'Health', icon: '🏥' };
+
+    const faqs = [
+        { q: `What is the ${calcData.title}?`, a: `The ${calcData.title} is an evidence-based health estimation tool designed to calculate personalized wellness and fitness metrics based on clinical and physiological formulas.` },
+        { q: `How do I use this calculator?`, a: `Enter your parameters (age, gender, height, weight, activity or measurements) above. Results, healthy ranges, and visual breakdowns will update automatically in real-time.` },
+        { q: `Does this replace professional medical advice?`, a: `No. All calculators on Health Hub are designed for personal tracking and educational purposes. Always consult a qualified physician or healthcare provider for medical diagnosis and treatment.` }
+    ];
+
+    const faqSchema = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqs.map(faq => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.a
+            }
+        }))
+    });
+
+    const viewPayload = {
+        title: `${calcData.title} - Free Online Health Calculator | Health Hub`,
+        calculatorName: calcData.title,
+        description: calcData.description,
+        category: calcData.category,
+        categoryName: categoryInfo.name,
+        icon: calcData.icon || categoryInfo.icon,
+        inputs: calcData.inputs || [],
+        formulaName: calcData.formulaName || '',
+        faqs: faqs,
+        calcLogicData: { slug: calculatorSlug, ...calcData },
+        canonicalUrl: `${BASE_URL}/${calculatorSlug}`,
+        schema: generateSchema(calcData.title, calcData.description, `/${calculatorSlug}`, true),
+        faqSchema: faqSchema
+    };
+
+    // If dedicated existing EJS view exists in views/, render it; otherwise render universal health calculator template
+    if (fs.existsSync(dedicatedViewPath)) {
+        res.render(viewName, viewPayload);
     } else {
-        res.status(404).send('Calculator not found');
+        res.render('universal_calculator', viewPayload);
     }
 });
 
 // Start Server
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Health-Hub server is running on port ${port}`);
+    console.log(`Health Hub server is running with ${Object.keys(masterCalculators).length} calculators at http://localhost:${port} (Base: ${BASE_URL})`);
 });

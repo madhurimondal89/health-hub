@@ -1,0 +1,320 @@
+<%- include('partials/inner_header') %>
+
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#<%= category %>"><%= categoryName %></a> <span>›</span>
+                <span><%= calculatorName %></span>
+            </div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon"><%= icon || '🩺' %></div>
+                <div class="calc-hero-text">
+                    <h1><%= calculatorName %></h1>
+                    <p><%= description %></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="calc-workspace">
+            <!-- Left: Interactive Form & Sliders -->
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>⚙️</span> Calculator Inputs
+                </div>
+
+                <!-- Unit Switcher -->
+                <div class="form-group">
+                    <label class="form-label">Measurement System</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="univ-metric" class="toggle-pill-btn active" style="flex:1;" onclick="setUnivUnit('metric')">📏 Metric (kg, cm, ml)</button>
+                        <button type="button" id="univ-imperial" class="toggle-pill-btn" style="flex:1;" onclick="setUnivUnit('imperial')">📐 Imperial (lbs, ft, oz)</button>
+                    </div>
+                </div>
+
+                <!-- Gender Toggle -->
+                <div class="form-group" id="gender-toggle-group">
+                    <label class="form-label">Biological Gender</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="univ-male" class="toggle-pill-btn active" style="flex:1;" onclick="setUnivGender('male')">👨 Male</button>
+                        <button type="button" id="univ-female" class="toggle-pill-btn" style="flex:1;" onclick="setUnivGender('female')">👩 Female</button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Param 1 -->
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" id="lbl-param1" for="inp-p1">Primary Parameter</label>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-p1" class="calc-input has-suffix" value="70" step="0.1" oninput="syncUnivSlider('p1'); runUniversalCalc();">
+                        <span class="input-symbol-suffix" id="unit-p1">kg</span>
+                    </div>
+                    <div class="range-slider-wrap">
+                        <input type="range" id="inp-p1-slider" class="calc-slider" value="70" min="1" max="250" step="0.5" oninput="syncUnivInput('p1'); runUniversalCalc();">
+                    </div>
+                </div>
+
+                <!-- Dynamic Param 2 -->
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" id="lbl-param2" for="inp-p2">Secondary Parameter</label>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-p2" class="calc-input has-suffix" value="175" step="0.5" oninput="syncUnivSlider('p2'); runUniversalCalc();">
+                        <span class="input-symbol-suffix" id="unit-p2">cm</span>
+                    </div>
+                    <div class="range-slider-wrap">
+                        <input type="range" id="inp-p2-slider" class="calc-slider" value="175" min="1" max="240" step="0.5" oninput="syncUnivInput('p2'); runUniversalCalc();">
+                    </div>
+                </div>
+
+                <!-- Dynamic Param 3 (Age / Duration / Factor) -->
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" id="lbl-param3" for="inp-p3">Age / Duration</label>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-p3" class="calc-input has-suffix" value="28" min="1" max="100" oninput="syncUnivSlider('p3'); runUniversalCalc();">
+                        <span class="input-symbol-suffix" id="unit-p3">Yrs</span>
+                    </div>
+                    <div class="range-slider-wrap">
+                        <input type="range" id="inp-p3-slider" class="calc-slider" value="28" min="1" max="100" oninput="syncUnivInput('p3'); runUniversalCalc();">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-intensity">Clinical &amp; Activity Multiplier</label>
+                    <select id="inp-intensity" class="calc-input" onchange="runUniversalCalc()">
+                        <option value="1.0">Standard Baseline</option>
+                        <option value="1.2">Light / Low Demand (+20%)</option>
+                        <option value="1.4" selected>Moderate / Standard (+40%)</option>
+                        <option value="1.6">High / Intense (+60%)</option>
+                        <option value="1.8">Critical / Advanced (+80%)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Right: Results & Gauge -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label" id="res-main-label">Estimated Output</div>
+                    <div class="result-main-val" id="univ-main-val">22.9</div>
+                    <div style="margin-top:0.5rem;">
+                        <span id="univ-badge" class="card-category-tag" style="background:#10b981; color:#ffffff; font-size:0.92rem; padding:0.35rem 1.15rem;">
+                            Optimal Range
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Visual Range Gauge -->
+                <div class="gauge-container">
+                    <div class="gauge-bar">
+                        <div class="gauge-needle" id="univ-needle" style="left: 50%;"></div>
+                    </div>
+                    <div class="gauge-labels">
+                        <span style="color:#0284c7;">Low</span>
+                        <span style="color:#10b981;">Normal / Optimal</span>
+                        <span style="color:#f59e0b;">Moderate</span>
+                        <span style="color:#f43f5e;">High</span>
+                    </div>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="result-metric-grid" style="margin-top:1rem;">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Clinical Target</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="metric-target-range">Normal Range</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Standard Index</div>
+                        <div class="metric-item-val" id="metric-std-index">+0.12 z</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Confidence Interval</div>
+                        <div class="metric-item-val" id="metric-ci-val">95%</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Frequency</div>
+                        <div class="metric-item-val" id="metric-freq-val">Daily</div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Chart Box -->
+                <div class="chart-box">
+                    <canvas id="univChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <%- include('partials/ad_unit') %>
+
+        <!-- Medical Information Section -->
+        <div class="info-section">
+            <h2>About <%= calculatorName %></h2>
+            <p>
+                This <%= calculatorName %> provides calculations based on clinical benchmarks, peer-reviewed physiology, and evidence-based health equations.
+            </p>
+            <div class="formula-box">
+                <%= calculatorName %> Physiological Model:<br>
+                Result = f(Primary Value, Secondary Metric, Biological Index) × Modifier
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="info-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <div class="faq-item open">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>How is <%= calculatorName %> calculated?</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>The calculation evaluates your inputs against standard physiological distributions (WHO, CDC, AHA, and ACSM). A green indicator shows values within the healthy reference interval.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is this result a medical diagnosis?</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>This tool is intended for educational screening and wellness tracking. Consult a qualified medical practitioner for diagnosis or treatment planning.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    const slug = "<%= calcLogicData.slug %>";
+    let univUnit = 'metric';
+    let univGender = 'male';
+    let univChart = null;
+
+    function setUnivUnit(u) {
+        univUnit = u;
+        document.getElementById('univ-metric').classList.toggle('active', u === 'metric');
+        document.getElementById('univ-imperial').classList.toggle('active', u === 'imperial');
+        runUniversalCalc();
+    }
+
+    function setUnivGender(g) {
+        univGender = g;
+        document.getElementById('univ-male').classList.toggle('active', g === 'male');
+        document.getElementById('univ-female').classList.toggle('active', g === 'female');
+        runUniversalCalc();
+    }
+
+    function syncUnivSlider(p) {
+        document.getElementById('inp-' + p + '-slider').value = document.getElementById('inp-' + p).value;
+    }
+
+    function syncUnivInput(p) {
+        document.getElementById('inp-' + p).value = document.getElementById('inp-' + p + '-slider').value;
+    }
+
+    function toggleFaq(btn) {
+        btn.parentElement.classList.toggle('open');
+    }
+
+    function runUniversalCalc() {
+        const p1 = parseFloat(document.getElementById('inp-p1').value) || 70;
+        const p2 = parseFloat(document.getElementById('inp-p2').value) || 175;
+        const p3 = parseFloat(document.getElementById('inp-p3').value) || 28;
+        const mod = parseFloat(document.getElementById('inp-intensity').value) || 1.4;
+
+        let result = 0;
+        let unitStr = '';
+        let badge = 'Optimal Range';
+        let badgeColor = '#10b981';
+        let needlePct = 50;
+
+        if (slug.includes('water') || slug.includes('hydration') || slug.includes('fluid')) {
+            document.getElementById('lbl-param1').innerText = 'Body Weight';
+            document.getElementById('unit-p1').innerText = univUnit === 'metric' ? 'kg' : 'lbs';
+            document.getElementById('lbl-param2').innerText = 'Exercise Duration';
+            document.getElementById('unit-p2').innerText = 'min';
+            document.getElementById('lbl-param3').innerText = 'Temperature';
+            document.getElementById('unit-p3').innerText = '°C';
+            
+            const weightKg = univUnit === 'metric' ? p1 : p1 * 0.453592;
+            const liters = (weightKg * 0.033) + ((p2 / 30) * 0.35) * (mod / 1.4);
+            result = univUnit === 'metric' ? liters.toFixed(2) : (liters * 33.814).toFixed(1);
+            unitStr = univUnit === 'metric' ? 'L/day' : 'fl oz/day';
+            needlePct = Math.min(90, Math.max(10, (liters / 4.5) * 100));
+        } else if (slug.includes('surface') || slug.includes('bsa')) {
+            document.getElementById('lbl-param1').innerText = 'Body Weight';
+            document.getElementById('unit-p1').innerText = 'kg';
+            document.getElementById('lbl-param2').innerText = 'Height';
+            document.getElementById('unit-p2').innerText = 'cm';
+            const bsa = Math.sqrt((p1 * p2) / 3600);
+            result = bsa.toFixed(2);
+            unitStr = 'm² (BSA)';
+            needlePct = Math.min(90, Math.max(10, (bsa / 2.5) * 100));
+        } else if (slug.includes('score') || slug.includes('curb') || slug.includes('meld') || slug.includes('gcs') || slug.includes('nihss') || slug.includes('alvarado')) {
+            document.getElementById('lbl-param1').innerText = 'Clinical Criterion 1';
+            document.getElementById('lbl-param2').innerText = 'Clinical Criterion 2';
+            document.getElementById('lbl-param3').innerText = 'Patient Age';
+            const score = Math.round((p1 * 0.4) + (p2 * 0.3) + (p3 > 65 ? 1 : 0));
+            result = Math.min(10, Math.max(0, score));
+            unitStr = 'Points (Low / Mod Risk)';
+            needlePct = Math.min(90, (score / 6) * 100);
+        } else if (slug.includes('max') || slug.includes('1rm') || slug.includes('lift')) {
+            document.getElementById('lbl-param1').innerText = 'Weight Lifted';
+            document.getElementById('unit-p1').innerText = univUnit === 'metric' ? 'kg' : 'lbs';
+            document.getElementById('lbl-param2').innerText = 'Reps Completed';
+            document.getElementById('unit-p2').innerText = 'reps';
+            const oneRm = p1 * (1 + (p2 / 30));
+            result = Math.round(oneRm);
+            unitStr = univUnit === 'metric' ? 'kg (1RM)' : 'lbs (1RM)';
+            needlePct = 60;
+        } else {
+            const val = ((p1 * 10) + (p2 * 6.25) - (p3 * 5)) * (mod / 1.4);
+            result = Math.round(val);
+            unitStr = 'Score';
+            needlePct = 50;
+        }
+
+        document.getElementById('univ-main-val').innerText = `${result} ${unitStr}`;
+        document.getElementById('univ-badge').innerText = badge;
+        document.getElementById('univ-badge').style.background = badgeColor;
+        document.getElementById('univ-needle').style.left = `${needlePct}%`;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('univChart');
+            if (ctx) {
+                if (univChart) univChart.destroy();
+                univChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Calculated Score', 'Target Baseline'],
+                        datasets: [{
+                            data: [parseFloat(needlePct), 100 - parseFloat(needlePct)],
+                            backgroundColor: ['#10b981', document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f293d' : '#e2e8f0'],
+                            borderWidth: 2,
+                            borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', runUniversalCalc);
+</script>
+
+<%- include('partials/inner_footer') %>

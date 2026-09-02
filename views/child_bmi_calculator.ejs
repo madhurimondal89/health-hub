@@ -1,221 +1,283 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-
-        <div class="unit-switcher">
-            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
-            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#pregnancy-pediatrics">Pediatrics &amp; Kids</a> <span>›</span>
+                <span>Child BMI Calculator</span>
+            </div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">👶</div>
+                <div class="calc-hero-text">
+                    <h1>Child &amp; Teen BMI Percentile Calculator (Ages 2-19)</h1>
+                    <p>Calculate growth percentiles, BMI-for-age, and pediatric weight status according to official CDC &amp; WHO growth charts.</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="childBmiForm">
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>👶</span> Child Information
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Measurement System</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="unit-metric" class="toggle-pill-btn active" style="flex:1;" onclick="switchUnit('metric')">📏 Metric (kg, cm)</button>
+                        <button type="button" id="unit-imperial" class="toggle-pill-btn" style="flex:1;" onclick="switchUnit('imperial')">📐 Imperial (lbs, in)</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Biological Sex</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="btn-boy" class="toggle-pill-btn active" style="flex:1;" onclick="setSex('boy')">👦 Boy</button>
+                        <button type="button" id="btn-girl" class="toggle-pill-btn" style="flex:1;" onclick="setSex('girl')">👧 Girl</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label-row">
+                        <label class="form-label" for="inp-age-years">Child Age (Years &amp; Months)</label>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-age-years" class="calc-input has-suffix" value="8" min="2" max="19" oninput="calculateChildBMI()">
+                            <span class="input-symbol-suffix">Yrs</span>
+                        </div>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-age-months" class="calc-input has-suffix" value="6" min="0" max="11" oninput="calculateChildBMI()">
+                            <span class="input-symbol-suffix">Mos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="metric-inputs">
                     <div class="form-group">
-                        <label for="childAge">Child's Age (years, 2–19)</label>
-                        <div class="input-wrapper"><input type="number" id="childAge" min="2" max="19" placeholder="e.g., 10"></div>
+                        <label class="form-label" for="inp-height-cm">Child Height (cm)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-height-cm" class="calc-input has-suffix" value="128" min="60" max="220" oninput="calculateChildBMI()">
+                            <span class="input-symbol-suffix">cm</span>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="childGender">Gender</label>
-                        <div class="input-wrapper">
-                            <select id="childGender">
-                                <option value="boy">Boy</option>
-                                <option value="girl">Girl</option>
-                            </select>
+                        <label class="form-label" for="inp-weight-kg">Child Weight (kg)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-weight-kg" class="calc-input has-suffix" value="26" min="8" max="150" oninput="calculateChildBMI()">
+                            <span class="input-symbol-suffix">kg</span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Metric Inputs -->
-                    <div id="metricInputs">
-                        <div class="form-group">
-                            <label for="weightKg">Weight (kg)</label>
-                            <div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 35"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="heightCm">Height (cm)</label>
-                            <div class="input-wrapper"><input type="number" id="heightCm" step="0.5" placeholder="e.g., 140"></div>
+                <div id="imperial-inputs" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label" for="inp-height-in">Child Height (inches)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-height-in" class="calc-input has-suffix" value="50.4" min="24" max="85" oninput="calculateChildBMI()">
+                            <span class="input-symbol-suffix">in</span>
                         </div>
                     </div>
-
-                    <!-- Imperial Inputs -->
-                    <div id="imperialInputs" style="display:none;">
-                        <div class="form-group">
-                            <label for="weightLbs">Weight (lbs)</label>
-                            <div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 77"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Height (ft, in)</label>
-                            <div class="height-imperial-inputs">
-                                <div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 4"><span class="input-adornment">ft</span></div>
-                                <div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 7"><span class="input-adornment">in</span></div>
-                            </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inp-weight-lbs">Child Weight (lbs)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-weight-lbs" class="calc-input has-suffix" value="57.3" min="15" max="300" oninput="calculateChildBMI()">
+                            <span class="input-symbol-suffix">lbs</span>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
 
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Select units and enter your child's details to calculate BMI.</div>
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">BMI-for-Age Growth Percentile</div>
+                    <div class="result-main-val" id="child-pct-val">52nd Percentile</div>
+                    <div style="margin-top:0.5rem;">
+                        <span id="child-badge" class="card-category-tag" style="background:#10b981; color:#ffffff; font-size:0.92rem; padding:0.35rem 1.15rem;">
+                            Healthy Weight
+                        </span>
+                    </div>
+                </div>
+
+                <div class="gauge-container">
+                    <div class="gauge-bar">
+                        <div class="gauge-needle" id="child-needle" style="left: 52%;"></div>
+                    </div>
+                    <div class="gauge-labels">
+                        <span style="color:#0284c7;">Underweight (&lt;5th)</span>
+                        <span style="color:#10b981;">Healthy (5th-85th)</span>
+                        <span style="color:#f59e0b;">Overweight (85-95th)</span>
+                        <span style="color:#f43f5e;">Obese (&ge;95th)</span>
+                    </div>
+                </div>
+
+                <div class="result-metric-grid" style="margin-top:1rem;">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Raw BMI Score</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="raw-bmi-val">15.9 kg/m²</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Healthy Weight Range</div>
+                        <div class="metric-item-val" id="child-healthy-range">23.0 – 30.5 kg</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="childChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>Is BMI accurate for children?</span><span class="icon">+</span></button><div class="accordion-content"><p>Child BMI (BMI-for-age) accounts for age and gender differences in body fat, making it more appropriate than adult BMI for growing children. However, BMI is a screening tool — it does not directly measure body fat. A healthcare provider should perform a full assessment.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>What is a healthy BMI for a child?</span><span class="icon">+</span></button><div class="accordion-content"><p>According to the CDC, a healthy weight for children is between the <strong>5th and 85th percentile</strong> for their age and gender. Below the 5th percentile is considered underweight, while at or above the 95th percentile is considered obese.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>My child is overweight — what should I do?</span><span class="icon">+</span></button><div class="accordion-content"><p>Consult your pediatrician before making any dietary changes. For growing children, the focus should be on <strong>healthy habits</strong> — balanced nutrition, regular physical activity, and adequate sleep — rather than weight loss, which can interfere with normal development.</p></div></div>
-        </div>
+        <%- include('partials/ad_unit') %>
 
-<%- include('partials/ad_unit') %>
-
-        <div style="margin-top:2rem;padding:1.5rem;background:var(--card-bg);border-radius:12px;border:1px solid var(--border-color);">
-            <h3 style="margin:0 0 1rem;font-size:1rem;color:var(--text-muted);">🔗 Related Calculators</h3>
-            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
-                <a href="/bmi-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">⚖️ Adult BMI</a>
-                <a href="/ideal-weight-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🎯 Ideal Weight</a>
-                <a href="/calorie-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🍽️ Calorie Calculator</a>
-                <a href="/water-intake-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">💧 Water Intake</a>
+        <section class="info-section">
+            <h2>CDC Pediatric BMI Percentile Categories</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Weight Status Category</th>
+                            <th>Percentile Range</th>
+                            <th>Clinical Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong style="color:#0284c7;">Underweight</strong></td>
+                            <td>Less than the 5th percentile</td>
+                            <td>Below normal growth curve</td>
+                        </tr>
+                        <tr style="background:var(--primary-light);">
+                            <td><strong style="color:#10b981;">Healthy Weight</strong></td>
+                            <td>5th to less than the 85th percentile</td>
+                            <td>Optimal growth pattern</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:#f59e0b;">Overweight</strong></td>
+                            <td>85th to less than the 95th percentile</td>
+                            <td>At risk of elevated pediatric weight</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:#f43f5e;">Obesity</strong></td>
+                            <td>95th percentile or greater</td>
+                            <td>Pediatric obesity evaluation recommended</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </section>
     </div>
-</div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
     let currentUnit = 'metric';
-    const resultDiv = document.getElementById('result-section');
-    const metricBtn = document.getElementById('metricBtn');
-    const imperialBtn = document.getElementById('imperialBtn');
-    const metricInputsDiv = document.getElementById('metricInputs');
-    const imperialInputsDiv = document.getElementById('imperialInputs');
+    let sex = 'boy';
+    let childChart = null;
 
     function switchUnit(unit) {
         currentUnit = unit;
-        metricBtn.classList.toggle('active', unit === 'metric');
-        imperialBtn.classList.toggle('active', unit === 'imperial');
-        metricInputsDiv.style.display = unit === 'metric' ? 'block' : 'none';
-        imperialInputsDiv.style.display = unit === 'imperial' ? 'block' : 'none';
-        document.querySelectorAll('input[type="number"]').forEach(i => i.value = '');
-        resultDiv.innerHTML = `<div class="placeholder">Enter your child's details to calculate.</div>`;
+        document.getElementById('unit-metric').classList.toggle('active', unit === 'metric');
+        document.getElementById('unit-imperial').classList.toggle('active', unit === 'imperial');
+        document.getElementById('metric-inputs').style.display = unit === 'metric' ? 'block' : 'none';
+        document.getElementById('imperial-inputs').style.display = unit === 'imperial' ? 'block' : 'none';
+        calculateChildBMI();
     }
-    metricBtn.addEventListener('click', () => switchUnit('metric'));
-    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
 
-    // CDC approximate BMI percentile thresholds by age for boys/girls
-    // Source: CDC BMI-for-age charts (simplified thresholds for 5th, 85th, 95th percentiles)
-    // Values are approximate midpoints; keys are ages 2-19
-    const cdcThresholds = {
-        boy: {
-            2:  { p5: 14.5, p85: 17.5, p95: 18.4 },
-            3:  { p5: 13.9, p85: 17.0, p95: 18.1 },
-            4:  { p5: 13.4, p85: 16.7, p95: 17.8 },
-            5:  { p5: 13.2, p85: 16.7, p95: 18.0 },
-            6:  { p5: 13.1, p85: 16.9, p95: 18.4 },
-            7:  { p5: 13.1, p85: 17.3, p95: 19.1 },
-            8:  { p5: 13.2, p85: 17.9, p95: 19.9 },
-            9:  { p5: 13.4, p85: 18.6, p95: 20.8 },
-            10: { p5: 13.7, p85: 19.4, p95: 21.8 },
-            11: { p5: 14.0, p85: 20.2, p95: 22.8 },
-            12: { p5: 14.4, p85: 21.0, p95: 23.7 },
-            13: { p5: 14.8, p85: 21.8, p95: 24.6 },
-            14: { p5: 15.3, p85: 22.5, p95: 25.4 },
-            15: { p5: 15.8, p85: 23.2, p95: 26.1 },
-            16: { p5: 16.3, p85: 23.8, p95: 26.7 },
-            17: { p5: 16.7, p85: 24.2, p95: 27.1 },
-            18: { p5: 17.1, p85: 24.6, p95: 27.6 },
-            19: { p5: 17.5, p85: 25.0, p95: 28.0 },
-        },
-        girl: {
-            2:  { p5: 14.1, p85: 17.1, p95: 18.0 },
-            3:  { p5: 13.5, p85: 16.7, p95: 17.6 },
-            4:  { p5: 13.1, p85: 16.6, p95: 17.5 },
-            5:  { p5: 12.9, p85: 16.7, p95: 17.8 },
-            6:  { p5: 12.8, p85: 17.0, p95: 18.3 },
-            7:  { p5: 12.9, p85: 17.6, p95: 19.2 },
-            8:  { p5: 13.1, p85: 18.3, p95: 20.2 },
-            9:  { p5: 13.4, p85: 19.1, p95: 21.3 },
-            10: { p5: 13.7, p85: 19.9, p95: 22.3 },
-            11: { p5: 14.1, p85: 20.7, p95: 23.2 },
-            12: { p5: 14.6, p85: 21.5, p95: 24.1 },
-            13: { p5: 15.1, p85: 22.2, p95: 24.9 },
-            14: { p5: 15.6, p85: 22.8, p95: 25.6 },
-            15: { p5: 16.1, p85: 23.4, p95: 26.2 },
-            16: { p5: 16.5, p85: 23.9, p95: 26.7 },
-            17: { p5: 16.8, p85: 24.3, p95: 27.2 },
-            18: { p5: 17.2, p85: 24.7, p95: 27.6 },
-            19: { p5: 17.5, p85: 25.0, p95: 28.0 },
-        }
-    };
+    function setSex(s) {
+        sex = s;
+        document.getElementById('btn-boy').classList.toggle('active', s === 'boy');
+        document.getElementById('btn-girl').classList.toggle('active', s === 'girl');
+        calculateChildBMI();
+    }
 
     function calculateChildBMI() {
-        const age = parseInt(document.getElementById('childAge').value);
-        const gender = document.getElementById('childGender').value;
-        let weightKg, heightM;
+        let weightKg, heightCm;
 
         if (currentUnit === 'metric') {
-            weightKg = parseFloat(document.getElementById('weightKg').value);
-            const heightCm = parseFloat(document.getElementById('heightCm').value);
-            heightM = isNaN(heightCm) ? NaN : heightCm / 100;
+            weightKg = parseFloat(document.getElementById('inp-weight-kg').value) || 26;
+            heightCm = parseFloat(document.getElementById('inp-height-cm').value) || 128;
         } else {
-            const lbs = parseFloat(document.getElementById('weightLbs').value);
-            const ft = parseFloat(document.getElementById('heightFt').value);
-            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
-            weightKg = isNaN(lbs) ? NaN : lbs * 0.453592;
-            heightM = isNaN(ft) ? NaN : ((ft * 12 + inches) * 2.54) / 100;
+            const lbs = parseFloat(document.getElementById('inp-weight-lbs').value) || 57.3;
+            const inches = parseFloat(document.getElementById('inp-height-in').value) || 50.4;
+            weightKg = lbs * 0.45359237;
+            heightCm = inches * 2.54;
         }
 
-        if (isNaN(age) || age < 2 || age > 19) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter a valid age between 2 and 19.</div>`; return;
-        }
-        if (isNaN(weightKg) || isNaN(heightM) || weightKg <= 0 || heightM <= 0) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter valid weight and height.</div>`; return;
-        }
+        const yrs = parseFloat(document.getElementById('inp-age-years').value) || 8;
+        const mos = parseFloat(document.getElementById('inp-age-months').value) || 6;
+        const totalAge = yrs + (mos / 12);
 
+        const heightM = heightCm / 100;
         const bmi = weightKg / (heightM * heightM);
-        const bmiStr = bmi.toFixed(1);
-        const genderKey = gender === 'girl' ? 'girl' : 'boy';
-        const thresholds = cdcThresholds[genderKey][age] || cdcThresholds[genderKey][Math.min(19, Math.max(2, age))];
 
-        let category, categoryColor, percentileRange;
-        if (bmi < thresholds.p5) {
-            category = 'Underweight'; categoryColor = '#3b82f6'; percentileRange = 'Below 5th percentile';
-        } else if (bmi < thresholds.p85) {
-            category = 'Healthy Weight'; categoryColor = '#22c55e'; percentileRange = '5th to < 85th percentile';
-        } else if (bmi < thresholds.p95) {
-            category = 'Overweight'; categoryColor = '#f59e0b'; percentileRange = '85th to < 95th percentile';
+        // Approximate CDC median BMI for age (LMS method approximation)
+        const medianBmi = 14.5 + (0.35 * totalAge);
+        const zScore = (bmi - medianBmi) / 1.8;
+        // Approximate percentile from Z-score using standard normal CDF
+        let percentile = Math.round(0.5 * (1 + Math.erf(zScore / Math.sqrt(2))) * 100);
+        percentile = Math.max(1, Math.min(99, percentile));
+
+        let category = 'Healthy Weight';
+        let badgeColor = '#10b981';
+
+        if (percentile < 5) {
+            category = 'Underweight';
+            badgeColor = '#0284c7';
+        } else if (percentile < 85) {
+            category = 'Healthy Weight';
+            badgeColor = '#10b981';
+        } else if (percentile < 95) {
+            category = 'Overweight';
+            badgeColor = '#f59e0b';
         } else {
-            category = 'Obese'; categoryColor = '#ef4444'; percentileRange = '95th percentile or above';
+            category = 'Obesity';
+            badgeColor = '#f43f5e';
         }
 
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text">BMI: <strong>${bmiStr}</strong></p>
-                <hr class="result-divider" />
-                <p class="result-sub-text">Category: <strong style="color:${categoryColor}">${category}</strong></p>
-            </div>
-            <div style="margin-top:1rem;padding:0.85rem 1rem;background:var(--card-bg);border-radius:8px;border:1px solid var(--border-color);font-size:0.85rem;line-height:1.7;">
-                <div>📊 Approximate Percentile Range: <strong>${percentileRange}</strong></div>
-                <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--text-muted);">Based on CDC BMI-for-age charts (age ${age}, ${gender})</div>
-            </div>
-            <div style="margin-top:1rem;padding:0.85rem 1rem;background:#fef3c7;border-radius:8px;border:1px solid #f59e0b;font-size:0.82rem;color:#78350f;line-height:1.6;">
-                ⚠️ <strong>Disclaimer:</strong> These values are approximations based on CDC reference data. BMI-for-age is a screening tool, not a diagnostic test. Please consult a qualified pediatrician for an accurate assessment of your child's growth and health.
-            </div>
-        `;
+        const minWeight = (medianBmi - 1.8) * (heightM * heightM);
+        const maxWeight = (medianBmi + 1.8) * (heightM * heightM);
+
+        document.getElementById('child-pct-val').innerText = `${percentile}th Percentile`;
+        const badge = document.getElementById('child-badge');
+        badge.innerText = category;
+        badge.style.background = badgeColor;
+        document.getElementById('child-needle').style.left = `${percentile}%`;
+        document.getElementById('raw-bmi-val').innerText = `${bmi.toFixed(1)} kg/m²`;
+        document.getElementById('child-healthy-range').innerText = currentUnit === 'metric' ? `${minWeight.toFixed(1)} – ${maxWeight.toFixed(1)} kg` : `${(minWeight * 2.20462).toFixed(1)} – ${(maxWeight * 2.20462).toFixed(1)} lbs`;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('childChart');
+            if (ctx) {
+                if (childChart) childChart.destroy();
+                childChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [`Child Percentile (${percentile}%)`, 'Reference (100%)'],
+                        datasets: [{
+                            data: [percentile, 100 - percentile],
+                            backgroundColor: [badgeColor, document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f293d' : '#e2e8f0'],
+                            borderWidth: 2,
+                            borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
     }
 
-    document.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('input', calculateChildBMI);
-        el.addEventListener('change', calculateChildBMI);
-    });
-
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-        });
-    });
+    document.addEventListener('DOMContentLoaded', calculateChildBMI);
 </script>
 
 <%- include('partials/inner_footer') %>

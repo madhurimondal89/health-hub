@@ -1,232 +1,206 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-
-        <div class="unit-switcher">
-            <button id="metricBtn" class="unit-btn active">Metric (km)</button>
-            <button id="imperialBtn" class="unit-btn">Imperial (miles)</button>
-        </div>
-
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="vo2Form">
-                    <div class="form-group">
-                        <label for="age">Age (years)</label>
-                        <div class="input-wrapper"><input type="number" id="age" min="10" max="100" placeholder="e.g., 30"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="gender">Gender</label>
-                        <div class="input-wrapper">
-                            <select id="gender">
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="method">Calculation Method</label>
-                        <div class="input-wrapper">
-                            <select id="method">
-                                <option value="rhr">Resting HR Method</option>
-                                <option value="cooper">Cooper 12-Min Run Test</option>
-                                <option value="mile">1.5 Mile Run Test</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Resting HR Method -->
-                    <div id="rhrInputs">
-                        <div class="form-group">
-                            <label for="restingHR">Resting Heart Rate (bpm)</label>
-                            <div class="input-wrapper"><input type="number" id="restingHR" placeholder="e.g., 65" min="30" max="120"></div>
-                        </div>
-                    </div>
-
-                    <!-- Cooper 12-Min Run Test -->
-                    <div id="cooperInputs" style="display:none;">
-                        <div id="cooperMetric">
-                            <div class="form-group">
-                                <label for="cooperDistM">Distance in 12 minutes (meters)</label>
-                                <div class="input-wrapper"><input type="number" id="cooperDistM" placeholder="e.g., 2400" step="1"></div>
-                            </div>
-                        </div>
-                        <div id="cooperImperial" style="display:none;">
-                            <div class="form-group">
-                                <label for="cooperDistMi">Distance in 12 minutes (miles)</label>
-                                <div class="input-wrapper"><input type="number" id="cooperDistMi" placeholder="e.g., 1.5" step="0.01"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 1.5 Mile Run Test -->
-                    <div id="mileInputs" style="display:none;">
-                        <div class="form-group">
-                            <label>Time to run 1.5 miles</label>
-                            <div class="height-imperial-inputs">
-                                <div class="input-wrapper"><input type="number" id="runMin" placeholder="min" min="0"><span class="input-adornment">min</span></div>
-                                <div class="input-wrapper"><input type="number" id="runSec" placeholder="sec" min="0" max="59"><span class="input-adornment">sec</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#fitness-workouts">Fitness &amp; Workouts</a> <span>›</span>
+                <span>VO2 Max Calculator</span>
             </div>
-
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Select a method and enter your details to estimate your VO2 Max.</div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">🫁</div>
+                <div class="calc-hero-text">
+                    <h1>VO2 Max &amp; Aerobic Fitness Calculator</h1>
+                    <p>Calculate your maximal oxygen uptake capacity (ml/kg/min) and cardiovascular fitness percentile using Cooper Run or Resting Heart Rate methods.</p>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>What is VO2 Max?</span><span class="icon">+</span></button><div class="accordion-content"><p>VO2 Max is the maximum rate at which your body can consume oxygen during intense exercise. It is expressed in ml/kg/min and is considered the gold standard for measuring cardiovascular fitness. Higher values indicate better aerobic endurance capacity.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>What is a good VO2 Max?</span><span class="icon">+</span></button><div class="accordion-content"><p>Average untrained adults typically score between 35–40 ml/kg/min. Fit recreational athletes often reach 45–55, while elite endurance athletes (e.g., marathon runners, cyclists) can score 60–85+ ml/kg/min. Values above 60 are considered superior for most age groups.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>How can I improve my VO2 Max?</span><span class="icon">+</span></button><div class="accordion-content"><p>High-intensity interval training (HIIT) and consistent aerobic exercise are the most effective methods. Incorporate activities like running, cycling, swimming, or rowing at 80–95% of your maximum heart rate for short bursts. Consistency over weeks and months drives the most significant improvements.</p></div></div>
-        </div>
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>🏃</span> Assessment Method
+                </div>
 
-<%- include('partials/ad_unit') %>
+                <div class="form-group">
+                    <label class="form-label">Testing Protocol</label>
+                    <select id="inp-method" class="calc-input" onchange="switchMethod()">
+                        <option value="cooper" selected>Cooper 12-Minute Run Test</option>
+                        <option value="resting-hr">Uth–Sørensen–Overgaard–Pedersen (Resting HR)</option>
+                        <option value="rockport">Rockport 1-Mile Walk Test</option>
+                    </select>
+                </div>
 
-        <div style="margin-top:2rem;padding:1.5rem;background:var(--card-bg);border-radius:12px;border:1px solid var(--border-color);">
-            <h3 style="margin:0 0 1rem;font-size:1rem;color:var(--text-muted);">🔗 Related Calculators</h3>
-            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
-                <a href="/heart-rate-zones-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">❤️ Heart Rate Zones</a>
-                <a href="/running-pace-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🏃 Running Pace</a>
-                <a href="/calorie-burn-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">🔥 Calorie Burn</a>
-                <a href="/tdee-calculator" style="padding:0.4rem 0.9rem;background:var(--accent-gradient);color:#fff;border-radius:20px;font-size:0.85rem;text-decoration:none;">⚡ TDEE Calculator</a>
+                <div class="form-group">
+                    <label class="form-label">Biological Gender</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="btn-male" class="toggle-pill-btn active" style="flex:1;" onclick="setGender('male')">👨 Male</button>
+                        <button type="button" id="btn-female" class="toggle-pill-btn" style="flex:1;" onclick="setGender('female')">👩 Female</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-age">Age</label>
+                    <input type="number" id="inp-age" class="calc-input" value="28" min="15" max="90" oninput="calculateVO2()">
+                </div>
+
+                <div id="cooper-inputs">
+                    <div class="form-group">
+                        <label class="form-label" for="inp-distance">Distance Covered in 12 Minutes (meters)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-distance" class="calc-input has-suffix" value="2400" min="500" max="5000" step="50" oninput="calculateVO2()">
+                            <span class="input-symbol-suffix">meters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="resting-hr-inputs" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label" for="inp-rhr">Resting Heart Rate (BPM)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-rhr" class="calc-input has-suffix" value="62" min="35" max="120" oninput="calculateVO2()">
+                            <span class="input-symbol-suffix">BPM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Estimated VO2 Max</div>
+                    <div class="result-main-val" id="vo2-val">42.4 ml/kg/min</div>
+                    <div style="margin-top:0.5rem;">
+                        <span id="vo2-badge" class="card-category-tag" style="background:#10b981; color:#ffffff; font-size:0.92rem; padding:0.35rem 1.15rem;">
+                            Good / Above Average
+                        </span>
+                    </div>
+                </div>
+
+                <div class="gauge-container">
+                    <div class="gauge-bar">
+                        <div class="gauge-needle" id="vo2-needle" style="left: 65%;"></div>
+                    </div>
+                    <div class="gauge-labels">
+                        <span style="color:#f43f5e;">Poor (&lt;30)</span>
+                        <span style="color:#f59e0b;">Fair (30-37)</span>
+                        <span style="color:#10b981;">Good (38-48)</span>
+                        <span style="color:#0284c7;">Superior (49+)</span>
+                    </div>
+                </div>
+
+                <div class="result-metric-grid" style="margin-top:1rem;">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Fitness Category</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="fitness-cat-val">Above Average</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Cardiovascular Age</div>
+                        <div class="metric-item-val" id="cardio-age-val">24 Yrs</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="vo2Chart"></canvas>
+                </div>
             </div>
         </div>
+
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>Cardiovascular Health &amp; VO2 Max</h2>
+            <p>
+                <strong>VO2 Max</strong> is the single strongest clinical biomarker for cardiorespiratory fitness and long-term cardiovascular longevity.
+            </p>
+        </section>
     </div>
-</div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    let currentUnit = 'metric';
-    const resultDiv = document.getElementById('result-section');
-    const metricBtn = document.getElementById('metricBtn');
-    const imperialBtn = document.getElementById('imperialBtn');
-    const methodSelect = document.getElementById('method');
+    let gender = 'male';
+    let vo2Chart = null;
 
-    function switchUnit(unit) {
-        currentUnit = unit;
-        metricBtn.classList.toggle('active', unit === 'metric');
-        imperialBtn.classList.toggle('active', unit === 'imperial');
-        document.querySelectorAll('input').forEach(i => i.value = '');
-        updateMethodInputs();
-        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate.</div>`;
+    function setGender(g) {
+        gender = g;
+        document.getElementById('btn-male').classList.toggle('active', g === 'male');
+        document.getElementById('btn-female').classList.toggle('active', g === 'female');
+        calculateVO2();
     }
-    metricBtn.addEventListener('click', () => switchUnit('metric'));
-    imperialBtn.addEventListener('click', () => switchUnit('imperial'));
 
-    function updateMethodInputs() {
-        const method = methodSelect.value;
-        document.getElementById('rhrInputs').style.display = method === 'rhr' ? 'block' : 'none';
-        document.getElementById('cooperInputs').style.display = method === 'cooper' ? 'block' : 'none';
-        document.getElementById('mileInputs').style.display = method === 'mile' ? 'block' : 'none';
-        if (method === 'cooper') {
-            document.getElementById('cooperMetric').style.display = currentUnit === 'metric' ? 'block' : 'none';
-            document.getElementById('cooperImperial').style.display = currentUnit === 'imperial' ? 'block' : 'none';
-        }
-        resultDiv.innerHTML = `<div class="placeholder">Enter your details to calculate.</div>`;
-    }
-    methodSelect.addEventListener('change', updateMethodInputs);
-
-    function getVO2Category(vo2, age, gender) {
-        // Fitness categories by age group and gender
-        const tables = {
-            male: [
-                { label: '20–29', ranges: [{ max: 33, cat: 'Poor' }, { max: 42, cat: 'Fair' }, { max: 46, cat: 'Good' }, { max: 52, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-                { label: '30–39', ranges: [{ max: 32, cat: 'Poor' }, { max: 40, cat: 'Fair' }, { max: 44, cat: 'Good' }, { max: 50, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-                { label: '40–49', ranges: [{ max: 30, cat: 'Poor' }, { max: 37, cat: 'Fair' }, { max: 41, cat: 'Good' }, { max: 47, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-                { label: '50–59', ranges: [{ max: 25, cat: 'Poor' }, { max: 33, cat: 'Fair' }, { max: 37, cat: 'Good' }, { max: 43, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-                { label: '60+', ranges: [{ max: 21, cat: 'Poor' }, { max: 27, cat: 'Fair' }, { max: 32, cat: 'Good' }, { max: 38, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-            ],
-            female: [
-                { label: '20–29', ranges: [{ max: 28, cat: 'Poor' }, { max: 35, cat: 'Fair' }, { max: 40, cat: 'Good' }, { max: 45, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-                { label: '30–39', ranges: [{ max: 26, cat: 'Poor' }, { max: 33, cat: 'Fair' }, { max: 38, cat: 'Good' }, { max: 43, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-                { label: '40–49', ranges: [{ max: 24, cat: 'Poor' }, { max: 30, cat: 'Fair' }, { max: 35, cat: 'Good' }, { max: 40, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-                { label: '50–59', ranges: [{ max: 20, cat: 'Poor' }, { max: 26, cat: 'Fair' }, { max: 31, cat: 'Good' }, { max: 36, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-                { label: '60+', ranges: [{ max: 17, cat: 'Poor' }, { max: 22, cat: 'Fair' }, { max: 27, cat: 'Good' }, { max: 32, cat: 'Excellent' }, { max: Infinity, cat: 'Superior' }] },
-            ]
-        };
-        const genderTable = tables[gender] || tables['male'];
-        let row = genderTable[genderTable.length - 1];
-        if (age < 30) row = genderTable[0];
-        else if (age < 40) row = genderTable[1];
-        else if (age < 50) row = genderTable[2];
-        else if (age < 60) row = genderTable[3];
-        let category = 'Superior';
-        for (const r of row.ranges) { if (vo2 <= r.max) { category = r.cat; break; } }
-        // Build rating table HTML
-        let tableHtml = `<table style="width:100%;border-collapse:collapse;margin-top:0.75rem;font-size:0.82rem;">
-            <tr><th style="text-align:left;padding:4px 6px;border-bottom:1px solid var(--border-color);">Category</th><th style="padding:4px 6px;border-bottom:1px solid var(--border-color);">VO2 Max (ml/kg/min)</th></tr>`;
-        const labels = ['Poor', 'Fair', 'Good', 'Excellent', 'Superior'];
-        const prevMax = [-Infinity, ...row.ranges.map(r => r.max)];
-        row.ranges.forEach((r, i) => {
-            const highlight = r.cat === category ? 'background:var(--accent-gradient);color:#fff;border-radius:4px;' : '';
-            const low = i === 0 ? '< ' + r.max : (prevMax[i] + 1) + '–' + (r.max === Infinity ? '+' : r.max);
-            tableHtml += `<tr><td style="padding:4px 6px;${highlight}">${r.cat}</td><td style="padding:4px 6px;text-align:center;${highlight}">${r.max === Infinity ? '> ' + prevMax[i] : low}</td></tr>`;
-        });
-        tableHtml += `</table>`;
-        return { category, tableHtml, ageLabel: row.label };
+    function switchMethod() {
+        const method = document.getElementById('inp-method').value;
+        document.getElementById('cooper-inputs').style.display = method === 'cooper' ? 'block' : 'none';
+        document.getElementById('resting-hr-inputs').style.display = method === 'resting-hr' ? 'block' : 'none';
+        calculateVO2();
     }
 
     function calculateVO2() {
-        const age = parseFloat(document.getElementById('age').value);
-        const gender = document.getElementById('gender').value;
-        const method = methodSelect.value;
-        if (isNaN(age) || age < 10 || age > 100) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter a valid age (10–100).</div>`;
-            return;
+        const method = document.getElementById('inp-method').value;
+        const age = parseFloat(document.getElementById('inp-age').value) || 28;
+
+        let vo2 = 0;
+        if (method === 'cooper') {
+            const dist = parseFloat(document.getElementById('inp-distance').value) || 2400;
+            // Cooper equation: (distance in meters - 504.9) / 44.73
+            vo2 = (dist - 504.9) / 44.73;
+        } else {
+            const rhr = parseFloat(document.getElementById('inp-rhr').value) || 62;
+            const maxHr = 220 - age;
+            // Uth formula: 15.3 * (HRmax / HRrest)
+            vo2 = 15.3 * (maxHr / rhr);
         }
-        let vo2 = null;
-        if (method === 'rhr') {
-            const rhr = parseFloat(document.getElementById('restingHR').value);
-            if (isNaN(rhr) || rhr < 30 || rhr > 120) { resultDiv.innerHTML = `<div class="placeholder">Please enter a valid resting heart rate (30–120 bpm).</div>`; return; }
-            const maxHR = 220 - age;
-            vo2 = 15 * (maxHR / rhr);
-        } else if (method === 'cooper') {
-            let distM;
-            if (currentUnit === 'metric') {
-                distM = parseFloat(document.getElementById('cooperDistM').value);
-            } else {
-                const miles = parseFloat(document.getElementById('cooperDistMi').value);
-                distM = isNaN(miles) ? NaN : miles * 1609.344;
+
+        vo2 = Math.max(15, Math.min(85, vo2));
+
+        let category = 'Good';
+        let badgeColor = '#10b981';
+        let needlePct = 60;
+
+        if (vo2 < 30) { category = 'Poor'; badgeColor = '#f43f5e'; needlePct = 20; }
+        else if (vo2 < 38) { category = 'Fair'; badgeColor = '#f59e0b'; needlePct = 40; }
+        else if (vo2 < 48) { category = 'Good'; badgeColor = '#10b981'; needlePct = 65; }
+        else { category = 'Superior'; badgeColor = '#0284c7'; needlePct = 90; }
+
+        document.getElementById('vo2-val').innerText = `${vo2.toFixed(1)} ml/kg/min`;
+        const badge = document.getElementById('vo2-badge');
+        badge.innerText = category;
+        badge.style.background = badgeColor;
+        document.getElementById('vo2-needle').style.left = `${needlePct}%`;
+        document.getElementById('fitness-cat-val').innerText = category;
+        document.getElementById('cardio-age-val').innerText = `${Math.max(18, Math.round(age - (vo2 - 40) * 0.5))} Yrs`;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('vo2Chart');
+            if (ctx) {
+                if (vo2Chart) vo2Chart.destroy();
+                vo2Chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [`VO2 Max (${vo2.toFixed(1)})`, 'Elite Standard (60)'],
+                        datasets: [{
+                            data: [vo2, Math.max(0, 60 - vo2)],
+                            backgroundColor: [badgeColor, document.documentElement.getAttribute('data-theme') === 'dark' ? '#1f293d' : '#e2e8f0'],
+                            borderWidth: 2,
+                            borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
             }
-            if (isNaN(distM) || distM <= 0) { resultDiv.innerHTML = `<div class="placeholder">Please enter a valid distance.</div>`; return; }
-            vo2 = (distM - 504.9) / 44.73;
-        } else if (method === 'mile') {
-            const mins = parseFloat(document.getElementById('runMin').value) || 0;
-            const secs = parseFloat(document.getElementById('runSec').value) || 0;
-            const totalMin = mins + secs / 60;
-            if (totalMin <= 0) { resultDiv.innerHTML = `<div class="placeholder">Please enter a valid run time.</div>`; return; }
-            vo2 = 3.5 + 483 / totalMin;
         }
-        if (vo2 === null || isNaN(vo2)) return;
-        vo2 = Math.max(0, vo2);
-        const vo2Str = vo2.toFixed(1);
-        const { category, tableHtml, ageLabel } = getVO2Category(vo2, age, gender);
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text">VO2 Max: <strong>${vo2Str} ml/kg/min</strong></p>
-                <hr class="result-divider" />
-                <p class="result-sub-text">Fitness Level: <strong>${category}</strong></p>
-            </div>
-            <div style="margin-top:1rem;font-size:0.85rem;color:var(--text-muted);">Rating table for age group <strong>${ageLabel}</strong> (${gender}):</div>
-            ${tableHtml}
-        `;
     }
 
-    document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calculateVO2));
-    document.querySelectorAll('input, select').forEach(el => el.addEventListener('change', calculateVO2));
-
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-        });
-    });
+    document.addEventListener('DOMContentLoaded', calculateVO2);
 </script>
 
 <%- include('partials/inner_footer') %>

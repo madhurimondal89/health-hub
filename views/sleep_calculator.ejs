@@ -1,207 +1,184 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-        
-        <div class="calc-mode-switcher">
-            <button id="wakeUpBtn" class="unit-btn active">Wake Up Time</button>
-            <button id="bedtimeBtn" class="unit-btn">Bedtime</button>
-            <button id="lengthBtn" class="unit-btn">Sleep Length</button>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#sleep-wellness">Sleep &amp; Wellness</a> <span>›</span>
+                <span>Sleep Calculator</span>
+            </div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">😴</div>
+                <div class="calc-hero-text">
+                    <h1>Sleep Cycle &amp; Circadian Optimizer</h1>
+                    <p>Calculate the best time to fall asleep or wake up based on natural 90-minute REM &amp; NREM sleep cycles to wake up energized.</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <!-- Mode 1: Wake Up Time -->
-        <div id="wakeUpMode">
-            <p class="mode-description">Calculate when to wake up based on your bedtime.</p>
-            <button id="calculateNowBtn" class="main-action-btn">Calculate from Now</button>
-            <p class="mode-description-alt">Or, if you plan to sleep at a specific time:</p>
-            <div class="form-group"><div class="input-wrapper"><input type="time" id="bedtimeInput"></div></div>
-        </div>
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>🌙</span> Sleep Schedule Mode
+                </div>
 
-        <!-- Mode 2: Bedtime -->
-        <div id="bedtimeMode" style="display: none;">
-            <p class="mode-description">Calculate when to go to bed to wake up at a specific time.</p>
-            <div class="form-group">
-                <label for="wakeUpTimeInput">I want to wake up at:</label>
-                <div class="input-wrapper"><input type="time" id="wakeUpTimeInput"></div>
+                <div class="form-group">
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="btn-wake-mode" class="toggle-pill-btn active" style="flex:1;" onclick="setMode('wake')">⏰ I want to wake up at...</button>
+                        <button type="button" id="btn-sleep-mode" class="toggle-pill-btn" style="flex:1;" onclick="setMode('sleep')">🛌 If I go to sleep now...</button>
+                    </div>
+                </div>
+
+                <div id="wake-time-section" class="form-group">
+                    <label class="form-label" for="wake-time">Target Wake-Up Time</label>
+                    <input type="time" id="wake-time" class="calc-input" value="07:00" onchange="calculateSleep()">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Average Time to Fall Asleep</label>
+                    <div class="preset-chips">
+                        <span class="chip" onclick="setLatency(10)">10 min</span>
+                        <span class="chip" onclick="setLatency(15)">15 min (Avg)</span>
+                        <span class="chip" onclick="setLatency(20)">20 min</span>
+                        <span class="chip" onclick="setLatency(30)">30 min</span>
+                    </div>
+                    <div class="input-with-symbol" style="margin-top:0.5rem;">
+                        <input type="number" id="inp-latency" class="calc-input has-suffix" value="15" min="0" max="60" oninput="calculateSleep()">
+                        <span class="input-symbol-suffix">min</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label" id="sleep-res-label">Suggested Bedtimes</div>
+                    <div class="result-main-val" id="sleep-prime-time" style="font-size:2.4rem;">10:00 PM or 11:30 PM</div>
+                    <div style="margin-top:0.35rem; font-size:0.88rem; color:var(--text-secondary);">Completes 5 to 6 full 90-minute sleep cycles</div>
+                </div>
+
+                <div class="section-subtitle" style="font-size:1rem; margin-bottom:0.75rem;">Optimal 90-Min Sleep Cycle Options</div>
+                
+                <div id="sleep-cards-container" style="display:flex; flex-direction:column; gap:0.65rem;">
+                    <!-- Dynamic Sleep Cycle Cards Generated via JS -->
+                </div>
             </div>
         </div>
 
-        <!-- Mode 3: Sleep Length -->
-        <div id="sleepLengthMode" style="display: none;">
-            <p class="mode-description">Calculate the duration and sleep cycles between your bedtime and wake-up time.</p>
-            <div class="form-group"><label for="sleepStart">I plan to sleep at:</label><div class="input-wrapper"><input type="time" id="sleepStart"></div></div>
-            <div class="form-group"><label for="sleepEnd">And wake up at:</label><div class="input-wrapper"><input type="time" id="sleepEnd"></div></div>
-        </div>
+        <%- include('partials/ad_unit') %>
 
-        <div class="result-section" id="result-section" style="margin-top: 2rem;">
-             <div class="placeholder">Select a mode and provide a time to get started.</div>
-        </div>
-
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>How Does This Calculator Work?</span><span class="icon">+</span></button><div class="accordion-content"><p>The average human sleep cycle is 90 minutes. Waking up at the end of a cycle, rather than in the middle of it, helps you feel refreshed and alert. This calculator works with 90-minute increments and also considers an average of 15 minutes to fall asleep.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Why 90-Minute Cycles?</span><span class="icon">+</span></button><div class="accordion-content"><p>During sleep, your brain cycles through different stages (light, deep, REM). A full cycle takes about 90 minutes. Completing 5-6 full cycles (7.5 to 9 hours) is recommended for most adults.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This is a tool based on averages. Individual sleep cycles can vary. Use these results as a guideline to find what works best for you.</p></div></div>
-        </div>
-<%- include('partials/ad_unit') %>
+        <section class="info-section">
+            <h2>The Science of 90-Minute Sleep Cycles</h2>
+            <p>
+                A standard human sleep cycle lasts approximately <strong>90 minutes</strong>, cycling through Light Sleep (NREM Stage 1 &amp; 2), Deep Slow-Wave Sleep (NREM Stage 3), and Rapid Eye Movement (REM) dream sleep.
+            </p>
+            <p>
+                Waking up in the middle of Deep Sleep leaves you feeling groggy (sleep inertia), whereas waking at the end of a completed 90-minute cycle ensures you feel fresh and alert.
+            </p>
+        </section>
     </div>
-</div>
+</main>
 
 <script>
-    let currentMode = 'wakeUp';
-    const resultDiv = document.getElementById('result-section');
+    let currentMode = 'wake';
 
-    const wakeUpBtn = document.getElementById('wakeUpBtn');
-    const bedtimeBtn = document.getElementById('bedtimeBtn');
-    const lengthBtn = document.getElementById('lengthBtn');
+    function setMode(m) {
+        currentMode = m;
+        document.getElementById('btn-wake-mode').classList.toggle('active', m === 'wake');
+        document.getElementById('btn-sleep-mode').classList.toggle('active', m === 'sleep');
+        document.getElementById('wake-time-section').style.display = m === 'wake' ? 'block' : 'none';
+        calculateSleep();
+    }
 
-    const wakeUpModeDiv = document.getElementById('wakeUpMode');
-    const bedtimeModeDiv = document.getElementById('bedtimeMode');
-    const sleepLengthModeDiv = document.getElementById('sleepLengthMode');
+    function setLatency(l) {
+        document.getElementById('inp-latency').value = l;
+        calculateSleep();
+    }
 
-    const calculateNowBtn = document.getElementById('calculateNowBtn');
-    const bedtimeInput = document.getElementById('bedtimeInput');
-    const wakeUpTimeInput = document.getElementById('wakeUpTimeInput');
-    const sleepStartInput = document.getElementById('sleepStart');
-    const sleepEndInput = document.getElementById('sleepEnd');
-
-    function formatTime(date) {
-        let hours = date.getHours();
-        let minutes = date.getMinutes();
+    function formatTime(d) {
+        let hours = d.getHours();
+        let minutes = d.getMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
+        hours = hours ? hours : 12;
         minutes = minutes < 10 ? '0' + minutes : minutes;
         return `${hours}:${minutes} ${ampm}`;
     }
 
-    function switchMode(mode) {
-        currentMode = mode;
-        wakeUpBtn.classList.toggle('active', mode === 'wakeUp');
-        bedtimeBtn.classList.toggle('active', mode === 'bedtime');
-        lengthBtn.classList.toggle('active', mode === 'length');
-        
-        wakeUpModeDiv.style.display = mode === 'wakeUp' ? 'block' : 'none';
-        bedtimeModeDiv.style.display = mode === 'bedtime' ? 'block' : 'none';
-        sleepLengthModeDiv.style.display = mode === 'length' ? 'block' : 'none';
-        
-        resultDiv.innerHTML = `<div class="placeholder">Select a mode and provide a time to get started.</div>`;
+    function calculateSleep() {
+        const latency = parseInt(document.getElementById('inp-latency').value) || 15;
+        const container = document.getElementById('sleep-cards-container');
+        container.innerHTML = '';
+
+        if (currentMode === 'wake') {
+            const timeStr = document.getElementById('wake-time').value || '07:00';
+            const [wH, wM] = timeStr.split(':').map(Number);
+            const wakeDate = new Date();
+            wakeDate.setHours(wH, wM, 0, 0);
+
+            document.getElementById('sleep-res-label').innerText = 'To Wake Up at ' + formatTime(wakeDate) + ', go to bed at:';
+
+            // Cycles: 6 cycles (9 hrs), 5 cycles (7.5 hrs), 4 cycles (6 hrs)
+            const cycles = [
+                { count: 6, hours: 9, note: 'Recommended (Optimal 9 hrs)', color: '#10b981' },
+                { count: 5, hours: 7.5, note: 'Great (7.5 hrs rest)', color: '#0284c7' },
+                { count: 4, hours: 6, note: 'Minimum (6 hrs rest)', color: '#f59e0b' }
+            ];
+
+            cycles.forEach((c, idx) => {
+                const bedDate = new Date(wakeDate.getTime() - (c.hours * 60 * 60 * 1000) - (latency * 60 * 1000));
+                const timeText = formatTime(bedDate);
+                if (idx === 0) document.getElementById('sleep-prime-time').innerText = timeText;
+
+                const div = document.createElement('div');
+                div.className = 'metric-item';
+                div.style.display = 'flex';
+                div.style.justifyContent = 'space-between';
+                div.style.alignItems = 'center';
+                div.innerHTML = `
+                    <div>
+                        <div style="font-weight:700; color:${c.color};">${c.count} Sleep Cycles (${c.hours} hrs)</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted);">${c.note}</div>
+                    </div>
+                    <div class="metric-item-val" style="font-size:1.3rem; color:${c.color};">${timeText}</div>
+                `;
+                container.appendChild(div);
+            });
+        } else {
+            const now = new Date();
+            document.getElementById('sleep-res-label').innerText = 'If you sleep right now, wake up at:';
+
+            const cycles = [
+                { count: 6, hours: 9, note: '6 Complete Cycles (9 hrs)', color: '#10b981' },
+                { count: 5, hours: 7.5, note: '5 Complete Cycles (7.5 hrs)', color: '#0284c7' },
+                { count: 4, hours: 6, note: '4 Complete Cycles (6 hrs)', color: '#f59e0b' }
+            ];
+
+            cycles.forEach((c, idx) => {
+                const wakeDate = new Date(now.getTime() + (c.hours * 60 * 60 * 1000) + (latency * 60 * 1000));
+                const timeText = formatTime(wakeDate);
+                if (idx === 1) document.getElementById('sleep-prime-time').innerText = timeText;
+
+                const div = document.createElement('div');
+                div.className = 'metric-item';
+                div.style.display = 'flex';
+                div.style.justifyContent = 'space-between';
+                div.style.alignItems = 'center';
+                div.innerHTML = `
+                    <div>
+                        <div style="font-weight:700; color:${c.color};">${c.count} Cycles (${c.hours} hrs)</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted);">${c.note}</div>
+                    </div>
+                    <div class="metric-item-val" style="font-size:1.3rem; color:${c.color};">${timeText}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
     }
 
-    function generateWakeUpResults(startTime, introText) {
-        const fallAsleepTime = new Date(startTime.getTime() + 15 * 60000); // Add 15 mins to fall asleep
-        
-        let resultsHTML = `<h4>${introText}</h4><div class="time-options-list">`;
-        for (let i = 1; i <= 6; i++) {
-            const wakeUpTime = new Date(fallAsleepTime.getTime() + i * 90 * 60000);
-            const isRecommended = (i === 5 || i === 6);
-            resultsHTML += `<div class="time-option ${isRecommended ? 'recommended' : ''}">${formatTime(wakeUpTime)} <span>(${i} cycle${i > 1 ? 's' : ''})</span></div>`;
-        }
-        resultsHTML += '</div><p class="result-sub-text">Getting 7.5 to 9 hours of sleep is recommended for adults.</p>';
-        resultDiv.innerHTML = resultsHTML;
-    }
-
-    function calculateBedtimes() {
-        const wakeUpValue = wakeUpTimeInput.value;
-        if (!wakeUpValue) {
-            resultDiv.innerHTML = `<div class="placeholder">Please select a wake up time.</div>`;
-            return;
-        }
-
-        const [hours, minutes] = wakeUpValue.split(':');
-        const wakeUpTime = new Date();
-        wakeUpTime.setHours(hours);
-        wakeUpTime.setMinutes(minutes);
-
-        let resultsHTML = `<h4>To wake up at ${formatTime(wakeUpTime)}, you should go to bed at one of the following times:</h4><div class="time-options-list">`;
-        for (let i = 1; i <= 6; i++) {
-            const bedtime = new Date(wakeUpTime.getTime() - (i * 90 * 60000) - (15 * 60000));
-            const isRecommended = (i === 5 || i === 6);
-            resultsHTML += `<div class="time-option ${isRecommended ? 'recommended' : ''}">${formatTime(bedtime)} <span>(${i} cycle${i > 1 ? 's' : ''})</span></div>`;
-        }
-        resultsHTML += '</div><p class="result-sub-text">This includes 15 minutes to fall asleep.</p>';
-        resultDiv.innerHTML = resultsHTML;
-    }
-
-    function calculateSleepLength() {
-        const startTimeValue = sleepStartInput.value;
-        const endTimeValue = sleepEndInput.value;
-        if (!startTimeValue || !endTimeValue) {
-            resultDiv.innerHTML = `<div class="placeholder">Please select both a start and end time.</div>`;
-            return;
-        }
-
-        const [startH, startM] = startTimeValue.split(':');
-        const [endH, endM] = endTimeValue.split(':');
-        
-        let startDate = new Date();
-        startDate.setHours(startH, startM, 0, 0);
-        let endDate = new Date();
-        endDate.setHours(endH, endM, 0, 0);
-
-        if (endDate < startDate) { // Handle overnight sleep
-            endDate.setDate(endDate.getDate() + 1);
-        }
-
-        const diffMs = endDate - startDate;
-        const totalMinutes = Math.floor(diffMs / 60000);
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        
-        const sleepCycles = Math.floor(totalMinutes / 90);
-        const remainingMinutes = totalMinutes % 90;
-
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text">Total Sleep Duration:</p>
-                <p class="result-main-text-large" style="margin-top:0.5rem;"><strong>${hours}h ${minutes}m</strong></p>
-            </div>
-            <div class="bf-details-container">
-                <div class="bf-details-item">
-                    <div>Completed Sleep Cycles</div>
-                    <div><strong>${sleepCycles}</strong></div>
-                </div>
-                <div class="bf-details-item">
-                    <div>Remaining Time</div>
-                    <div><strong>${remainingMinutes} minutes</strong></div>
-                </div>
-            </div>
-        `;
-    }
-
-    // --- ATTACH EVENT LISTENERS ---
-    wakeUpBtn.addEventListener('click', () => switchMode('wakeUp'));
-    bedtimeBtn.addEventListener('click', () => switchMode('bedtime'));
-    lengthBtn.addEventListener('click', () => switchMode('length'));
-    
-    calculateNowBtn.addEventListener('click', () => {
-        generateWakeUpResults(new Date(), 'If you go to bed now, you should wake up at:');
-    });
-
-    bedtimeInput.addEventListener('input', () => {
-        const bedTimeValue = bedtimeInput.value;
-        if (!bedTimeValue) return;
-        const [hours, minutes] = bedTimeValue.split(':');
-        const startTime = new Date();
-        startTime.setHours(hours);
-        startTime.setMinutes(minutes);
-        generateWakeUpResults(startTime, `If you go to bed at ${formatTime(startTime)}, you should wake up at:`);
-    });
-
-    wakeUpTimeInput.addEventListener('input', calculateBedtimes);
-    sleepStartInput.addEventListener('input', calculateSleepLength);
-    sleepEndInput.addEventListener('input', calculateSleepLength);
-
-    // --- ACCORDION LOGIC (THIS WAS MISSING) ---
-    document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const accordionItem = header.parentElement;
-            accordionItem.classList.toggle('active');
-            const content = header.nextElementSibling;
-            content.style.maxHeight = accordionItem.classList.contains('active') ? content.scrollHeight + 'px' : '0px';
-        });
-    });
+    document.addEventListener('DOMContentLoaded', calculateSleep);
 </script>
 
 <%- include('partials/inner_footer') %>

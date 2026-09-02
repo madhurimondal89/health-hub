@@ -1,12 +1,12 @@
 {
   "name": "health-hub",
-  "version": "1.0.1",
-  "description": "Health Hub - Online Health Calculators",
+  "version": "1.0.0",
+  "description": "Health Hub - 300+ Smart, Free & Accurate Online Health, Fitness and Medical Calculators",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
-  "author": "",
+  "author": "Calculator Free",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",

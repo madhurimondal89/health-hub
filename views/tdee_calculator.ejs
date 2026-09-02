@@ -1,117 +1,241 @@
 <%- include('partials/inner_header') %>
 
-<div class="container">
-    <div class="calculator-container">
-        <h1 class="calculator-title"><%= title %></h1>
-<%- include('partials/ad_unit') %>
-        
-        <div class="unit-switcher">
-            <button id="metricBtn" class="unit-btn active">Metric (kg, cm)</button>
-            <button id="imperialBtn" class="unit-btn">Imperial (lbs, ft, in)</button>
+<main>
+    <section class="calc-page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/">Home</a> <span>›</span>
+                <a href="/#body-composition">Body Composition</a> <span>›</span>
+                <span>TDEE Calculator</span>
+            </div>
+            <div class="calc-hero-content">
+                <div class="calc-hero-icon">⚡</div>
+                <div class="calc-hero-text">
+                    <h1>TDEE Calculator (Total Daily Energy Expenditure)</h1>
+                    <p>Calculate your daily maintenance calories, macronutrient targets, and total energy expenditure based on activity level.</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="calculator-grid">
-            <div class="form-section">
-                <form id="tdeeForm">
+    <div class="container">
+        <div class="calc-workspace">
+            <div class="input-card">
+                <div class="section-subtitle">
+                    <span>⚡</span> Energy Parameters
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Measurement System</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="unit-metric" class="toggle-pill-btn active" style="flex:1;" onclick="switchUnit('metric')">📏 Metric (kg, cm)</button>
+                        <button type="button" id="unit-imperial" class="toggle-pill-btn" style="flex:1;" onclick="switchUnit('imperial')">📐 Imperial (lbs, ft-in)</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Biological Gender</label>
+                    <div class="toggle-pills" style="width:100%; display:flex;">
+                        <button type="button" id="btn-male" class="toggle-pill-btn active" style="flex:1;" onclick="setGender('male')">👨 Male</button>
+                        <button type="button" id="btn-female" class="toggle-pill-btn" style="flex:1;" onclick="setGender('female')">👩 Female</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-age">Age</label>
+                    <div class="input-with-symbol">
+                        <input type="number" id="inp-age" class="calc-input has-suffix" value="28" min="15" max="100" oninput="calculateTDEE()">
+                        <span class="input-symbol-suffix">Yrs</span>
+                    </div>
+                </div>
+
+                <div id="metric-inputs">
                     <div class="form-group">
-                        <label>Gender</label>
-                        <div class="gender-switcher">
-                            <button type="button" id="genderMale" class="gender-btn active">Male</button>
-                            <button type="button" id="genderFemale" class="gender-btn">Female</button>
+                        <label class="form-label" for="inp-height-cm">Height (cm)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-height-cm" class="calc-input has-suffix" value="175" min="100" max="230" oninput="calculateTDEE()">
+                            <span class="input-symbol-suffix">cm</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="age">Age (years)</label>
-                        <div class="input-wrapper"><input type="number" id="age" min="15" max="100" placeholder="e.g., 25"></div>
-                    </div>
-                    
-                    <!-- Weight & Height Inputs (same as BMR) -->
-                    <div id="metricInputs">
-                        <div class="form-group"><label for="weightKg">Weight (kg)</label><div class="input-wrapper"><input type="number" id="weightKg" step="0.1" placeholder="e.g., 70"></div></div>
-                        <div class="form-group"><label for="heightCm">Height (cm)</label><div class="input-wrapper"><input type="number" id="heightCm" step="1" placeholder="e.g., 175"></div></div>
-                    </div>
-                    <div id="imperialInputs" style="display: none;">
-                        <div class="form-group"><label for="weightLbs">Weight (lbs)</label><div class="input-wrapper"><input type="number" id="weightLbs" step="0.1" placeholder="e.g., 154"></div></div>
-                        <div class="form-group"><label>Height (ft, in)</label><div class="height-imperial-inputs"><div class="input-wrapper"><input type="number" id="heightFt" placeholder="e.g., 5"><span class="input-adornment">ft</span></div><div class="input-wrapper"><input type="number" id="heightIn" placeholder="e.g., 9"><span class="input-adornment">in</span></div></div></div>
-                    </div>
-
-                    <!-- --- NEW ACTIVITY LEVEL DROPDOWN --- -->
-                    <div class="form-group">
-                        <label for="activityLevel">Activity Level</label>
-                        <div class="input-wrapper">
-                            <select id="activityLevel">
-                                <option value="1.2">Sedentary (little or no exercise)</option>
-                                <option value="1.375">Lightly active (exercise 1-3 days/week)</option>
-                                <option value="1.55">Moderately active (exercise 3-5 days/week)</option>
-                                <option value="1.725">Very active (hard exercise 6-7 days/week)</option>
-                                <option value="1.9">Extra active (very hard exercise & physical job)</option>
-                            </select>
+                        <label class="form-label" for="inp-weight-kg">Weight (kg)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="inp-weight-kg" class="calc-input has-suffix" value="70" min="30" max="250" oninput="calculateTDEE()">
+                            <span class="input-symbol-suffix">kg</span>
                         </div>
                     </div>
-                </form>
+                </div>
+
+                <div id="imperial-inputs" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">Height (ft &amp; in)</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                            <input type="number" id="inp-height-ft" class="calc-input" value="5" min="1" max="8" oninput="calculateTDEE()">
+                            <input type="number" id="inp-height-in" class="calc-input" value="9" min="0" max="11" oninput="calculateTDEE()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inp-weight-lbs">Weight (lbs)</label>
+                        <input type="number" id="inp-weight-lbs" class="calc-input" value="154" min="50" max="500" oninput="calculateTDEE()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="inp-activity">Activity Level</label>
+                    <select id="inp-activity" class="calc-input" onchange="calculateTDEE()">
+                        <option value="1.2">Sedentary (Desk job, little exercise)</option>
+                        <option value="1.375" selected>Lightly Active (Workout 1-3 days/week)</option>
+                        <option value="1.55">Moderately Active (Workout 3-5 days/week)</option>
+                        <option value="1.725">Very Active (Heavy training 6-7 days/week)</option>
+                        <option value="1.9">Extra Active (Athlete / Intense physical labor)</option>
+                    </select>
+                </div>
             </div>
-            
-            <div class="result-section" id="result-section">
-                <div class="placeholder">Enter your details to estimate your daily calorie needs.</div>
+
+            <!-- Right: Results -->
+            <div class="results-card">
+                <div class="result-main-banner">
+                    <div class="result-main-label">Total Daily Energy Expenditure (TDEE)</div>
+                    <div class="result-main-val" id="tdee-val">2,335 kcal/day</div>
+                    <div style="margin-top:0.35rem; color:var(--text-secondary); font-size:0.88rem;">Weekly energy burn: <strong id="tdee-weekly">16,345 kcal</strong></div>
+                </div>
+
+                <div class="result-metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-item-label">Basal Metabolism (BMR)</div>
+                        <div class="metric-item-val" id="bmr-val">1,698 kcal</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-item-label">Active Burn (TEPA / NEAT)</div>
+                        <div class="metric-item-val" style="color:var(--primary);" id="active-burn-val">637 kcal</div>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="tdeeChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <div class="faq-section">
-            <div class="accordion-item"><button class="accordion-header"><span>What is TDEE?</span><span class="icon">+</span></button><div class="accordion-content"><p>Total Daily Energy Expenditure (TDEE) is an estimation of how many calories you burn per day when exercise is taken into account. It is calculated by first figuring out your Basal Metabolic Rate (BMR), then multiplying that value by an activity multiplier.</p></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>How to Use TDEE for Weight Goals</span><span class="icon">+</span></button><div class="accordion-content"><p>Your TDEE is the number of calories your body needs to maintain its current weight. This is your "maintenance calories."</p><ul><li><strong>To lose weight:</strong> Consume slightly fewer calories than your TDEE (a deficit of 300-500 kcal is common).</li><li><strong>To gain weight:</strong> Consume slightly more calories than your TDEE (a surplus of 300-500 kcal is common).</li></ul></div></div>
-            <div class="accordion-item"><button class="accordion-header"><span>Important Medical Disclaimer</span><span class="icon">+</span></button><div class="accordion-content"><p>This TDEE calculator provides an estimate and should not be a substitute for professional medical advice. For personalized nutrition and health guidance, please consult a qualified healthcare provider or a registered dietitian.</p></div></div>
-        </div>
-<%- include('partials/ad_unit') %>
+        <%- include('partials/ad_unit') %>
+
+        <section class="info-section">
+            <h2>Understanding the 4 Components of TDEE</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Share of Daily Energy</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>BMR (Basal Metabolic Rate)</strong></td>
+                            <td>60% – 70%</td>
+                            <td>Energy needed to sustain vital organs at complete rest</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NEAT (Non-Exercise Activity)</strong></td>
+                            <td>15% – 20%</td>
+                            <td>Energy spent on walking, fidgeting, working, and daily tasks</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EAT (Exercise Activity)</strong></td>
+                            <td>5% – 15%</td>
+                            <td>Direct energy burned during gym, running, or sports workouts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TEF (Thermic Effect of Food)</strong></td>
+                            <td>8% – 10%</td>
+                            <td>Energy expended to digest, absorb, and metabolize nutrients</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
-</div>
+</main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    let currentUnit = 'metric', currentGender = 'male';
-    const allInputs = document.querySelectorAll('input, select');
-    const resultDiv = document.getElementById('result-section');
-    // ... all other element selections are the same as BMR ...
+    let currentUnit = 'metric';
+    let gender = 'male';
+    let tdeeChart = null;
 
-    // --- All event listeners and switch functions are the same ---
-    
-    allInputs.forEach(input => input.addEventListener('input', calculateTDEE));
-
-    function calculateTDEE() {
-        let weightInKg, heightInCm;
-        const age = parseFloat(document.getElementById('age').value);
-        const activityMultiplier = parseFloat(document.getElementById('activityLevel').value);
-
-        if (currentUnit === 'metric') {
-            weightInKg = parseFloat(document.getElementById('weightKg').value);
-            heightInCm = parseFloat(document.getElementById('heightCm').value);
-        } else {
-            const lbs = parseFloat(document.getElementById('weightLbs').value);
-            const ft = parseFloat(document.getElementById('heightFt').value);
-            const inches = parseFloat(document.getElementById('heightIn').value) || 0;
-            if (!isNaN(lbs)) weightInKg = lbs * 0.453592;
-            if (!isNaN(ft)) heightInCm = (ft * 12 + inches) * 2.54;
-        }
-
-        if (isNaN(weightInKg) || isNaN(heightInCm) || isNaN(age) || age < 15) {
-            resultDiv.innerHTML = `<div class="placeholder">Please enter valid age, weight, and height.</div>`;
-            return;
-        }
-
-        let bmr;
-        if (currentGender === 'male') { bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) + 5; } 
-        else { bmr = (10 * weightInKg) + (6.25 * heightInCm) - (5 * age) - 161; }
-        
-        const tdee = Math.round(bmr * activityMultiplier);
-        
-        resultDiv.innerHTML = `
-            <div class="result-display-new">
-                <p class="result-main-text">Your TDEE: <strong>${tdee.toLocaleString()} kcal/day</strong></p>
-                <hr class="result-divider" />
-                <p class="result-sub-text">This is your estimated daily calorie need to maintain your current weight.</p>
-            </div>
-        `;
+    function switchUnit(unit) {
+        currentUnit = unit;
+        document.getElementById('unit-metric').classList.toggle('active', unit === 'metric');
+        document.getElementById('unit-imperial').classList.toggle('active', unit === 'imperial');
+        document.getElementById('metric-inputs').style.display = unit === 'metric' ? 'block' : 'none';
+        document.getElementById('imperial-inputs').style.display = unit === 'imperial' ? 'block' : 'none';
+        calculateTDEE();
     }
 
-    // Attach listeners and other functions from BMR calculator
+    function setGender(g) {
+        gender = g;
+        document.getElementById('btn-male').classList.toggle('active', g === 'male');
+        document.getElementById('btn-female').classList.toggle('active', g === 'female');
+        calculateTDEE();
+    }
+
+    function calculateTDEE() {
+        let weightKg, heightCm;
+
+        if (currentUnit === 'metric') {
+            weightKg = parseFloat(document.getElementById('inp-weight-kg').value) || 70;
+            heightCm = parseFloat(document.getElementById('inp-height-cm').value) || 175;
+        } else {
+            const lbs = parseFloat(document.getElementById('inp-weight-lbs').value) || 154;
+            const ft = parseFloat(document.getElementById('inp-height-ft').value) || 5;
+            const inches = parseFloat(document.getElementById('inp-height-in').value) || 9;
+            weightKg = lbs * 0.45359237;
+            heightCm = (ft * 12 + inches) * 2.54;
+        }
+
+        const age = parseFloat(document.getElementById('inp-age').value) || 28;
+        const activity = parseFloat(document.getElementById('inp-activity').value) || 1.375;
+
+        let bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age);
+        bmr = Math.round(gender === 'male' ? bmr + 5 : bmr - 161);
+
+        const tdee = Math.round(bmr * activity);
+        const activeBurn = tdee - bmr;
+
+        document.getElementById('tdee-val').innerText = `${tdee.toLocaleString()} kcal/day`;
+        document.getElementById('tdee-weekly').innerText = `${(tdee * 7).toLocaleString()} kcal`;
+        document.getElementById('bmr-val').innerText = `${bmr.toLocaleString()} kcal`;
+        document.getElementById('active-burn-val').innerText = `${activeBurn.toLocaleString()} kcal`;
+
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('tdeeChart');
+            if (ctx) {
+                if (tdeeChart) tdeeChart.destroy();
+                tdeeChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [`BMR (${bmr} kcal)`, `Active Expenditure (${activeBurn} kcal)`],
+                        datasets: [{
+                            data: [bmr, activeBurn],
+                            backgroundColor: ['#10b981', '#0284c7'],
+                            borderWidth: 2,
+                            borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Inter', size: 12 } } }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', calculateTDEE);
 </script>
 
 <%- include('partials/inner_footer') %>
