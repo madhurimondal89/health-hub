@@ -1,0 +1,74 @@
+# Health Hub
+> 540+ Free, Medically Verified Online Health, Fitness, Nutrition & Clinical Calculators.
+
+- Website: https://health-hub.calculatorfree.in/
+- Sitemap: https://health-hub.calculatorfree.in/sitemap.xml
+- Network: Calculator Free (https://www.calculatorfree.in/)
+
+## Overview
+Health Hub is an open, evidence-based health estimation platform featuring 540+ specialized calculators across body composition, diet, calories, macronutrients, clinical scores, pediatrics, pregnancy, sports performance, and sleep. All biometric estimations occur client-side in the user's browser, ensuring 100% personal data privacy.
+
+## Categories & High-Authority Health Tools
+
+### 1. Body Composition & Weight
+- BMI Calculator: https://health-hub.calculatorfree.in/bmi-calculator
+  - Accurately calculates Body Mass Index with WHO and Asian-population thresholds.
+- BMR Calculator: https://health-hub.calculatorfree.in/bmr-calculator
+  - Calculates resting basal metabolic rate via Mifflin-St Jeor and Harris-Benedict formulas.
+- TDEE Calculator: https://health-hub.calculatorfree.in/tdee-calculator
+  - Evaluates Total Daily Energy Expenditure factoring in lifestyle physical activity multipliers.
+- Body Fat Calculator: https://health-hub.calculatorfree.in/body-fat-calculator
+  - U.S. Navy circumference method (neck, waist, hip measurements).
+- Ideal Body Weight: https://health-hub.calculatorfree.in/ideal-weight-calculator
+  - Devine, Robinson, Miller, and Hamwi equations.
+- Child & Teen BMI Percentile: https://health-hub.calculatorfree.in/child-bmi-calculator
+  - CDC growth percentiles for ages 2 to 19.
+
+### 2. Diet, Calories & Nutrition
+- Daily Calorie Calculator: https://health-hub.calculatorfree.in/calorie-calculator
+- Calorie Deficit Calculator: https://health-hub.calculatorfree.in/calorie-deficit-calculator
+  - Safe weight loss rate calculation without muscle atrophy.
+- Macro Calculator: https://health-hub.calculatorfree.in/macro-calculator
+  - Protein, carbohydrates, and dietary fats customized by athletic goal.
+- Keto Diet Macro Calculator: https://health-hub.calculatorfree.in/keto-calculator
+  - Net carbs, high healthy fats, and moderate protein for ketosis.
+- Protein Intake Calculator: https://health-hub.calculatorfree.in/protein-intake-calculator
+- Intermittent Fasting Schedule: https://health-hub.calculatorfree.in/intermittent-fasting-calculator
+  - 16:8, 18:6, 20:4, and OMAD protocols.
+- Live Food Nutrition & Calorie Lookup: https://health-hub.calculatorfree.in/food-nutrition-lookup
+  - Food ingredient lookup with macro and micronutrient breakdown.
+
+### 3. Fitness, Workouts & Strength
+- One Rep Max (1RM) Calculator: https://health-hub.calculatorfree.in/one-rep-max-calculator
+  - Epley, Brzycki, Lombardi, and Mayhew strength formulas.
+- VO2 Max Fitness Calculator: https://health-hub.calculatorfree.in/vo2-max-calculator
+  - Aerobic capacity via Cooper 12-minute run and Rockport walking tests.
+- Target Heart Rate Zones: https://health-hub.calculatorfree.in/heart-rate-zones-calculator
+  - Karvonen formula (Recovery, Fat Burn, Aerobic, Anaerobic, VO2 Peak).
+- Exercise Workout Library: https://health-hub.calculatorfree.in/exercise-workout-library
+  - 800+ muscle-targeted exercises with MET metabolic burn rates.
+
+### 4. Medical, Heart & Clinical Screening
+- Blood Pressure Category: https://health-hub.calculatorfree.in/blood-pressure-calculator
+  - American Heart Association (AHA) systolic/diastolic staging.
+- Type 2 Diabetes Risk Score: https://health-hub.calculatorfree.in/diabetes-risk-calculator
+  - Clinical FINDRISC scoring model.
+- OpenFDA Drug Safety Checker: https://health-hub.calculatorfree.in/drug-safety-checker
+  - US FDA drug labels, contraindications, and clinical warnings.
+
+### 5. Pregnancy, Fertility & Pediatrics
+- Pregnancy Due Date: https://health-hub.calculatorfree.in/pregnancy-due-date-calculator
+  - Naegele's rule calculation from last menstrual period (LMP).
+- Ovulation & Fertile Days: https://health-hub.calculatorfree.in/ovulation-calculator
+- Pregnancy Weight Gain Tracker: https://health-hub.calculatorfree.in/pregnancy-weight-gain-calculator
+  - Institute of Medicine (IOM) week-by-week targets.
+
+### 6. Sleep, Longevity & Wellness
+- Sleep Cycle Calculator: https://health-hub.calculatorfree.in/sleep-calculator
+  - 90-minute ultradian REM and non-REM sleep cycle optimization.
+- Daily Water Intake: https://health-hub.calculatorfree.in/water-intake-calculator
+- Solar UV Index & Vitamin D Calculator: https://health-hub.calculatorfree.in/uv-index-vitamin-d-calculator
+  - Real-time solar UV exposure time estimation.
+
+## Clinical & Medical Disclaimer
+All calculations, biometric estimates, and clinical risk models on Health Hub are intended solely for educational, fitness screening, and wellness tracking purposes. They do not constitute professional medical advice, clinical diagnosis, or medical treatment plans. Always consult a licensed medical physician or certified healthcare provider. Full medical disclaimer: https://health-hub.calculatorfree.in/disclaimer

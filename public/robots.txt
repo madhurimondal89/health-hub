@@ -2,4 +2,24 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
+# AI Search Engines & LLM Web Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# Sitemaps and LLMs Discoverability
 Sitemap: https://health-hub.calculatorfree.in/sitemap.xml
